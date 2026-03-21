@@ -1,11 +1,4 @@
-type Team = {
-  id: string
-  name: string
-  code: string
-  flag_emoji: string
-  group_letter: string
-  confederation: string
-}
+type Team = { id: string; name: string; code: string; flag_emoji: string; group_letter: string; confederation: string }
 
 const GROUPS = ["A","B","C","D","E","F","G","H","I","J","K","L"]
 
@@ -21,22 +14,23 @@ export default function GruposGrid({ teams }: { teams: Team[] }) {
       {GROUPS.map((letter) => {
         const groupTeams = grouped[letter] || []
         return (
-          <div
-            key={letter}
-            className="bg-white/5 rounded-xl border border-white/10 overflow-hidden"
-          >
-            <div className="bg-white/5 px-4 py-3 border-b border-white/10">
-              <h3 className="font-bold text-green-400">Grupo {letter}</h3>
+          <div key={letter} className="rounded-2xl overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+              <h3 className="text-xs font-black tracking-wider" style={{ color: "#2ac105" }}>GRUPO {letter}</h3>
             </div>
-            <div className="divide-y divide-white/5">
-              {groupTeams.map((team) => (
-                <div key={team.id} className="flex items-center gap-3 px-4 py-3">
+            <div>
+              {groupTeams.map((team, i) => (
+                <div
+                  key={team.id}
+                  className="flex items-center gap-3 px-4 py-3"
+                  style={{ borderBottom: i < groupTeams.length - 1 ? "1px solid rgba(255,255,255,0.03)" : "none" }}
+                >
                   <span className="text-2xl">{team.flag_emoji}</span>
                   <div className="flex-1">
-                    <p className="text-white font-medium text-sm">{team.name}</p>
-                    <p className="text-gray-500 text-xs">{team.confederation}</p>
+                    <p className="text-white font-bold text-sm">{team.name}</p>
+                    <p className="text-white/15 text-[10px] font-semibold">{team.confederation}</p>
                   </div>
-                  <span className="text-gray-600 text-xs">{team.code}</span>
+                  <span className="text-white/10 text-[10px] font-black">{team.code}</span>
                 </div>
               ))}
             </div>

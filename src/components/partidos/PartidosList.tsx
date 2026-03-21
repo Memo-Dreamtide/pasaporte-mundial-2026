@@ -27,7 +27,6 @@ type Match = {
 }
 
 type FilterType = "todos" | "proximos" | "en_vivo" | "finalizados"
-type GroupFilter = "todos" | string
 
 const GROUPS = ["A","B","C","D","E","F","G","H","I","J","K","L"]
 
@@ -43,7 +42,7 @@ const STAGE_LABELS: Record<string, string> = {
 
 export default function PartidosList({ matches }: { matches: Match[] }) {
   const [filter, setFilter] = useState<FilterType>("todos")
-  const [groupFilter, setGroupFilter] = useState<GroupFilter>("todos")
+  const [groupFilter, setGroupFilter] = useState<string>("todos")
 
   const filtered = matches.filter((m) => {
     if (filter === "proximos" && m.status !== "scheduled") return false
@@ -54,55 +53,64 @@ export default function PartidosList({ matches }: { matches: Match[] }) {
   })
 
   const grouped = filtered.reduce((acc, match) => {
-    const key = match.stage === "group" 
-      ? `Grupo ${match.group_letter}` 
+    const key = match.stage === "group"
+      ? `Grupo ${match.group_letter}`
       : STAGE_LABELS[match.stage] || match.stage
     if (!acc[key]) acc[key] = []
     acc[key].push(match)
     return acc
   }, {} as Record<string, Match[]>)
 
+  const filters: { key: FilterType; label: string }[] = [
+    { key: "todos", label: "Todos" },
+    { key: "proximos", label: "Próximos" },
+    { key: "en_vivo", label: "En Vivo" },
+    { key: "finalizados", label: "Finalizados" },
+  ]
+
   return (
     <div>
-      <div className="flex flex-wrap gap-2 mb-4">
-        {(["todos", "proximos", "en_vivo", "finalizados"] as FilterType[]).map((f) => (
+      {/* Status Filters */}
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
+        {filters.map((f) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              filter === f
-                ? "bg-yellow-500 text-black"
-                : "bg-white/10 text-gray-300 hover:bg-white/20"
-            }`}
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className="px-4 py-2 rounded-full text-xs font-black tracking-wider whitespace-nowrap transition-all duration-200"
+            style={{
+              backgroundColor: filter === f.key ? "rgba(255,215,13,0.15)" : "rgba(255,255,255,0.04)",
+              color: filter === f.key ? "#ffd70d" : "rgba(255,255,255,0.3)",
+              border: filter === f.key ? "1px solid rgba(255,215,13,0.2)" : "1px solid rgba(255,255,255,0.05)",
+            }}
           >
-            {f === "todos" && "Todos"}
-            {f === "proximos" && "Próximos"}
-            {f === "en_vivo" && "En Vivo"}
-            {f === "finalizados" && "Finalizados"}
+            {f.label.toUpperCase()}
           </button>
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      {/* Group Filters */}
+      <div className="flex gap-1.5 mb-6 overflow-x-auto pb-1 scrollbar-hide">
         <button
           onClick={() => setGroupFilter("todos")}
-          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-            groupFilter === "todos"
-              ? "bg-green-500 text-black"
-              : "bg-white/10 text-gray-400 hover:bg-white/20"
-          }`}
+          className="px-3 py-1.5 rounded-lg text-[10px] font-black tracking-wider whitespace-nowrap transition-all"
+          style={{
+            backgroundColor: groupFilter === "todos" ? "rgba(42,193,5,0.15)" : "rgba(255,255,255,0.03)",
+            color: groupFilter === "todos" ? "#2ac105" : "rgba(255,255,255,0.2)",
+            border: groupFilter === "todos" ? "1px solid rgba(42,193,5,0.2)" : "1px solid rgba(255,255,255,0.04)",
+          }}
         >
-          Todos
+          TODOS
         </button>
         {GROUPS.map((g) => (
           <button
             key={g}
             onClick={() => setGroupFilter(g)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              groupFilter === g
-                ? "bg-green-500 text-black"
-                : "bg-white/10 text-gray-400 hover:bg-white/20"
-            }`}
+            className="px-3 py-1.5 rounded-lg text-[10px] font-black tracking-wider whitespace-nowrap transition-all"
+            style={{
+              backgroundColor: groupFilter === g ? "rgba(42,193,5,0.15)" : "rgba(255,255,255,0.03)",
+              color: groupFilter === g ? "#2ac105" : "rgba(255,255,255,0.2)",
+              border: groupFilter === g ? "1px solid rgba(42,193,5,0.2)" : "1px solid rgba(255,255,255,0.04)",
+            }}
           >
             {g}
           </button>
@@ -110,17 +118,18 @@ export default function PartidosList({ matches }: { matches: Match[] }) {
       </div>
 
       {Object.keys(grouped).length === 0 ? (
-        <div className="text-center text-gray-500 py-12">
-          <p>No hay partidos con este filtro</p>
+        <div className="text-center py-16">
+          <p className="text-white/15 text-sm">No hay partidos con este filtro</p>
         </div>
       ) : (
         Object.entries(grouped).map(([section, sectionMatches]) => (
-          <div key={section} className="mb-8">
-            <h2 className="text-lg font-bold text-green-400 mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-              {section}
-            </h2>
-            <div className="space-y-3">
+          <div key={section} className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#2ac105" }} />
+              <h2 className="text-xs font-black tracking-wider uppercase" style={{ color: "#2ac105" }}>{section}</h2>
+              <span className="text-white/10 text-[10px] font-semibold">{sectionMatches.length}</span>
+            </div>
+            <div className="space-y-2">
               {sectionMatches.map((match) => (
                 <PartidoCard key={match.id} match={match} />
               ))}
@@ -129,8 +138,8 @@ export default function PartidosList({ matches }: { matches: Match[] }) {
         ))
       )}
 
-      <p className="text-center text-gray-600 text-sm mt-8">
-        {filtered.length} partido{filtered.length !== 1 ? "s" : ""}
+      <p className="text-center text-white/10 text-[10px] font-semibold mt-6 tracking-wider">
+        {filtered.length} PARTIDO{filtered.length !== 1 ? "S" : ""}
       </p>
     </div>
   )

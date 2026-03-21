@@ -9,8 +9,8 @@ type Team = {
 type Match = {
   id: string
   match_number: number
-  home_team: Team
-  away_team: Team
+  home_team: Team | null
+  away_team: Team | null
   home_score: number | null
   away_score: number | null
   stage: string
@@ -32,69 +32,93 @@ function formatTime(dateStr: string) {
   const date = new Date(dateStr)
   const hours = date.getUTCHours().toString().padStart(2, "0")
   const minutes = date.getUTCMinutes().toString().padStart(2, "0")
-  return `${hours}:${minutes} UTC`
+  return `${hours}:${minutes}`
+}
+
+const STAGE_LABELS: Record<string, string> = {
+  round_of_32: "Dieciseisavos",
+  round_of_16: "Octavos",
+  quarter: "Cuartos",
+  semi: "Semifinal",
+  third_place: "3er Lugar",
+  final: "Final",
 }
 
 export default function PartidoCard({ match }: { match: Match }) {
   const isLive = match.status === "live"
   const isFinished = match.status === "finished"
+  const hasTeams = match.home_team && match.away_team
 
   return (
-    <div className={`bg-white/5 rounded-xl p-4 border transition-colors hover:bg-white/10 ${
-      isLive ? "border-red-500/50 shadow-lg shadow-red-500/10" : "border-white/10"
-    }`}>
+    <div
+      className="rounded-xl p-4 transition-colors"
+      style={{
+        backgroundColor: isLive ? "rgba(241,10,60,0.06)" : "rgba(255,255,255,0.03)",
+        border: isLive ? "1px solid rgba(241,10,60,0.2)" : "1px solid rgba(255,255,255,0.05)",
+      }}
+    >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-gray-500 text-xs">#{match.match_number}</span>
+          {match.stage !== "group" && (
+            <span className="text-[9px] font-black px-2 py-0.5 rounded" style={{ backgroundColor: "rgba(69,143,255,0.1)", color: "#458fff" }}>
+              {STAGE_LABELS[match.stage] || match.stage}
+            </span>
+          )}
           {isLive && (
-            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse font-bold">
-              EN VIVO
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse" style={{ backgroundColor: "rgba(241,10,60,0.2)", color: "#f10a3c" }}>
+              LIVE
             </span>
           )}
           {isFinished && (
-            <span className="bg-gray-600 text-white text-xs px-2 py-0.5 rounded-full">
-              FINAL
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)" }}>
+              FIN
             </span>
           )}
         </div>
         <div className="text-right">
-          <p className="text-gray-400 text-xs">{formatDate(match.match_date)}</p>
-          <p className="text-gray-500 text-xs">{formatTime(match.match_date)}</p>
+          <p className="text-white/30 text-[10px] font-semibold">{formatDate(match.match_date)}</p>
+          <p className="text-white/15 text-[10px]">{formatTime(match.match_date)} UTC</p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 flex-1">
-          <span className="text-3xl">{match.home_team.flag_emoji}</span>
-          <div>
-            <p className="font-bold text-white text-sm">{match.home_team.name}</p>
-            <p className="text-gray-500 text-xs">{match.home_team.code}</p>
-          </div>
-        </div>
-
-        <div className="text-center px-4">
-          {isFinished || isLive ? (
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-white">{match.home_score}</span>
-              <span className="text-gray-500">-</span>
-              <span className="text-2xl font-bold text-white">{match.away_score}</span>
+      {hasTeams ? (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 flex-1">
+            <span className="text-3xl">{match.home_team!.flag_emoji}</span>
+            <div>
+              <p className="font-black text-white text-sm">{match.home_team!.name}</p>
+              <p className="text-white/20 text-[10px] font-semibold">{match.home_team!.code}</p>
             </div>
-          ) : (
-            <span className="text-lg font-bold text-gray-600">vs</span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3 flex-1 justify-end">
-          <div className="text-right">
-            <p className="font-bold text-white text-sm">{match.away_team.name}</p>
-            <p className="text-gray-500 text-xs">{match.away_team.code}</p>
           </div>
-          <span className="text-3xl">{match.away_team.flag_emoji}</span>
+
+          <div className="text-center px-4">
+            {isFinished || isLive ? (
+              <div className="flex items-center gap-2">
+                <span className="text-3xl font-black text-white">{match.home_score}</span>
+                <span className="text-white/20 text-lg">:</span>
+                <span className="text-3xl font-black text-white">{match.away_score}</span>
+              </div>
+            ) : (
+              <span className="text-white/10 text-sm font-black">VS</span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 flex-1 justify-end">
+            <div className="text-right">
+              <p className="font-black text-white text-sm">{match.away_team!.name}</p>
+              <p className="text-white/20 text-[10px] font-semibold">{match.away_team!.code}</p>
+            </div>
+            <span className="text-3xl">{match.away_team!.flag_emoji}</span>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="text-center py-3">
+          <span className="text-white/10 text-xs font-black">POR DEFINIR</span>
+        </div>
+      )}
 
       <div className="mt-3 text-center">
-        <p className="text-gray-500 text-xs">{match.stadium}, {match.city}</p>
+        <p className="text-white/10 text-[10px] font-medium">{match.stadium}, {match.city}</p>
       </div>
     </div>
   )

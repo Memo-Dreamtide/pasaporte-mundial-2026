@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase-server"
 import { redirect } from "next/navigation"
+import Image from "next/image"
 import PartidosList from "@/components/partidos/PartidosList"
 
 export default async function PartidosPage() {
@@ -20,19 +21,19 @@ export default async function PartidosPage() {
     .order("match_date", { ascending: true })
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+    <div>
+      <header className="px-4 py-4 border-b border-white/5">
+        <div className="max-w-4xl mx-auto flex items-center gap-3">
+          <Image src="/images/logo.png" alt="PM" width={32} height={32} />
           <div>
-            <h1 className="text-3xl font-bold">Partidos</h1>
-            <p className="text-gray-400">Pasaporte Mundial 2026</p>
+            <h1 className="text-lg font-black text-white tracking-tight">PARTIDOS</h1>
+            <p className="text-white/30 text-xs">Pasaporte Mundial 2026</p>
           </div>
-          <a href="/dashboard" className="text-gray-400 hover:text-white transition-colors text-sm">
-            Dashboard
-          </a>
         </div>
+      </header>
+      <div className="max-w-4xl mx-auto px-4 py-6">
         <PartidosList matches={matches || []} />
       </div>
-    </main>
+    </div>
   )
 }
