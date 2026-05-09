@@ -139,7 +139,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.7 }}
             className="text-white text-lg md:text-2xl mb-10 font-light tracking-wide"
           >
-            Predice, compite y gana premios!
+            Predice, compite y ¡Gana premios!
           </motion.p>
 
           {/* CTAs */}
@@ -253,7 +253,7 @@ export default function Home() {
               {
                 num: "01",
                 title: "REGISTRATE",
-                desc: "Crea tu cuenta gratis en segundos con Google o tu correo electronico.",
+                desc: "Crea tu cuenta gratis en segundos con tu correo electronico.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ),
@@ -295,12 +295,12 @@ export default function Home() {
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealOnScroll>
             <div className="text-center mb-16 md:mb-20">
-              <span className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase">Premios semanales</span>
+              <span className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase">Premios y gran final</span>
               <h2 className="text-4xl md:text-5xl font-black mt-3 text-gray-900 uppercase">
-                Gana premios<br />cada semana
+                Gana premios<br />increibles
               </h2>
               <p className="text-gray-600 mt-4 max-w-lg mx-auto">
-                Cada semana se sortean premios entre todos los participantes activos. Mientras mas pronostiques, mas oportunidades tienes de ganar.
+                Sorteos semanales para todos los participantes activos y un gran premio final para el campeon del ranking.
               </p>
             </div>
           </RevealOnScroll>
