@@ -1,16 +1,20 @@
 import type { Metadata } from "next"
-import { Montserrat } from "next/font/google"
+import { Roboto } from "next/font/google"
 import "./globals.css"
 
-const montserrat = Montserrat({ subsets: ["latin"] })
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "900"],
+  variable: "--font-roboto",
+})
 
 export const metadata: Metadata = {
-  title: "Pasaporte Mundial 2026 | Pronósticos de Fútbol",
-  description: "Pronostica los 104 partidos del torneo, acumula puntos y gana premios. El mejor predictor de El Salvador.",
-  keywords: ["mundial", "2026", "pronósticos", "el salvador", "fútbol"],
+  title: "Pasaporte 2026 | Predice. Compite. Gana.",
+  description: "La plataforma de predicciones del Mundial 2026. Pronostica los 104 partidos, acumula puntos y gana premios. Presentado por Banco Atlantida.",
+  keywords: ["mundial", "2026", "predicciones", "el salvador", "banco atlantida"],
   openGraph: {
-    title: "Pasaporte Mundial 2026",
-    description: "Pronostica los partidos y gana premios",
+    title: "Pasaporte 2026",
+    description: "Predice los partidos del Mundial y gana premios",
     type: "website",
   },
 }
@@ -22,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${montserrat.className} antialiased`}>
+      <body className={`${roboto.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>

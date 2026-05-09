@@ -2,320 +2,484 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { motion, useScroll, useTransform, useInView } from "motion/react"
 
-export default function Home() {
-  const [scrollY, setScrollY] = useState(0)
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY)
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+function ParallaxBg({ src, overlay, blend, className = "" }: { src?: string; overlay?: string; blend?: string; className?: string }) {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  })
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"])
 
   return (
-    <div style={{ backgroundColor: "#051119" }}>
+    <div ref={ref} className="absolute inset-0 overflow-hidden">
+      {src ? (
+        <motion.div
+          className={`absolute inset-0 bg-cover bg-center ${className}`}
+          style={{
+            backgroundImage: `url('${src}')`,
+            y,
+            top: "-15%",
+            bottom: "-15%",
+            ...(blend ? { mixBlendMode: blend as React.CSSProperties["mixBlendMode"] } : {}),
+          }}
+        />
+      ) : (
+        <motion.div
+          className={`absolute inset-0 ${className}`}
+          style={{ y, top: "-15%", bottom: "-15%" }}
+        />
+      )}
+      {overlay && <div className={`absolute inset-0 ${overlay}`} />}
+    </div>
+  )
+}
+
+function RevealOnScroll({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-80px" })
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
+      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      transition={{ duration: 0.7, delay, ease: [0.25, 0.4, 0.25, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true })
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    if (!isInView) return
+    const duration = 1500
+    const startTime = performance.now()
+    const animate = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.floor(eased * target))
+      if (progress < 1) requestAnimationFrame(animate)
+    }
+    requestAnimationFrame(animate)
+  }, [isInView, target])
+
+  return <span ref={ref}>{count}{suffix}</span>
+}
+
+export default function Home() {
+  const heroRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  })
+
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+  const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 1.1])
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150])
+
+  return (
+    <div className="bg-bg-base">
+
+      {/* ========== HEADER ========== */}
+      <StickyHeader />
 
       {/* ========== HERO SECTION ========== */}
-      <section className="relative min-h-screen overflow-hidden">
-        {/* Background with parallax */}
-        <div className="absolute inset-0" style={{ transform: `translateY(${scrollY * 0.4}px)` }}>
-          <Image
-            src="/images/bg-hero.jpg"
-            alt=""
-            fill
-            className="object-cover opacity-60"
-            priority
-          />
-          <div className="absolute inset-0" style={{
-            background: "linear-gradient(to bottom, rgba(5,17,25,0.3) 0%, rgba(5,17,25,0.6) 50%, rgba(5,17,25,0.95) 100%)"
-          }} />
-        </div>
-
-        {/* Player Left - parallax slower */}
-        <div
-          className="absolute top-4 left-0 w-[45%] max-w-[220px] md:top-auto md:bottom-0 md:w-[45%] md:max-w-[550px] z-10 pointer-events-none opacity-60 md:opacity-100"
-          style={{ transform: `translateY(${scrollY * -0.15}px)` }}
+      <section ref={heroRef} className="relative h-screen overflow-hidden">
+        {/* Video background with parallax */}
+        <motion.div
+          className="absolute inset-0"
+          style={{ scale: heroScale, y: heroY }}
         >
-          <Image
-            src="/images/player-left.png"
-            alt=""
-            width={800}
-            height={1000}
-            className="w-full h-auto object-contain drop-shadow-2xl"
-            priority
-          />
-        </div>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-hero-video.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+        </motion.div>
 
-        {/* Player Right - parallax faster */}
-        <div
-          className="absolute bottom-0 right-0 w-[40%] max-w-[480px] z-10 pointer-events-none hidden md:block"
-          style={{ transform: `translateY(${scrollY * -0.25}px)` }}
+        {/* Hero content */}
+        <motion.div
+          className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center"
+          style={{ opacity: heroOpacity }}
         >
-          <Image
-            src="/images/player-right.png"
-            alt=""
-            width={800}
-            height={1000}
-            className="w-full h-auto object-contain drop-shadow-2xl"
-            priority
-          />
-        </div>
-
-        {/* Copa - parallax upward */}
-        <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-6 text-center">
-          <div className="mb-4" style={{
-            animation: "float 3s ease-in-out infinite",
-            transform: `translateY(${scrollY * -0.3}px)`
-          }}>
-            <Image
-              src="/images/copa.png"
-              alt="Trofeo"
-              width={120}
-              height={160}
-              className="drop-shadow-[0_0_30px_rgba(255,215,13,0.4)]"
-              priority
+          {/* Logo Vive el Mundial */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.4, 0.25, 1] }}
+            className="mb-8"
+          >
+            <img
+              src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-vive-el-mundial.png"
+              alt="Atlantida Vive el Mundial"
+              style={{ width: "min(80vw, 480px)", height: "auto", filter: "drop-shadow(0 4px 30px rgba(0,0,0,0.5))" }}
             />
-          </div>
+          </motion.div>
 
-          {/* Countries Badge */}
-          <div
-            className="flex items-center gap-2 mb-6 px-5 py-2 rounded-full border border-white/20 backdrop-blur-sm"
-            style={{ backgroundColor: "rgba(5,17,25,0.6)", transform: `translateY(${scrollY * -0.2}px)` }}
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="text-white text-lg md:text-2xl mb-10 font-light tracking-wide"
           >
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#f10a3c" }} />
-            <span className="text-white/80 text-xs md:text-sm font-medium tracking-wider">MÉXICO</span>
-            <span className="text-white/40">|</span>
-            <span className="text-xs md:text-sm font-bold tracking-wider" style={{ color: "#458fff" }}>ESTADOS UNIDOS</span>
-            <span className="text-white/40">|</span>
-            <span className="text-white/80 text-xs md:text-sm font-medium tracking-wider">CANADÁ</span>
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#f10a3c" }} />
-          </div>
+            Predice, compite y gana premios!
+          </motion.p>
 
-          {/* Title with parallax */}
-          <h1 className="mb-2" style={{ transform: `translateY(${scrollY * -0.15}px)` }}>
-            <span className="block text-5xl md:text-8xl font-black tracking-tight text-white drop-shadow-[0_2px_20px_rgba(69,143,255,0.3)]">PASAPORTE</span>
-            <span className="block text-5xl md:text-8xl font-black tracking-tight drop-shadow-[0_2px_20px_rgba(255,215,13,0.3)]" style={{ color: "#ffd70d" }}>MUNDIAL</span>
-          </h1>
-
-          <p className="text-3xl md:text-5xl font-light text-white/60 mb-6 tracking-widest" style={{ transform: `translateY(${scrollY * -0.1}px)` }}>2026</p>
-          <p className="text-white/70 text-base md:text-xl mb-10 max-w-md" style={{ transform: `translateY(${scrollY * -0.05}px)` }}>
-            Pronostica, acumula puntos y gana premios
-          </p>
-
-          <Link
-            href="/login"
-            className="px-12 py-4 rounded-full font-bold text-lg tracking-wider transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(42,193,5,0.4)]"
-            style={{ backgroundColor: "#2ac105", color: "#051119" }}
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="flex flex-col sm:flex-row items-center gap-4"
           >
-            INICIO
-          </Link>
-
-          <p className="mt-5 text-white/40 text-sm">
-            No tienes sesión,{" "}
-            <Link href="/registro" className="underline hover:text-white/70 transition-colors" style={{ color: "#ffd70d" }}>
-              regístrate aquí
+            <Link
+              href="/login"
+              className="px-10 py-4 text-white font-bold text-sm tracking-[0.15em] uppercase border border-white/30 rounded-lg hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-sm"
+            >
+              INICIAR SESION
             </Link>
-          </p>
-
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2" style={{ animation: "bounce 2s infinite", opacity: Math.max(0, 1 - scrollY / 200) }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white/30">
-              <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        </div>
+            <Link
+              href="/registro"
+              className="group relative px-10 py-4 bg-red-atlantida text-white font-bold text-sm tracking-[0.15em] uppercase rounded-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(217,39,46,0.4)] cursor-pointer"
+            >
+              <span className="relative z-10">COMIENZA AQUI</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-red-atlantida to-red-glow opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </Link>
+          </motion.div>
+        </motion.div>
       </section>
 
-      {/* ========== BANNER SPONSOR PLATINO 1200x400 ========== */}
-      <section className="px-4 py-8 md:py-12" style={{ transform: `translateY(${Math.max(0, (scrollY - 400) * -0.05)}px)` }}>
+      {/* ========== MARCADORES EN VIVO ========== */}
+      <section className="pt-16 md:pt-24 pb-24 md:pb-32 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
-          <div className="relative overflow-hidden rounded-2xl border border-white/10" style={{ backgroundColor: "rgba(69,143,255,0.05)" }}>
-            <div className="flex items-center justify-center h-[180px] md:h-[300px]">
-              <div className="text-center">
-                <p className="text-white/20 text-xs tracking-widest uppercase mb-2">Sponsor Principal</p>
-                <p className="text-white/10 text-2xl md:text-4xl font-black tracking-wider">TU MARCA AQUÍ</p>
-                <p className="text-white/15 text-xs mt-2">1200 x 400 px</p>
+          {/* Stats Bar */}
+          <RevealOnScroll className="mb-16 md:mb-20">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 p-6 md:p-10 rounded-2xl bg-gray-50 border border-gray-200">
+              {[
+                { value: 104, label: "PARTIDOS" },
+                { value: 48, label: "SELECCIONES" },
+                { value: 11, label: "CIUDADES SEDE" },
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-3xl md:text-5xl font-black text-red-atlantida">
+                    <CountUp target={stat.value} />
+                  </p>
+                  <p className="text-gray-500 text-[10px] md:text-xs tracking-[0.15em] mt-1 uppercase font-medium">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </RevealOnScroll>
+
+          <RevealOnScroll>
+            <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+              <div>
+                <span className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase">En tiempo real</span>
+                <h2 className="text-4xl md:text-5xl font-black mt-3 mb-5 text-gray-900 leading-tight uppercase">
+                  Marcadores<br />en vivo
+                </h2>
+                <p className="text-gray-600 text-base md:text-lg leading-relaxed max-w-md">
+                  Sigue todos los resultados de la cita mundialista en tiempo real. Marcadores, estadisticas y actualizaciones al instante desde tu celular.
+                </p>
+              </div>
+              <div className="relative">
+                <div className="absolute -inset-4 bg-red-atlantida/5 rounded-3xl blur-2xl" />
+                <div className="relative bg-white border border-gray-200 rounded-2xl p-6 space-y-4 shadow-sm">
+                  {[
+                    { home: "Mexico", away: "Canada", scoreH: 2, scoreA: 1, time: "67'", live: true },
+                    { home: "Brasil", away: "Alemania", scoreH: 1, scoreA: 1, time: "45+2'", live: true },
+                    { home: "Argentina", away: "Japon", scoreH: 3, scoreA: 0, time: "FT", live: false },
+                  ].map((match, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-100">
+                      <div className="flex-1 text-right">
+                        <span className="text-sm font-bold text-gray-900">{match.home}</span>
+                      </div>
+                      <div className="flex items-center gap-3 mx-4">
+                        <span className="text-2xl font-black text-gray-900">{match.scoreH}</span>
+                        <div className="flex flex-col items-center">
+                          {match.live ? (
+                            <span className="text-[10px] font-bold text-red-atlantida tracking-wider animate-pulse">EN VIVO</span>
+                          ) : (
+                            <span className="text-[10px] font-bold text-gray-400 tracking-wider">FIN</span>
+                          )}
+                          <span className="text-[10px] text-gray-400">{match.time}</span>
+                        </div>
+                        <span className="text-2xl font-black text-gray-900">{match.scoreA}</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <span className="text-sm font-bold text-gray-900">{match.away}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="absolute top-3 right-3">
-              <span className="text-white/10 text-[10px] uppercase tracking-widest">Platino</span>
-            </div>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
 
-      {/* ========== CÓMO FUNCIONA ========== */}
-      <section className="px-4 py-12 md:py-20 relative overflow-hidden">
-        {/* Parallax background accent */}
-        <div
-          className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full opacity-[0.03]"
-          style={{ backgroundColor: "#458fff", transform: `translateY(${Math.max(0, (scrollY - 800) * 0.15)}px)` }}
-        />
-        <div
-          className="absolute -bottom-20 -left-20 w-[300px] h-[300px] rounded-full opacity-[0.03]"
-          style={{ backgroundColor: "#ffd70d", transform: `translateY(${Math.max(0, (scrollY - 800) * -0.1)}px)` }}
-        />
+      {/* ========== COMO FUNCIONA ========== */}
+      <section className="py-24 md:py-32 px-6 relative overflow-hidden bg-red-atlantida">
+        <ParallaxBg src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-predice.jpg" blend="multiply" className="opacity-50" />
 
         <div className="max-w-5xl mx-auto relative z-10">
-          <h2 className="text-3xl md:text-4xl font-black text-center text-white mb-4">
-            CÓMO <span style={{ color: "#ffd70d" }}>FUNCIONA</span>
-          </h2>
-          <p className="text-white/40 text-center mb-12 max-w-lg mx-auto">
-            Tres pasos simples para convertirte en el mejor predictor de El Salvador
-          </p>
+          <RevealOnScroll>
+            <div className="text-center mb-16 md:mb-20">
+              <span className="text-white/70 text-xs font-bold tracking-[0.2em] uppercase">Asi de facil</span>
+              <h2 className="text-4xl md:text-5xl font-black mt-3 text-white uppercase">
+                Predice, espera<br />y gana
+              </h2>
+            </div>
+          </RevealOnScroll>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {[
-              { num: "1", title: "Regístrate", desc: "Crea tu cuenta gratis con Google o email en segundos", color: "#458fff" },
-              { num: "2", title: "Pronostica", desc: "Predice los marcadores de los 104 partidos y gana puntos", color: "#ffd70d" },
-              { num: "3", title: "Gana Premios", desc: "Los Top 5 ganan premios y cada semana hay sorteos para todos", color: "#2ac105" },
+              {
+                num: "01",
+                title: "REGISTRATE",
+                desc: "Crea tu cuenta gratis en segundos con Google o tu correo electronico.",
+                icon: (
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                ),
+              },
+              {
+                num: "02",
+                title: "PRONOSTICA",
+                desc: "Predice los marcadores de los 104 partidos. Facil, rapido y desde tu celular.",
+                icon: (
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                ),
+              },
+              {
+                num: "03",
+                title: "GANA PREMIOS",
+                desc: "Acumula puntos, sube en el ranking y participa en sorteos semanales.",
+                icon: (
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6"><path d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                ),
+              },
             ].map((step, i) => (
-              <div
-                key={step.num}
-                className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center hover:border-white/20 transition-all duration-500 hover:translate-y-[-4px]"
-                style={{ transform: `translateY(${Math.max(0, (scrollY - 900 - i * 100) * -0.04)}px)` }}
-              >
-                <div
-                  className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-black"
-                  style={{ backgroundColor: `${step.color}15`, color: step.color }}
-                >
-                  {step.num}
+              <RevealOnScroll key={i} delay={i * 0.15}>
+                <div className="group relative p-8 md:p-10 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm hover:border-white/40 transition-all duration-500 cursor-pointer h-full flex flex-col">
+                  <div className="absolute top-6 right-6 text-5xl font-black text-white/[0.05]">{step.num}</div>
+                  <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white mb-6 group-hover:bg-white/30 transition-colors duration-300">
+                    {step.icon}
+                  </div>
+                  <h3 className="text-xl font-black text-white mb-3 tracking-wide">{step.title}</h3>
+                  <p className="text-white/70 text-sm leading-relaxed flex-1">{step.desc}</p>
                 </div>
-                <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
-                <p className="text-white/40 text-sm">{step.desc}</p>
-              </div>
+              </RevealOnScroll>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ========== BANNER SECUNDARIO 1200x250 ========== */}
-      <section className="px-4 py-4">
-        <div className="max-w-5xl mx-auto">
-          <div
-            className="relative overflow-hidden rounded-xl border border-white/10"
-            style={{ backgroundColor: "rgba(255,215,13,0.03)", transform: `translateY(${Math.max(0, (scrollY - 1400) * -0.04)}px)` }}
-          >
-            <div className="flex items-center justify-center h-[120px] md:h-[200px]">
-              <div className="text-center">
-                <p className="text-white/10 text-xl md:text-2xl font-black tracking-wider">ESPACIO PUBLICITARIO</p>
-                <p className="text-white/10 text-xs mt-1">1200 x 250 px</p>
-              </div>
+      {/* ========== PREMIOS ========== */}
+      <section className="py-24 md:py-32 px-6 relative overflow-hidden bg-white">
+        <div className="max-w-5xl mx-auto relative z-10">
+          <RevealOnScroll>
+            <div className="text-center mb-16 md:mb-20">
+              <span className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase">Premios semanales</span>
+              <h2 className="text-4xl md:text-5xl font-black mt-3 text-gray-900 uppercase">
+                Gana premios<br />cada semana
+              </h2>
+              <p className="text-gray-600 mt-4 max-w-lg mx-auto">
+                Cada semana se sortean premios entre todos los participantes activos. Mientras mas pronostiques, mas oportunidades tienes de ganar.
+              </p>
             </div>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {[
+              { name: "Televisor 55\"", icon: "TV", gradient: "from-red-atlantida/10 to-transparent" },
+              { name: "Barbacoa Premium", icon: "BBQ", gradient: "from-red-atlantida/10 to-transparent" },
+              { name: "Horno de Conveccion", icon: "HC", gradient: "from-red-atlantida/10 to-transparent" },
+              { name: "Sala Completa", icon: "SC", gradient: "from-red-atlantida/10 to-transparent" },
+            ].map((prize, i) => (
+              <RevealOnScroll key={i} delay={i * 0.1}>
+                <div className="group relative p-6 md:p-8 rounded-2xl bg-gray-50 border border-gray-200 hover:border-red-atlantida/30 transition-all duration-500 text-center cursor-pointer">
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${prize.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  <div className="relative z-10">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-atlantida/10 flex items-center justify-center">
+                      <span className="text-2xl font-black text-red-atlantida">{prize.icon}</span>
+                    </div>
+                    <p className="text-gray-900 font-bold text-sm">{prize.name}</p>
+                  </div>
+                </div>
+              </RevealOnScroll>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ========== SPONSORS GRID ========== */}
-      <section className="px-4 py-12 md:py-20 relative overflow-hidden">
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-[0.02]"
-          style={{ backgroundColor: "#ffd70d", transform: `translateY(${Math.max(0, (scrollY - 1600) * 0.1)}px)` }}
-        />
-
+      {/* ========== PATROCINADO POR ========== */}
+      <section className="py-24 md:py-32 px-6 relative bg-red-atlantida">
         <div className="max-w-5xl mx-auto relative z-10">
-          <h2 className="text-2xl md:text-3xl font-black text-center text-white mb-2">
-            NUESTROS <span style={{ color: "#458fff" }}>SPONSORS</span>
-          </h2>
-          <p className="text-white/30 text-center mb-10 text-sm">Marcas que hacen posible Pasaporte Mundial</p>
+          <RevealOnScroll>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-black text-white uppercase">
+                Grupo Atlantida
+              </h2>
+            </div>
+          </RevealOnScroll>
 
-          {/* Platino */}
-          <div className="mb-8">
-            <p className="text-center text-xs tracking-widest uppercase mb-4" style={{ color: "#ffd70d" }}>Platino</p>
-            <div className="grid grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
+          <RevealOnScroll delay={0.2}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                "Banco Atlantida",
+                "Seguros Atlantida",
+                "Atlantida Capital",
+                "Atlantida Vida",
+              ].map((brand, i) => (
                 <div
-                  key={`p-${i}`}
-                  className="bg-white/5 border border-white/10 rounded-xl h-20 md:h-24 flex items-center justify-center hover:border-white/20 transition-all duration-300 hover:translate-y-[-2px]"
-                  style={{ transform: `translateY(${Math.max(0, (scrollY - 1800 - i * 50) * -0.03)}px)` }}
+                  key={i}
+                  className="group flex flex-col items-center justify-center p-8 md:p-10 rounded-2xl bg-white/10 border border-white/20 hover:border-white/40 transition-all duration-500 cursor-pointer"
                 >
-                  <span className="text-white/10 text-xs font-bold">LOGO</span>
+                  <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-4 group-hover:bg-white/30 transition-colors duration-300">
+                    <Image
+                      src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png"
+                      alt="Atlantida"
+                      width={28}
+                      height={28}
+                      className="opacity-90 group-hover:opacity-100 transition-opacity"
+                    />
+                  </div>
+                  <p className="text-white/80 text-sm font-medium text-center group-hover:text-white transition-colors duration-300">{brand}</p>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Oro */}
-          <div className="mb-8">
-            <p className="text-center text-xs tracking-widest uppercase mb-4" style={{ color: "#458fff" }}>Oro</p>
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={`o-${i}`}
-                  className="bg-white/5 border border-white/10 rounded-xl h-16 md:h-20 flex items-center justify-center hover:border-white/20 transition-all duration-300 hover:translate-y-[-2px]"
-                  style={{ transform: `translateY(${Math.max(0, (scrollY - 1900 - i * 50) * -0.03)}px)` }}
-                >
-                  <span className="text-white/10 text-xs font-bold">LOGO</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Plata */}
-          <div>
-            <p className="text-center text-xs tracking-widest uppercase mb-4 text-white/30">Plata</p>
-            <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={`s-${i}`}
-                  className="bg-white/5 border border-white/10 rounded-lg h-14 md:h-16 flex items-center justify-center hover:border-white/20 transition-all duration-300 hover:translate-y-[-2px]"
-                  style={{ transform: `translateY(${Math.max(0, (scrollY - 2000 - i * 30) * -0.03)}px)` }}
-                >
-                  <span className="text-white/10 text-[10px] font-bold">LOGO</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* ========== CTA FINAL ========== */}
-      <section className="px-4 py-16 md:py-24 relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            background: `radial-gradient(circle at 50% 50%, #2ac105, transparent 70%)`,
-            transform: `scale(${1 + Math.max(0, (scrollY - 2200) * 0.0003)})`
-          }}
-        />
+      <section className="py-24 md:py-32 px-6 relative overflow-hidden">
+        <ParallaxBg src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-demuestra.jpg" overlay="bg-black/50" />
+
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-4">
-            DEMUESTRA QUE ERES EL <span style={{ color: "#ffd70d" }}>MEJOR</span>
-          </h2>
-          <p className="text-white/40 mb-8 max-w-md mx-auto">
-            Únete a miles de salvadoreños que competirán por ser el predictor número uno del país
-          </p>
-          <Link
-            href="/registro"
-            className="inline-block px-12 py-4 rounded-full font-bold text-lg tracking-wider transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(42,193,5,0.4)]"
-            style={{ backgroundColor: "#2ac105", color: "#051119" }}
-          >
-            REGISTRARSE GRATIS
-          </Link>
+          <RevealOnScroll>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 leading-tight uppercase">
+              Demuestra que<br />
+              <span className="text-white">eres el mejor</span>
+            </h2>
+            <p className="text-white/80 text-base md:text-lg mb-10 max-w-md mx-auto">
+              Predice los partidos de la fiesta mundialista y gana fabulosos premios.
+            </p>
+            <Link
+              href="/registro"
+              className="group relative inline-flex px-12 py-5 bg-red-atlantida text-white font-bold text-base tracking-[0.15em] uppercase rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_60px_rgba(217,39,46,0.5)] cursor-pointer"
+            >
+              <span className="relative z-10">REGISTRARSE GRATIS</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-red-atlantida to-red-glow opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </Link>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* ========== FOOTER ========== */}
-      <footer className="px-4 py-8 border-t border-white/5">
-        <div className="max-w-5xl mx-auto flex items-center justify-center gap-3">
-          <Image src="/images/logo.png" alt="Pasaporte Mundial" width={40} height={40} />
-          <span className="text-white/40 text-sm font-medium">Pasaporte Mundial 2026</span>
+      <footer className="py-12 px-6 bg-red-atlantida">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-4">
+              <Image
+                src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png"
+                alt="Banco Atlantida"
+                width={36}
+                height={36}
+              />
+              <div>
+                <p className="text-white font-bold text-sm">Pasaporte 2026</p>
+                <p className="text-white/60 text-xs">Presentado por Banco Atlantida</p>
+              </div>
+            </div>
+
+            <Link
+              href="/login"
+              className="px-8 py-3 bg-white text-red-atlantida font-bold text-sm tracking-[0.15em] uppercase rounded-lg hover:bg-white/90 transition-all duration-300 cursor-pointer"
+            >
+              INGRESAR
+            </Link>
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-white/20 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-white/60 text-xs">2026 Pasaporte 2026. Todos los derechos reservados.</p>
+            <div className="flex items-center gap-2">
+              <span className="text-white/60 text-xs">Desarrollado por</span>
+              <span className="text-white/90 text-xs font-bold">studio.dreamtide.co</span>
+            </div>
+          </div>
         </div>
       </footer>
 
-      {/* Global keyframes */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        @keyframes bounce {
-          0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-          40% { transform: translateX(-50%) translateY(-8px); }
-          60% { transform: translateX(-50%) translateY(-4px); }
-        }
-      `}} />
     </div>
+  )
+}
+
+function StickyHeader() {
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+      <div
+        className={`transition-all duration-500 ${
+          scrolled
+            ? "bg-red-atlantida/95 backdrop-blur-xl shadow-lg"
+            : "bg-red-atlantida"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+          {/* Left: Logo + Name */}
+          <Link href="/" className="flex items-center gap-3 cursor-pointer">
+            <Image
+              src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png"
+              alt="Banco Atlantida"
+              width={32}
+              height={32}
+              className="brightness-0 invert"
+            />
+            <div className="h-6 w-px bg-white/30" />
+            <span className="text-white text-sm font-bold tracking-wide uppercase">Pasaporte 2026</span>
+          </Link>
+
+          {/* Right: Nav */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="text-white/80 text-sm font-medium hover:text-white transition-colors cursor-pointer hidden sm:block"
+            >
+              Ingresar
+            </Link>
+            <Link
+              href="/registro"
+              className="px-5 py-2 border border-white/40 text-white text-sm font-bold rounded-lg hover:bg-white/10 transition-all duration-300 cursor-pointer"
+            >
+              Registro
+            </Link>
+          </div>
+        </div>
+      </div>
+    </header>
   )
 }
