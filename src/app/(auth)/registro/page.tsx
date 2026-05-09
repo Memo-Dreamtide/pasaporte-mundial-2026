@@ -63,30 +63,35 @@ export default function RegistroPage() {
 
   if (success) {
     return (
-      <main className="relative min-h-screen overflow-hidden flex items-center justify-center px-4" style={{ backgroundColor: "#051119" }}>
+      <main className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 bg-bg-base">
         <div className="absolute inset-0">
-          <Image src="/images/bg-hero.jpg" alt="" fill className="object-cover opacity-30" priority />
-          <div className="absolute inset-0" style={{
-            background: "radial-gradient(circle at 50% 30%, rgba(42,193,5,0.08) 0%, transparent 60%), linear-gradient(to bottom, rgba(5,17,25,0.7) 0%, rgba(5,17,25,0.95) 100%)"
-          }} />
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+          >
+            <source src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-hero-video.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/95" />
         </div>
         <div className="relative z-10 w-full max-w-md text-center">
-          <div className="rounded-2xl p-10 border border-white/10 backdrop-blur-sm" style={{ backgroundColor: "rgba(5,17,25,0.8)" }}>
-            <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ backgroundColor: "rgba(42,193,5,0.15)" }}>
+          <div className="rounded-2xl p-10 border border-white/10 backdrop-blur-sm bg-black/60">
+            <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ backgroundColor: "rgba(217,39,46,0.15)" }}>
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                <path d="M5 13L9 17L19 7" stroke="#2ac105" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M5 13L9 17L19 7" stroke="#D9272E" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
             <h2 className="text-2xl font-black text-white mb-3">REVISA TU EMAIL</h2>
             <p className="text-white/50 text-sm mb-2">
-              Te enviamos un enlace de confirmación a
+              Te enviamos un enlace de confirmacion a
             </p>
-            <p className="font-bold text-sm mb-6" style={{ color: "#458fff" }}>{email}</p>
+            <p className="font-bold text-sm mb-6 text-red-atlantida">{email}</p>
             <p className="text-white/30 text-xs">Haz clic en el enlace para activar tu cuenta</p>
             <Link
               href="/login"
-              className="inline-block mt-8 text-sm font-bold hover:opacity-80 transition-opacity"
-              style={{ color: "#ffd70d" }}
+              className="inline-block mt-8 text-sm font-bold hover:opacity-80 transition-opacity text-red-atlantida"
             >
               Ir al login
             </Link>
@@ -97,38 +102,43 @@ export default function RegistroPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden flex items-center justify-center px-4" style={{ backgroundColor: "#051119" }}>
-      {/* Background */}
+    <main className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 bg-bg-base">
+      {/* Video Background */}
       <div className="absolute inset-0">
-        <Image
-          src="/images/bg-hero.jpg"
-          alt=""
-          fill
-          className="object-cover opacity-30"
-          priority
-        />
-        <div className="absolute inset-0" style={{
-          background: "radial-gradient(circle at 50% 30%, rgba(255,215,13,0.06) 0%, transparent 60%), linear-gradient(to bottom, rgba(5,17,25,0.7) 0%, rgba(5,17,25,0.95) 100%)"
-        }} />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        >
+          <source src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-hero-video.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/95" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo + Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-4">
-            <Image src="/images/logo.png" alt="Pasaporte Mundial" width={80} height={80} />
+          <Link href="/" className="inline-flex items-center justify-center gap-3 mb-4">
+            <Image
+              src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png"
+              alt="Banco Atlantida"
+              width={48}
+              height={48}
+            />
           </Link>
           <h1 className="text-2xl font-black text-white tracking-tight">CREAR CUENTA</h1>
-          <p className="text-white/40 text-sm mt-1">Únete a Pasaporte Mundial 2026</p>
+          <p className="text-white/40 text-sm mt-1">Pasaporte 2026</p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl p-8 border border-white/10 backdrop-blur-sm" style={{ backgroundColor: "rgba(5,17,25,0.8)" }}>
+        <div className="rounded-2xl p-8 border border-white/10 backdrop-blur-sm bg-black/60">
           {/* Google Button */}
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full bg-white text-gray-800 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
+            className="w-full bg-white text-gray-800 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 cursor-pointer"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -155,8 +165,8 @@ export default function RegistroPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-yellow-500/50 transition-colors text-sm"
-                style={{ caretColor: "#ffd70d" }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                style={{ caretColor: "#D9272E" }}
               />
             </div>
             <div>
@@ -166,31 +176,30 @@ export default function RegistroPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-yellow-500/50 transition-colors text-sm"
-                style={{ caretColor: "#ffd70d" }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                style={{ caretColor: "#D9272E" }}
               />
             </div>
             <div>
               <input
                 type="password"
-                placeholder="Contraseña (mínimo 6 caracteres)"
+                placeholder="Contraseña (minimo 6 caracteres)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-yellow-500/50 transition-colors text-sm"
-                style={{ caretColor: "#ffd70d" }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                style={{ caretColor: "#D9272E" }}
               />
             </div>
 
             {error && (
-              <p className="text-sm text-center py-2 rounded-lg" style={{ color: "#f10a3c", backgroundColor: "rgba(241,10,60,0.1)" }}>{error}</p>
+              <p className="text-sm text-center py-2 rounded-lg text-red-atlantida" style={{ backgroundColor: "rgba(217,39,46,0.1)" }}>{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl font-bold text-lg tracking-wider transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
-              style={{ backgroundColor: "#ffd70d", color: "#051119" }}
+              className="w-full py-3.5 rounded-xl font-bold text-lg tracking-wider transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 bg-red-atlantida text-white cursor-pointer hover:shadow-[0_0_30px_rgba(217,39,46,0.4)]"
             >
               {loading ? "Creando cuenta..." : "CREAR CUENTA GRATIS"}
             </button>
@@ -200,8 +209,8 @@ export default function RegistroPage() {
         {/* Login link */}
         <p className="text-center text-white/30 text-sm mt-6">
           Ya tienes cuenta?{" "}
-          <Link href="/login" className="font-bold hover:opacity-80 transition-opacity" style={{ color: "#458fff" }}>
-            Inicia sesión
+          <Link href="/login" className="font-bold hover:opacity-80 transition-opacity text-red-atlantida">
+            Inicia sesion
           </Link>
         </p>
 

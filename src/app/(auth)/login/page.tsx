@@ -48,38 +48,43 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden flex items-center justify-center px-4" style={{ backgroundColor: "#051119" }}>
-      {/* Background */}
+    <main className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 bg-bg-base">
+      {/* Video Background */}
       <div className="absolute inset-0">
-        <Image
-          src="/images/bg-hero.jpg"
-          alt=""
-          fill
-          className="object-cover opacity-30"
-          priority
-        />
-        <div className="absolute inset-0" style={{
-          background: "radial-gradient(circle at 50% 30%, rgba(69,143,255,0.08) 0%, transparent 60%), linear-gradient(to bottom, rgba(5,17,25,0.7) 0%, rgba(5,17,25,0.95) 100%)"
-        }} />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        >
+          <source src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-hero-video.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/95" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo + Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-4">
-            <Image src="/images/logo.png" alt="Pasaporte Mundial" width={80} height={80} />
+          <Link href="/" className="inline-flex items-center justify-center gap-3 mb-4">
+            <Image
+              src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png"
+              alt="Banco Atlantida"
+              width={48}
+              height={48}
+            />
           </Link>
-          <h1 className="text-2xl font-black text-white tracking-tight">INICIAR SESIÓN</h1>
-          <p className="text-white/40 text-sm mt-1">Pasaporte Mundial 2026</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">INICIAR SESION</h1>
+          <p className="text-white/40 text-sm mt-1">Pasaporte 2026</p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl p-8 border border-white/10 backdrop-blur-sm" style={{ backgroundColor: "rgba(5,17,25,0.8)" }}>
+        <div className="rounded-2xl p-8 border border-white/10 backdrop-blur-sm bg-black/60">
           {/* Google Button */}
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full bg-white text-gray-800 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
+            className="w-full bg-white text-gray-800 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 cursor-pointer"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -106,8 +111,8 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-blue-500/50 transition-colors text-sm"
-                style={{ caretColor: "#458fff" }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                style={{ caretColor: "#D9272E" }}
               />
             </div>
             <div>
@@ -117,22 +122,28 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-blue-500/50 transition-colors text-sm"
-                style={{ caretColor: "#458fff" }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                style={{ caretColor: "#D9272E" }}
               />
             </div>
 
+            {/* Forgot password */}
+            <div className="text-right">
+              <Link href="#" className="text-white/40 text-xs hover:text-white/60 transition-colors">
+                Olvidaste tu contraseña?
+              </Link>
+            </div>
+
             {error && (
-              <p className="text-sm text-center py-2 rounded-lg" style={{ color: "#f10a3c", backgroundColor: "rgba(241,10,60,0.1)" }}>{error}</p>
+              <p className="text-sm text-center py-2 rounded-lg text-red-atlantida" style={{ backgroundColor: "rgba(217,39,46,0.1)" }}>{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl font-bold text-lg tracking-wider transition-all duration-300 hover:scale-[1.02] disabled:opacity-50"
-              style={{ backgroundColor: "#2ac105", color: "#051119" }}
+              className="w-full py-3.5 rounded-xl font-bold text-lg tracking-wider transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 bg-red-atlantida text-white cursor-pointer hover:shadow-[0_0_30px_rgba(217,39,46,0.4)]"
             >
-              {loading ? "Ingresando..." : "INICIAR SESIÓN"}
+              {loading ? "Ingresando..." : "INICIAR SESION"}
             </button>
           </form>
         </div>
@@ -140,8 +151,8 @@ export default function LoginPage() {
         {/* Register link */}
         <p className="text-center text-white/30 text-sm mt-6">
           No tienes cuenta?{" "}
-          <Link href="/registro" className="font-bold hover:opacity-80 transition-opacity" style={{ color: "#ffd70d" }}>
-            Regístrate gratis
+          <Link href="/registro" className="font-bold hover:opacity-80 transition-opacity text-red-atlantida">
+            Registrate gratis
           </Link>
         </p>
 
