@@ -84,7 +84,8 @@ export default function DashboardClient({
 
   const navItems = [
     { label: "INICIO", href: "/dashboard" },
-    { label: "PRONOSTICOS", href: "/pronosticos" },
+    { label: "PRONÓSTICOS", href: "/pronosticos" },
+    { label: "PARTIDOS", href: "/partidos" },
     { label: "RANKING", href: "/ranking" },
     { label: "PREMIOS", href: "/premios" },
   ]
@@ -148,7 +149,7 @@ export default function DashboardClient({
               href={item.href}
               onMouseEnter={() => setHoveredNav(item.href)}
               onMouseLeave={() => setHoveredNav(null)}
-              className={`flex-1 text-center py-2.5 px-3 rounded-full text-[11px] font-bold tracking-wider transition-all duration-300 whitespace-nowrap ${
+              className={`flex-1 text-center py-2 px-1.5 rounded-full text-[10px] font-bold tracking-wider transition-all duration-300 whitespace-nowrap ${
                 showRed
                   ? "bg-red-atlantida text-white"
                   : "text-white/40"

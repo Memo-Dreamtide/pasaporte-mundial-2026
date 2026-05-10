@@ -1,12 +1,14 @@
 import { createClient } from "@/lib/supabase-server"
 import { redirect } from "next/navigation"
-import PronosticosApp from "@/components/pronosticos/PronosticosApp"
+import PronosticosClient from "./PronosticosClient"
 
 export default async function PronosticosPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect("/login")
+
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
   const { data: matches } = await supabase
     .from("matches")
@@ -18,20 +20,18 @@ export default async function PronosticosPage() {
     .select("*")
     .eq("user_id", user.id)
 
+  const totalMatches = matches?.length || 104
+
   return (
-    <div>
-      <header className="px-4 pt-6 pb-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-black text-white tracking-tight">PRONÓSTICOS</h1>
-          <p className="text-white/30 text-xs font-medium mt-1">Predice los marcadores y gana puntos</p>
-        </div>
-      </header>
-      <div className="max-w-4xl mx-auto px-4">
-        <PronosticosApp
-          matches={matches || []}
-          predictions={predictions || []}
-        />
-      </div>
-    </div>
+    <PronosticosClient
+      userName={profile?.full_name || user.email || "Usuario"}
+      userEmail={user.email || ""}
+      userInitial={profile?.full_name?.charAt(0)?.toUpperCase() || "?"}
+      rankPosition={profile?.rank_position || 0}
+      totalPoints={profile?.total_points || 0}
+      matches={matches || []}
+      predictions={predictions || []}
+      totalMatches={totalMatches}
+    />
   )
 }
