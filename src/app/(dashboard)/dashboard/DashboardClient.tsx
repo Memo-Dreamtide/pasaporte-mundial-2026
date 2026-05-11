@@ -107,7 +107,7 @@ export default function DashboardClient({
     <div className="min-h-screen bg-bg-base relative">
       {/* Background Image */}
       <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-15"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30"
         style={{ backgroundImage: "url('https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-inicio.jpg')" }}
       />
       <div className="fixed inset-0 z-0 bg-gradient-to-b from-bg-base/50 to-bg-base" />
