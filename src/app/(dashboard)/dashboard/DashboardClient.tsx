@@ -5,6 +5,9 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
+import FadeIn from "@/components/ui/FadeIn"
+import { useRef } from "react"
+import { motion, useInView } from "motion/react"
 
 interface MatchData {
   homeCode: string
@@ -69,6 +72,8 @@ export default function DashboardClient({
   const [brandIndex, setBrandIndex] = useState(0)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [passwordMsg, setPasswordMsg] = useState("")
+  const cardsRef = useRef(null)
+  const cardsInView = useInView(cardsRef, { once: true, margin: "-50px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -117,6 +122,7 @@ export default function DashboardClient({
 
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header — on desktop: name left, nav center, profile right in one row */}
+      <FadeIn delay={0.1}>
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">
         <h1 className="text-4xl lg:text-5xl font-light text-white leading-tight">
           {userName.split(" ").map((word, i) => (
@@ -160,6 +166,7 @@ export default function DashboardClient({
           </div>
         </button>
       </div>
+      </FadeIn>
 
       {/* Mobile-only Navigation Tabs */}
       <div className="flex items-center rounded-full border border-border-medium bg-bg-surface p-1 mb-6 lg:hidden">
@@ -186,17 +193,30 @@ export default function DashboardClient({
       </div>
 
       {/* Main Content — stacked on mobile, 3-column grid on desktop */}
+      <FadeIn delay={0.2}>
       <div className="lg:grid lg:grid-cols-3 lg:gap-6">
         {/* Stats Card — spans 2 cols on desktop */}
-        <div className="flex gap-2 mb-6 lg:col-span-2 lg:mb-0">
-          {/* Position - only top-right corner rounded */}
-          <div className="flex-1 bg-red-atlantida p-6 flex flex-col justify-end min-h-[220px] lg:min-h-[320px]" style={{ borderRadius: "0 3rem 0 0" }}>
+        <div ref={cardsRef} className="flex gap-2 mb-6 lg:col-span-2 lg:mb-0 items-end">
+          {/* Position - rises up first like a bar chart */}
+          <motion.div
+            className="flex-1 bg-red-atlantida p-6 flex flex-col justify-end min-h-[220px] lg:min-h-[320px] origin-bottom"
+            style={{ borderRadius: "0 3rem 0 0" }}
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={cardsInView ? { scaleY: 1, opacity: 1 } : {}}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <p className="text-8xl lg:text-9xl font-black text-black/70 leading-none">{rankPosition || "-"}</p>
             <p className="text-white/90 text-[11px] font-bold tracking-wider mt-3 uppercase">Posicion Actual</p>
-          </div>
+          </motion.div>
 
-          {/* Predictions - only top-left corner rounded, gray bg */}
-          <div className="flex-1 bg-[#C8C8C8] p-4 lg:p-6 flex flex-col justify-between min-h-[220px] lg:min-h-[320px]" style={{ borderRadius: "3rem 0 0 0" }}>
+          {/* Predictions - rises up second with delay */}
+          <motion.div
+            className="flex-1 bg-[#C8C8C8] p-4 lg:p-6 flex flex-col justify-between min-h-[220px] lg:min-h-[320px] origin-bottom"
+            style={{ borderRadius: "3rem 0 0 0" }}
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={cardsInView ? { scaleY: 1, opacity: 1 } : {}}
+            transition={{ duration: 0.7, delay: 0.35, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <div className="space-y-2 lg:space-y-3">
               <div className="bg-[#B0B0B0] rounded-full px-4 py-2.5 lg:py-3 flex items-baseline gap-2">
                 <span className="text-2xl lg:text-3xl font-black text-gray-900">{predictedCount}</span>
@@ -212,7 +232,7 @@ export default function DashboardClient({
               </div>
             </div>
             <p className="text-gray-700 text-[11px] font-bold tracking-wider mt-3 uppercase text-center">Pronosticos</p>
-          </div>
+          </motion.div>
         </div>
 
         {/* Right column on desktop: Match + Carousel stacked */}
@@ -287,8 +307,10 @@ export default function DashboardClient({
           </div>
         </div>
       </div>
+      </FadeIn>
 
       {/* Promotional Banner */}
+      <FadeIn delay={0.3}>
       <div className="relative overflow-hidden mt-6 lg:mt-8 h-[200px] lg:h-[280px]" style={{ borderRadius: "0 0 3rem 3rem" }}>
         <Image
           src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/banner-home.jpg"
@@ -297,6 +319,7 @@ export default function DashboardClient({
           className="object-cover"
         />
       </div>
+      </FadeIn>
 
       {/* Fixed "+" Button */}
       <Link
