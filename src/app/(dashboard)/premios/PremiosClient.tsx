@@ -76,7 +76,10 @@ export default function PremiosClient({
   }
 
   return (
-    <div className="min-h-screen bg-bg-base px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
+    <div className="min-h-screen bg-bg-base relative">
+      <div className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-15" style={{ backgroundImage: "url('https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-premios.jpg')" }} />
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-bg-base/50 to-bg-base" />
+      <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">
         <h1 className="text-4xl lg:text-5xl font-light text-white leading-tight">
@@ -297,6 +300,7 @@ export default function PremiosClient({
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }
