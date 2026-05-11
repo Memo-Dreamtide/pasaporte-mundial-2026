@@ -55,6 +55,8 @@ export default async function DashboardPage() {
     status: currentMatch.status as string,
   } : null
 
+  const authProvider = user.app_metadata?.provider || "email"
+
   return (
     <DashboardClient
       userName={profile?.full_name || user.email || "Usuario"}
@@ -66,6 +68,7 @@ export default async function DashboardPage() {
       faltantes={totalMatches - predictedCount}
       exactCount={exactCount}
       match={matchData}
+      authProvider={authProvider}
     />
   )
 }

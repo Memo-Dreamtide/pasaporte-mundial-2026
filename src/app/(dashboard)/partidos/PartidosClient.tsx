@@ -23,9 +23,12 @@ interface PartidosClientProps {
   userInitial: string
   rankPosition: number
   totalPoints: number
+  predictionsCount: number
+  exactScores: number
   matches: Match[]
   featuredMatches: Match[]
   scorers: Scorer[]
+  authProvider: string
 }
 
 const GROUPS = ["A","B","C","D","E","F","G","H","I","J","K","L"]
@@ -87,7 +90,7 @@ function getJornada(matchNumber: number): string {
 
 export default function PartidosClient({
   userName, userEmail, userInitial, rankPosition, totalPoints,
-  matches, featuredMatches, scorers,
+  predictionsCount, exactScores, matches, featuredMatches, scorers, authProvider,
 }: PartidosClientProps) {
   const [showProfile, setShowProfile] = useState(false)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
@@ -96,10 +99,17 @@ export default function PartidosClient({
   const [groupFilter, setGroupFilter] = useState("A")
   const [jornadaFilter, setJornadaFilter] = useState("1")
   const [elimStage, setElimStage] = useState("round_of_32")
+  const [passwordMsg, setPasswordMsg] = useState("")
 
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  const handleResetPassword = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(userEmail)
+    setPasswordMsg(error ? "Error al enviar el correo" : "Revisa tu correo para cambiar tu contrasena")
+    setTimeout(() => setPasswordMsg(""), 5000)
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -374,7 +384,7 @@ export default function PartidosClient({
             </div>
             <h2 className="text-xl font-black text-white text-center">{userName}</h2>
             <p className="text-white/40 text-sm text-center mt-1 mb-6">{userEmail}</p>
-            <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="grid grid-cols-4 gap-2 mb-4">
               <div className="bg-bg-surface rounded-xl p-3 text-center">
                 <p className="text-xl font-black text-red-atlantida">{totalPoints}</p>
                 <p className="text-white/30 text-[10px] font-bold mt-1">PUNTOS</p>
@@ -384,10 +394,27 @@ export default function PartidosClient({
                 <p className="text-white/30 text-[10px] font-bold mt-1">RANKING</p>
               </div>
               <div className="bg-bg-surface rounded-xl p-3 text-center">
-                <p className="text-xl font-black text-white">0</p>
+                <p className="text-xl font-black text-white">{predictionsCount}</p>
                 <p className="text-white/30 text-[10px] font-bold mt-1">JUGADOS</p>
               </div>
+              <div className="bg-bg-surface rounded-xl p-3 text-center">
+                <p className="text-xl font-black text-white">{exactScores}</p>
+                <p className="text-white/30 text-[10px] font-bold mt-1">EXACTOS</p>
+              </div>
             </div>
+            {authProvider === "google" ? (
+              <div className="flex items-center gap-2 bg-bg-surface rounded-xl px-4 py-3 mb-3">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/30 shrink-0">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <p className="text-white/30 text-xs">Tu cuenta esta vinculada con Google. La contrasena se administra desde tu cuenta de Google.</p>
+              </div>
+            ) : (
+              <button onClick={handleResetPassword} className="w-full py-3 rounded-xl font-bold text-xs tracking-wider bg-bg-surface text-white/50 hover:text-white/70 transition-all duration-300 cursor-pointer mb-3">
+                CAMBIAR CONTRASENA
+              </button>
+            )}
+            {passwordMsg && <p className="text-red-atlantida text-xs text-center mb-3">{passwordMsg}</p>}
             <button
               onClick={handleLogout}
               className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wider bg-red-atlantida/10 text-red-atlantida border border-red-atlantida/20 hover:bg-red-atlantida/20 transition-all duration-300 cursor-pointer"

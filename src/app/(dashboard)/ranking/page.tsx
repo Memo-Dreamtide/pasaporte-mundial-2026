@@ -18,6 +18,8 @@ export default async function RankingPage() {
     .order("exact_scores", { ascending: false })
     .limit(100)
 
+  const authProvider = user.app_metadata?.provider || "email"
+
   return (
     <RankingClient
       userName={profile?.full_name || user.email || "Usuario"}
@@ -25,8 +27,11 @@ export default async function RankingPage() {
       userInitial={profile?.full_name?.charAt(0)?.toUpperCase() || "?"}
       rankPosition={profile?.rank_position || 0}
       totalPoints={profile?.total_points || 0}
+      predictionsCount={profile?.predictions_count || 0}
+      exactScores={profile?.exact_scores || 0}
       currentUserId={user.id}
       profiles={profiles || []}
+      authProvider={authProvider}
     />
   )
 }

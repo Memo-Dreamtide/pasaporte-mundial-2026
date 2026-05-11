@@ -21,6 +21,7 @@ export default async function PronosticosPage() {
     .eq("user_id", user.id)
 
   const totalMatches = matches?.length || 104
+  const authProvider = user.app_metadata?.provider || "email"
 
   return (
     <PronosticosClient
@@ -29,9 +30,12 @@ export default async function PronosticosPage() {
       userInitial={profile?.full_name?.charAt(0)?.toUpperCase() || "?"}
       rankPosition={profile?.rank_position || 0}
       totalPoints={profile?.total_points || 0}
+      predictionsCount={profile?.predictions_count || 0}
+      exactScores={profile?.exact_scores || 0}
       matches={matches || []}
       predictions={predictions || []}
       totalMatches={totalMatches}
+      authProvider={authProvider}
     />
   )
 }

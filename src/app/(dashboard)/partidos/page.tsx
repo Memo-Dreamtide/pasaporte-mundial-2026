@@ -44,6 +44,8 @@ export default async function PartidosPage() {
         .order("minute", { ascending: true })
     : { data: [] }
 
+  const authProvider = user.app_metadata?.provider || "email"
+
   return (
     <PartidosClient
       userName={profile?.full_name || user.email || "Usuario"}
@@ -51,9 +53,12 @@ export default async function PartidosPage() {
       userInitial={profile?.full_name?.charAt(0)?.toUpperCase() || "?"}
       rankPosition={profile?.rank_position || 0}
       totalPoints={profile?.total_points || 0}
+      predictionsCount={profile?.predictions_count || 0}
+      exactScores={profile?.exact_scores || 0}
       matches={matches || []}
       featuredMatches={featuredMatches || []}
       scorers={scorers || []}
+      authProvider={authProvider}
     />
   )
 }
