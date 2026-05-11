@@ -333,12 +333,12 @@ export default function DashboardClient({
 
       {/* Profile Modal */}
       {showProfile && (
-        <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowProfile(false)}
           />
-          <div className="relative z-10 w-full max-w-md bg-bg-elevated border border-border-subtle rounded-t-3xl md:rounded-3xl p-8 animate-slide-up">
+          <div className="relative z-10 w-full max-w-md bg-bg-elevated border border-border-subtle rounded-3xl p-8 animate-slide-up">
             <button
               onClick={() => setShowProfile(false)}
               className="absolute top-4 right-4 text-white/30 hover:text-white/60 transition-colors cursor-pointer"
