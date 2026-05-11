@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
+import FadeIn from "@/components/ui/FadeIn"
 
 type Team = { id: string; name: string; code: string; flag_emoji: string; group_letter: string }
 type Match = {
@@ -167,6 +168,7 @@ export default function PronosticosClient({
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/50 to-bg-base" />
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header */}
+      <FadeIn delay={0.1}>
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">
         <h1 className="text-4xl lg:text-5xl font-light text-white leading-tight">
           {userName.split(" ").map((word, i) => (
@@ -208,6 +210,7 @@ export default function PronosticosClient({
           </div>
         </button>
       </div>
+      </FadeIn>
 
       {/* Mobile Nav */}
       <div className="flex items-center rounded-full border border-border-medium bg-bg-surface p-1 mb-6 lg:hidden">
@@ -232,6 +235,7 @@ export default function PronosticosClient({
       </div>
 
       {/* Progress + How to Play — desktop: side by side with tabs */}
+      <FadeIn delay={0.2}>
       <div className="lg:grid lg:grid-cols-3 lg:gap-6 lg:mb-8">
         {/* Progress + How to Play cards */}
         <div className="flex gap-2 mb-4 lg:col-span-2 lg:mb-0">
@@ -291,8 +295,10 @@ export default function PronosticosClient({
           </button>
         </div>
       </div>
+      </FadeIn>
 
       {/* Groups Tab Content */}
+      <FadeIn delay={0.3}>
       {tab === "groups" && (
         <>
           {/* Group Letter Filter */}
@@ -352,7 +358,10 @@ export default function PronosticosClient({
         </>
       )}
 
+      </FadeIn>
+
       {/* Knockout Tab Content */}
+      <FadeIn delay={0.3}>
       {tab === "knockout" && (
         <>
           {/* Stage Filter */}
@@ -393,6 +402,8 @@ export default function PronosticosClient({
           </div>
         </>
       )}
+
+      </FadeIn>
 
       {/* Prediction Modal */}
       {selectedMatch && (

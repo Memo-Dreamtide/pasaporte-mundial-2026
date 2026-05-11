@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
+import FadeIn from "@/components/ui/FadeIn"
 
 type Prize = {
   id: string
@@ -87,6 +88,7 @@ export default function PremiosClient({
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/50 to-bg-base" />
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header */}
+      <FadeIn delay={0.1}>
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">
         <h1 className="text-4xl lg:text-5xl font-light text-white leading-tight">
           {userName.split(" ").map((word, i) => (
@@ -150,16 +152,20 @@ export default function PremiosClient({
           )
         })}
       </div>
+      </FadeIn>
 
       {/* Title */}
+      <FadeIn delay={0.15}>
       <h2 className="text-2xl lg:text-3xl font-black text-white text-center tracking-wider uppercase mb-2">
         Premios
       </h2>
       <p className="text-white/30 text-sm text-center mb-8 lg:mb-10">
         Los mejores predictores ganan al final del torneo
       </p>
+      </FadeIn>
 
       {/* Top 3 Prize Cards — same height, top corners rounded, bottom square */}
+      <FadeIn delay={0.25}>
       <div className="grid grid-cols-3 gap-2 mb-12 lg:gap-4 lg:mb-14 items-stretch">
         {prizes.slice(0, 3).map((prize) => {
           const style = prizeStyles[prize.place] || prizeStyles[3]
@@ -188,8 +194,10 @@ export default function PremiosClient({
           )
         })}
       </div>
+      </FadeIn>
 
       {/* Sorteos Semanales */}
+      <FadeIn delay={0.35}>
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-1 h-6 bg-red-atlantida rounded-full" />
@@ -229,8 +237,10 @@ export default function PremiosClient({
           ))}
         </div>
       </div>
+      </FadeIn>
 
       {/* Como Funciona */}
+      <FadeIn delay={0.45}>
       <div className="bg-bg-elevated border border-border-subtle p-6 lg:p-8 mb-6" style={{ borderRadius: "0 0 2.5rem 2.5rem" }}>
         <h3 className="text-sm font-black text-white tracking-wider uppercase mb-5">Como Participar</h3>
         <div className="space-y-4">
@@ -247,6 +257,7 @@ export default function PremiosClient({
           ))}
         </div>
       </div>
+      </FadeIn>
 
       {/* Profile Modal */}
       {showProfile && (

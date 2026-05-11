@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
+import FadeIn from "@/components/ui/FadeIn"
 
 type Team = { id: string; name: string; code: string; flag_emoji: string; group_letter: string }
 type Match = {
@@ -163,6 +164,7 @@ export default function PartidosClient({
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/50 to-bg-base" />
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header */}
+      <FadeIn delay={0.1}>
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">
         <h1 className="text-4xl lg:text-5xl font-light text-white leading-tight">
           {userName.split(" ").map((word, i) => (
@@ -204,6 +206,7 @@ export default function PartidosClient({
           </div>
         </button>
       </div>
+      </FadeIn>
 
       {/* Mobile Nav */}
       <div className="flex items-center rounded-full border border-border-medium bg-bg-surface p-1 mb-6 lg:hidden">
@@ -228,6 +231,7 @@ export default function PartidosClient({
       </div>
 
       {/* Video Banner with Brand Carousel */}
+      <FadeIn delay={0.15}>
       <div className="relative overflow-hidden rounded-2xl mb-6 h-[180px] lg:h-[240px]">
         <video
           autoPlay
@@ -254,8 +258,10 @@ export default function PartidosClient({
           </div>
         </div>
       </div>
+      </FadeIn>
 
       {/* Featured Matches (Live or Next) */}
+      <FadeIn delay={0.25}>
       {featuredMatches.length > 0 && (
         <div className="space-y-4 mb-6 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
           {featuredMatches.map(match => (
@@ -269,7 +275,10 @@ export default function PartidosClient({
         </div>
       )}
 
+      </FadeIn>
+
       {/* Grupos / Eliminatorias Tabs */}
+      <FadeIn delay={0.35}>
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setTab("groups")}
@@ -374,6 +383,8 @@ export default function PartidosClient({
           </div>
         </>
       )}
+
+      </FadeIn>
 
       {/* Profile Modal */}
       {showProfile && (
