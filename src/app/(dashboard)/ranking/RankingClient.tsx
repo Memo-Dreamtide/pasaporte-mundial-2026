@@ -34,6 +34,7 @@ export default function RankingClient({
   predictionsCount, exactScores, currentUserId, profiles, authProvider,
 }: RankingClientProps) {
   const [showProfile, setShowProfile] = useState(false)
+  const [selectedPlayer, setSelectedPlayer] = useState<RankProfile | null>(null)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [passwordMsg, setPasswordMsg] = useState("")
   const podiumRef = useRef(null)
@@ -165,7 +166,7 @@ export default function RankingClient({
             animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.35, ease: [0.25, 0.4, 0.25, 1] }}
           >
-            <div className="bg-white p-4 lg:p-5 text-center min-h-[140px] lg:min-h-[170px] flex flex-col justify-end" style={{ borderRadius: "0 2rem 0 0" }}>
+            <div onClick={() => setSelectedPlayer(top3[1])} className="bg-white p-4 lg:p-5 text-center min-h-[140px] lg:min-h-[170px] flex flex-col justify-end cursor-pointer hover:opacity-90 transition-opacity" style={{ borderRadius: "0 2rem 0 0" }}>
               <p className="text-6xl lg:text-7xl font-black text-gray-900 leading-none">2</p>
               {top3[1].full_name && (
                 <p className="text-gray-600 text-[10px] lg:text-xs font-bold mt-2 truncate">{top3[1].full_name}</p>
@@ -181,7 +182,7 @@ export default function RankingClient({
             animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
             transition={{ duration: 0.7, delay: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
           >
-            <div className="bg-red-atlantida p-4 lg:p-5 text-center min-h-[180px] lg:min-h-[220px] flex flex-col justify-end" style={{ borderRadius: "2rem 0 0 0" }}>
+            <div onClick={() => setSelectedPlayer(top3[0])} className="bg-red-atlantida p-4 lg:p-5 text-center min-h-[180px] lg:min-h-[220px] flex flex-col justify-end cursor-pointer hover:opacity-90 transition-opacity" style={{ borderRadius: "2rem 0 0 0" }}>
               <p className="text-7xl lg:text-8xl font-black text-white/90 leading-none">1</p>
               <p className="text-white text-[10px] lg:text-xs font-bold mt-2 truncate">{top3[0].full_name || "---"}</p>
               <p className="text-white text-sm lg:text-base font-black mt-1">{top3[0].total_points} Pts.</p>
@@ -195,7 +196,7 @@ export default function RankingClient({
             animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.4, 0.25, 1] }}
           >
-            <div className="bg-[#C8C8C8] p-4 lg:p-5 text-center min-h-[120px] lg:min-h-[150px] flex flex-col justify-end" style={{ borderRadius: "2rem 0 0 0" }}>
+            <div onClick={() => setSelectedPlayer(top3[2])} className="bg-[#C8C8C8] p-4 lg:p-5 text-center min-h-[120px] lg:min-h-[150px] flex flex-col justify-end cursor-pointer hover:opacity-90 transition-opacity" style={{ borderRadius: "2rem 0 0 0" }}>
               <p className="text-5xl lg:text-6xl font-black text-gray-900 leading-none">3</p>
               {top3[2].full_name && (
                 <p className="text-gray-600 text-[10px] lg:text-xs font-bold mt-2 truncate">{top3[2].full_name}</p>
@@ -231,12 +232,13 @@ export default function RankingClient({
             return (
               <div
                 key={p.id}
-                className={`flex items-center rounded-lg transition-colors ${
+                onClick={() => setSelectedPlayer(p)}
+                className={`flex items-center rounded-lg transition-colors cursor-pointer hover:border-red-atlantida/20 ${
                   isCurrentUser
                     ? "bg-red-atlantida/10 border border-red-atlantida/20"
                     : position % 2 === 0
-                      ? "bg-bg-elevated"
-                      : "bg-bg-surface"
+                      ? "bg-bg-elevated hover:bg-bg-elevated/80"
+                      : "bg-bg-surface hover:bg-bg-surface/80"
                 }`}
               >
                 <div className="w-16 lg:w-20 py-3 text-center">
@@ -260,6 +262,62 @@ export default function RankingClient({
         )}
       </div>
       </FadeIn>
+
+      {/* Player Stats Modal */}
+      {selectedPlayer && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedPlayer(null)} />
+          <div className="relative z-10 w-full max-w-sm bg-bg-elevated border border-border-subtle rounded-3xl p-8 animate-slide-up">
+            <button
+              onClick={() => setSelectedPlayer(null)}
+              className="absolute top-4 right-4 text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Player Initial */}
+            <div className="w-20 h-20 rounded-full bg-red-atlantida/20 flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl font-black text-red-atlantida">
+                {selectedPlayer.full_name?.charAt(0)?.toUpperCase() || "?"}
+              </span>
+            </div>
+
+            {/* Name & Position */}
+            <h2 className="text-xl font-black text-white text-center">{selectedPlayer.full_name || "Usuario"}</h2>
+            <p className="text-red-atlantida text-sm text-center font-bold mt-1 mb-6">
+              Posicion #{selectedPlayer.rank_position || "-"}
+            </p>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <div className="bg-bg-surface rounded-xl p-4 text-center">
+                <p className="text-2xl font-black text-red-atlantida">{selectedPlayer.total_points}</p>
+                <p className="text-white/30 text-[10px] font-bold mt-1">PUNTOS</p>
+              </div>
+              <div className="bg-bg-surface rounded-xl p-4 text-center">
+                <p className="text-2xl font-black text-white">{selectedPlayer.predictions_count}</p>
+                <p className="text-white/30 text-[10px] font-bold mt-1">JUGADOS</p>
+              </div>
+              <div className="bg-bg-surface rounded-xl p-4 text-center">
+                <p className="text-2xl font-black text-white">{selectedPlayer.exact_scores}</p>
+                <p className="text-white/30 text-[10px] font-bold mt-1">EXACTOS</p>
+              </div>
+            </div>
+
+            {/* Accuracy */}
+            {selectedPlayer.predictions_count > 0 && (
+              <div className="bg-bg-surface rounded-xl p-4 text-center mt-2">
+                <p className="text-white/30 text-[10px] font-bold mb-1">PROMEDIO POR PARTIDO</p>
+                <p className="text-lg font-black text-white">
+                  {(selectedPlayer.total_points / selectedPlayer.predictions_count).toFixed(1)} <span className="text-white/40 text-xs">pts/partido</span>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Profile Modal */}
       {showProfile && (

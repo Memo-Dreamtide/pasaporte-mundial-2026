@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
 import { useRef } from "react"
 import { motion, useInView } from "motion/react"
+import { calculatePoints, STAGE_MULTIPLIERS } from "@/utils/points"
 
 type Team = { id: string; name: string; code: string; flag_emoji: string; group_letter: string }
 type Match = {
@@ -583,23 +584,37 @@ export default function PronosticosClient({
 }
 
 /* ─── Match Card ─── */
-function MatchCard({ match, prediction, onSelect }: {
-  match: Match; prediction?: Prediction; onSelect: () => void
+function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
+  match: Match; prediction?: Prediction; onSelect: () => void; streakCount?: number
 }) {
   const locked = isLocked(match.match_date)
   const hasPrediction = !!prediction
   const hasTeams = match.home_team && match.away_team
+  const isFinished = match.status === "finished"
+  const hasRealScore = isFinished && match.home_score !== null && match.away_score !== null
+
+  // Calculate point breakdown if match is finished and user predicted
+  const points = hasPrediction && hasRealScore
+    ? calculatePoints(
+        prediction!.home_score, prediction!.away_score,
+        match.home_score!, match.away_score!,
+        match.stage, streakCount
+      )
+    : null
 
   return (
-    <button
-      onClick={onSelect}
-      disabled={locked || !hasTeams}
-      className={`w-full rounded-2xl p-4 transition-all duration-200 cursor-pointer border ${
-        hasPrediction
-          ? "bg-red-atlantida/15 border-red-atlantida/30 opacity-100"
-          : locked
-            ? "bg-bg-elevated border-border-subtle opacity-40"
-            : "bg-bg-elevated border-border-medium opacity-50 hover:opacity-80 hover:border-red-atlantida/20"
+    <div
+      onClick={() => {
+        if (!locked && hasTeams && !isFinished) onSelect()
+      }}
+      className={`w-full rounded-2xl p-4 transition-all duration-200 border ${
+        isFinished && hasPrediction
+          ? "bg-bg-elevated border-border-subtle opacity-100"
+          : hasPrediction
+            ? "bg-red-atlantida/15 border-red-atlantida/30 opacity-100 cursor-pointer"
+            : locked || isFinished
+              ? "bg-bg-elevated border-border-subtle opacity-40"
+              : "bg-bg-elevated border-border-medium opacity-50 hover:opacity-80 hover:border-red-atlantida/20 cursor-pointer"
       }`}
     >
       {/* Date */}
@@ -607,7 +622,7 @@ function MatchCard({ match, prediction, onSelect }: {
         {formatToSV(match.match_date)}
       </p>
 
-      {/* Teams & Score */}
+      {/* Teams & Prediction Score */}
       {hasTeams ? (
         <div className="flex items-center justify-between">
           <div className="flex-1 text-center">
@@ -638,14 +653,52 @@ function MatchCard({ match, prediction, onSelect }: {
         </div>
       )}
 
-      {/* Prediction status indicator */}
-      {hasPrediction && (
+      {/* Result + Points breakdown when match is finished */}
+      {hasRealScore && hasPrediction ? (
+        <div className="mt-3 pt-3 border-t border-white/10">
+          {/* Real score */}
+          <p className="text-center text-white/40 text-[10px] font-bold tracking-wider uppercase mb-2">Resultado Real</p>
+          <p className="text-center text-white text-sm font-black mb-3">
+            {match.home_team!.code} {match.home_score} - {match.away_score} {match.away_team!.code}
+          </p>
+
+          {/* Points breakdown */}
+          {points && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-[10px]">
+                <span className="text-white/40">Marcador Exacto</span>
+                <span className={points.exact > 0 ? "text-green-400 font-bold" : "text-white/20"}>{points.exact} pts</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-white/40">Ganador Correcto</span>
+                <span className={points.winner > 0 ? "text-green-400 font-bold" : "text-white/20"}>{points.winner} pts</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-white/40">Diferencia de goles</span>
+                <span className={points.difference > 0 ? "text-green-400 font-bold" : "text-white/20"}>{points.difference} pts</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-white/40">Racha</span>
+                <span className={points.streak > 1 ? "text-red-atlantida font-bold" : "text-white/20"}>x{points.streak}</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-white/40">Fase</span>
+                <span className={points.phase > 1 ? "text-red-atlantida font-bold" : "text-white/20"}>x{points.phase}</span>
+              </div>
+              <div className="flex justify-between text-xs pt-1.5 mt-1.5 border-t border-white/10">
+                <span className="text-white font-bold">Total</span>
+                <span className={`font-black ${points.total > 0 ? "text-red-atlantida" : "text-white/30"}`}>{points.total} pts</span>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : hasPrediction ? (
         <div className="flex items-center justify-center gap-1.5 mt-3">
           <div className="w-1.5 h-1.5 rounded-full bg-red-atlantida" />
           <span className="text-red-atlantida text-[9px] font-bold tracking-wider uppercase">Pronosticado</span>
         </div>
-      )}
-    </button>
+      ) : null}
+    </div>
   )
 }
 
