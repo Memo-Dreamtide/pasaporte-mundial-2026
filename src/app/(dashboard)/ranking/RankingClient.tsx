@@ -67,9 +67,15 @@ export default function RankingClient({
     : top3
 
   return (
-    <div className="min-h-screen bg-bg-base relative">
-      <div className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30" style={{ backgroundImage: "url('https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-ranking.jpg')" }} />
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-bg-base/50 to-bg-base" />
+    <div
+      className="min-h-screen relative bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: "url('https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-ranking.jpg')",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="absolute inset-0 bg-bg-base/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/50 to-bg-base" />
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">

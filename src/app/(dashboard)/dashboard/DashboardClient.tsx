@@ -104,13 +104,16 @@ export default function DashboardClient({
   ]
 
   return (
-    <div className="min-h-screen bg-bg-base relative">
-      {/* Background Image */}
-      <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30"
-        style={{ backgroundImage: "url('https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-inicio.jpg')" }}
-      />
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-bg-base/50 to-bg-base" />
+    <div
+      className="min-h-screen relative bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: "url('https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-inicio.jpg')",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Overlay: dark + gradient for readability */}
+      <div className="absolute inset-0 bg-bg-base/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/50 to-bg-base" />
 
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header — on desktop: name left, nav center, profile right in one row */}
