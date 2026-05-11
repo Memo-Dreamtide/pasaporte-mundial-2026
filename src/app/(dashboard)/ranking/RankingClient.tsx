@@ -131,9 +131,9 @@ export default function RankingClient({
       {/* Podium — Desktop: wider layout */}
       {top3.length >= 3 && (
         <div className="flex items-end justify-center gap-2 mb-10 lg:gap-4 lg:mb-12">
-          {/* 2nd Place */}
+          {/* 2nd Place — top-right corner only */}
           <div className="flex-1 max-w-[140px] lg:max-w-[200px]">
-            <div className="bg-white rounded-2xl p-4 lg:p-5 text-center min-h-[140px] lg:min-h-[170px] flex flex-col justify-end">
+            <div className="bg-white p-4 lg:p-5 text-center min-h-[140px] lg:min-h-[170px] flex flex-col justify-end" style={{ borderRadius: "0 2rem 0 0" }}>
               <p className="text-6xl lg:text-7xl font-black text-gray-900 leading-none">2</p>
               {top3[1].full_name && (
                 <p className="text-gray-600 text-[10px] lg:text-xs font-bold mt-2 truncate">{top3[1].full_name}</p>
@@ -142,18 +142,18 @@ export default function RankingClient({
             </div>
           </div>
 
-          {/* 1st Place */}
+          {/* 1st Place — top-left corner only */}
           <div className="flex-1 max-w-[160px] lg:max-w-[220px]">
-            <div className="bg-red-atlantida rounded-2xl p-4 lg:p-5 text-center min-h-[180px] lg:min-h-[220px] flex flex-col justify-end">
+            <div className="bg-red-atlantida p-4 lg:p-5 text-center min-h-[180px] lg:min-h-[220px] flex flex-col justify-end" style={{ borderRadius: "2rem 0 0 0" }}>
               <p className="text-7xl lg:text-8xl font-black text-white/90 leading-none">1</p>
               <p className="text-white text-[10px] lg:text-xs font-bold mt-2 truncate">{top3[0].full_name || "---"}</p>
               <p className="text-white text-sm lg:text-base font-black mt-1">{top3[0].total_points} Pts.</p>
             </div>
           </div>
 
-          {/* 3rd Place */}
+          {/* 3rd Place — top-left corner only, gray bg */}
           <div className="flex-1 max-w-[140px] lg:max-w-[200px]">
-            <div className="bg-white rounded-2xl p-4 lg:p-5 text-center min-h-[120px] lg:min-h-[150px] flex flex-col justify-end">
+            <div className="bg-[#C8C8C8] p-4 lg:p-5 text-center min-h-[120px] lg:min-h-[150px] flex flex-col justify-end" style={{ borderRadius: "2rem 0 0 0" }}>
               <p className="text-5xl lg:text-6xl font-black text-gray-900 leading-none">3</p>
               {top3[2].full_name && (
                 <p className="text-gray-600 text-[10px] lg:text-xs font-bold mt-2 truncate">{top3[2].full_name}</p>
