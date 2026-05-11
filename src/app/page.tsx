@@ -342,13 +342,16 @@ export default function Home() {
           <RevealOnScroll delay={0.2}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                "Banco Atlantida",
-                "Seguros Atlantida",
-                "Atlantida Capital",
-                "Atlantida Vida",
+                { name: "Banco Atlantida", url: "https://www.bancoatlantida.com.sv" },
+                { name: "Seguros Atlantida", url: "https://www.segurosatlantida.com" },
+                { name: "Atlantida Capital", url: "https://atlantidacapital.com.sv/" },
+                { name: "Atlantida Vida", url: "https://www.segurosatlantida.com.sv/seguro-de-vida" },
               ].map((brand, i) => (
-                <div
+                <a
                   key={i}
+                  href={brand.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group flex flex-col items-center justify-center p-8 md:p-10 rounded-2xl bg-white/10 border border-white/20 hover:border-white/40 transition-all duration-500 cursor-pointer"
                 >
                   <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-4 group-hover:bg-white/30 transition-colors duration-300">
@@ -360,8 +363,8 @@ export default function Home() {
                       className="opacity-90 group-hover:opacity-100 transition-opacity"
                     />
                   </div>
-                  <p className="text-white/80 text-sm font-medium text-center group-hover:text-white transition-colors duration-300">{brand}</p>
-                </div>
+                  <p className="text-white/80 text-sm font-medium text-center group-hover:text-white transition-colors duration-300">{brand.name}</p>
+                </a>
               ))}
             </div>
           </RevealOnScroll>
@@ -418,10 +421,13 @@ export default function Home() {
           </div>
 
           <div className="mt-10 pt-6 border-t border-white/20 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-white/60 text-xs">2026 Pasaporte 2026. Todos los derechos reservados.</p>
+            <div className="text-center md:text-left">
+              <p className="text-white/60 text-xs">2026 Pasaporte 2026. Todos los derechos reservados.</p>
+              <p className="text-white/40 text-[10px] mt-1">Aplicacion exclusiva para colaboradores del Grupo Atlantida.</p>
+            </div>
             <div className="flex items-center gap-2">
               <span className="text-white/60 text-xs">Desarrollado por</span>
-              <span className="text-white/90 text-xs font-bold">studio.dreamtide.co</span>
+              <a href="https://studio.dreamtide.co" target="_blank" rel="noopener noreferrer" className="text-white/90 text-xs font-bold hover:text-white transition-colors">studio.dreamtide.co</a>
             </div>
           </div>
         </div>

@@ -49,14 +49,13 @@ const ELIM_STAGES = ["round_of_32", "round_of_16", "quarter", "semi", "third_pla
 
 const RULES = [
   { title: "Predice el marcador", desc: "Selecciona un partido y predice el marcador final antes de que inicie." },
-  { title: "Goleador del partido", desc: "Selecciona quien crees que sera el goleador del partido para ganar +5 puntos bonus." },
-  { title: "Jugador del partido", desc: "Elige quien crees que sera el mejor jugador del partido para ganar +3 puntos bonus." },
   { title: "Bloqueo automatico", desc: "Los pronósticos se bloquean 1 minuto antes del inicio del partido." },
   { title: "Edita cuando quieras", desc: "Puedes editar o borrar tu pronóstico en cualquier momento antes del bloqueo." },
-  { title: "Marcador exacto", desc: "+10 puntos si aciertas el marcador exacto." },
-  { title: "Resultado correcto", desc: "+4 puntos si aciertas el resultado (1X2)." },
-  { title: "Diferencia de goles", desc: "+3 puntos si aciertas la diferencia de goles." },
-  { title: "Multiplicadores", desc: "Grupos x1.0, 32avos x1.25, 8vos x1.5, 4tos x2.0, Semis x2.5, Final x3.0." },
+  { title: "Marcador exacto", desc: "+10 puntos si aciertas el marcador exacto del partido." },
+  { title: "Ganador correcto", desc: "+4 puntos si aciertas quien gana o si es empate, sin importar el marcador." },
+  { title: "Diferencia de goles", desc: "+3 puntos si aciertas la diferencia de goles entre ambos equipos." },
+  { title: "Racha de exactos", desc: "Acierta marcadores exactos consecutivos y multiplica tus puntos: x2, x3, hasta x4." },
+  { title: "Multiplicadores por fase", desc: "Grupos x1.0, 32avos x1.25, 8vos x1.5, 4tos x2.0, Semis x2.5, Final x3.0." },
 ]
 
 function formatToSV(dateStr: string) {
@@ -466,6 +465,36 @@ export default function PronosticosClient({
 
             {/* Points Summary */}
             <div className="mt-6 pt-6 border-t border-white/10">
+              <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-3">Puntos por partido</p>
+              <div className="flex flex-wrap gap-2 mb-5">
+                {[
+                  { label: "Exacto", pts: "+10" },
+                  { label: "Ganador", pts: "+4" },
+                  { label: "Diferencia", pts: "+3" },
+                  { label: "Falla", pts: "0" },
+                ].map(m => (
+                  <div key={m.label} className="bg-white/5 rounded-lg px-3 py-2 text-center">
+                    <p className="text-white/30 text-[9px]">{m.label}</p>
+                    <p className="text-red-atlantida text-xs font-black">{m.pts}</p>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-3">Racha de exactos</p>
+              <div className="flex flex-wrap gap-2 mb-5">
+                {[
+                  { label: "1 exacto", mult: "x1" },
+                  { label: "2 seguidos", mult: "x2" },
+                  { label: "3 seguidos", mult: "x3" },
+                  { label: "4+ seguidos", mult: "x4" },
+                ].map(m => (
+                  <div key={m.label} className="bg-white/5 rounded-lg px-3 py-2 text-center">
+                    <p className="text-white/30 text-[9px]">{m.label}</p>
+                    <p className="text-red-atlantida text-xs font-black">{m.mult}</p>
+                  </div>
+                ))}
+              </div>
+
               <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-3">Multiplicadores por fase</p>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -630,8 +659,6 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
 }) {
   const [homeScore, setHomeScore] = useState(existingPrediction?.home_score ?? 0)
   const [awayScore, setAwayScore] = useState(existingPrediction?.away_score ?? 0)
-  const [scorer, setScorer] = useState(existingPrediction?.scorer_name ?? "")
-  const [player, setPlayer] = useState(existingPrediction?.player_name ?? "")
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState("")
@@ -649,8 +676,8 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
       match_id: match.id,
       home_score: homeScore,
       away_score: awayScore,
-      scorer_name: scorer.trim() || null,
-      player_name: player.trim() || null,
+      scorer_name: null,
+      player_name: null,
       updated_at: new Date().toISOString(),
     }
 
@@ -732,24 +759,6 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
             </div>
           </div>
         </div>
-
-        {/* Player of the Match Input */}
-        <input
-          type="text"
-          placeholder="Jugador del partido (+3 pts)"
-          value={player}
-          onChange={(e) => setPlayer(e.target.value)}
-          className="w-full rounded-xl px-5 py-4 text-white text-sm placeholder-white/30 focus:outline-none transition-colors mb-3 bg-white/5 border border-white/10 focus:border-red-atlantida/40"
-        />
-
-        {/* Scorer Input */}
-        <input
-          type="text"
-          placeholder="Goleador del partido (+5 pts)"
-          value={scorer}
-          onChange={(e) => setScorer(e.target.value)}
-          className="w-full rounded-xl px-5 py-4 text-white text-sm placeholder-white/30 focus:outline-none transition-colors mb-6 bg-white/5 border border-white/10 focus:border-red-atlantida/40"
-        />
 
         {error && (
           <p className="text-sm text-center py-2 rounded-lg mb-4 text-red-atlantida bg-red-atlantida/10">{error}</p>

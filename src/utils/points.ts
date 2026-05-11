@@ -1,10 +1,8 @@
 export const POINTS = {
   EXACT_SCORE: 10,
-  CORRECT_RESULT: 4,
-  CORRECT_DIFFERENCE: 3,
-  SCORER_BONUS: 5,
-  STREAK_BONUS: 3,
-  STREAK_MINIMUM: 3,
+  CORRECT_RESULT: 4,    // "Ganador correcto"
+  CORRECT_DIFFERENCE: 3, // "Diferencia de goles"
+  STREAK_MAX: 4,         // Max racha multiplier
 } as const
 
 export const STAGE_MULTIPLIERS: Record<string, number> = {
@@ -22,39 +20,40 @@ export function calculatePoints(
   predictedAway: number,
   actualHome: number,
   actualAway: number,
-  predictedScorer: string | null,
-  actualScorers: string[],
-  stage: string
-): number {
-  let points = 0
-  const multiplier = STAGE_MULTIPLIERS[stage] || 1.0
+  stage: string,
+  streakCount: number = 0
+): { exact: number; winner: number; difference: number; streak: number; phase: number; total: number } {
+  let exact = 0
+  let winner = 0
+  let difference = 0
+  const phase = STAGE_MULTIPLIERS[stage] || 1.0
+  const streak = Math.min(Math.max(streakCount, 1), POINTS.STREAK_MAX)
 
   if (predictedHome === actualHome && predictedAway === actualAway) {
-    points += POINTS.EXACT_SCORE
+    // Marcador exacto — no se suman ganador ni diferencia
+    exact = POINTS.EXACT_SCORE
   } else {
     const predictedResult = Math.sign(predictedHome - predictedAway)
     const actualResult = Math.sign(actualHome - actualAway)
 
     if (predictedResult === actualResult) {
-      points += POINTS.CORRECT_RESULT
+      winner = POINTS.CORRECT_RESULT
     }
 
     const predictedDiff = predictedHome - predictedAway
     const actualDiff = actualHome - actualAway
 
     if (predictedDiff === actualDiff) {
-      points += POINTS.CORRECT_DIFFERENCE
+      difference = POINTS.CORRECT_DIFFERENCE
     }
   }
 
-  if (
-    predictedScorer &&
-    actualScorers.some(
-      (s) => s.toLowerCase() === predictedScorer.toLowerCase()
-    )
-  ) {
-    points += POINTS.SCORER_BONUS
-  }
+  // Racha solo aplica a marcadores exactos
+  const basePoints = exact > 0
+    ? exact * streak
+    : winner + difference
 
-  return Math.round(points * multiplier)
+  const total = Math.round(basePoints * phase)
+
+  return { exact, winner, difference, streak, phase, total }
 }
