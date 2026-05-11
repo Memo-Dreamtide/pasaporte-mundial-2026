@@ -5,6 +5,8 @@ import { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
+import { useRef } from "react"
+import { motion, useInView } from "motion/react"
 
 type Team = { id: string; name: string; code: string; flag_emoji: string; group_letter: string }
 type Match = {
@@ -100,6 +102,8 @@ export default function PronosticosClient({
     Object.fromEntries(predictions.map(p => [p.match_id, p]))
   )
 
+  const cardsRef = useRef(null)
+  const cardsInView = useInView(cardsRef, { once: true, margin: "-50px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -235,12 +239,16 @@ export default function PronosticosClient({
       </div>
 
       {/* Progress + How to Play — desktop: side by side with tabs */}
-      <FadeIn delay={0.2}>
-      <div className="lg:grid lg:grid-cols-3 lg:gap-6 lg:mb-8">
+      <div ref={cardsRef} className="lg:grid lg:grid-cols-3 lg:gap-6 lg:mb-8">
         {/* Progress + How to Play cards */}
         <div className="flex gap-2 mb-4 lg:col-span-2 lg:mb-0">
-          {/* Progress Circle Card */}
-          <div className="flex-1 bg-red-atlantida rounded-2xl p-5 flex items-center gap-4">
+          {/* Progress Circle Card — slides in first from left */}
+          <motion.div
+            className="flex-1 bg-red-atlantida rounded-2xl p-5 flex items-center gap-4"
+            initial={{ x: -60, opacity: 0, filter: "blur(4px)" }}
+            animate={cardsInView ? { x: 0, opacity: 1, filter: "blur(0px)" } : {}}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <div className="relative w-24 h-24 shrink-0">
               <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r={circleRadius} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="8" />
@@ -259,43 +267,53 @@ export default function PronosticosClient({
               <p className="text-white text-sm font-black tracking-wider uppercase">Progreso</p>
               <p className="text-white/60 text-xs mt-0.5">{totalPredicted} / {totalMatches}</p>
             </div>
-          </div>
+          </motion.div>
 
-          {/* How to Play Card */}
-          <button
+          {/* How to Play Card — slides in second */}
+          <motion.button
             onClick={() => setShowRules(true)}
             className="flex-1 bg-bg-elevated border border-border-medium rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer hover:border-red-atlantida/30 transition-colors"
+            initial={{ x: -60, opacity: 0, filter: "blur(4px)" }}
+            animate={cardsInView ? { x: 0, opacity: 1, filter: "blur(0px)" } : {}}
+            transition={{ duration: 0.6, delay: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <p className="text-white text-sm font-black">¿Cómo jugar?</p>
             <p className="text-white/40 text-xs mt-1">Conoce las reglas.</p>
-          </button>
+          </motion.button>
         </div>
 
         {/* Grupos / Eliminatorias Tabs */}
         <div className="flex gap-2 mb-4 lg:col-span-1 lg:mb-0 lg:flex-col">
-          <button
+          {/* Grupos — slides in third */}
+          <motion.button
             onClick={() => setTab("groups")}
             className={`flex-1 py-3.5 rounded-2xl text-sm font-black tracking-wider transition-all cursor-pointer ${
               tab === "groups"
                 ? "bg-red-atlantida text-white"
                 : "bg-bg-elevated border border-border-medium text-white/40 hover:text-white/60 hover:border-red-atlantida/20"
             }`}
+            initial={{ x: -60, opacity: 0, filter: "blur(4px)" }}
+            animate={cardsInView ? { x: 0, opacity: 1, filter: "blur(0px)" } : {}}
+            transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.4, 0.25, 1] }}
           >
             Grupos
-          </button>
-          <button
+          </motion.button>
+          {/* Eliminatorias — slides in fourth */}
+          <motion.button
             onClick={() => setTab("knockout")}
             className={`flex-1 py-3.5 rounded-2xl text-sm font-black tracking-wider transition-all cursor-pointer ${
               tab === "knockout"
                 ? "bg-red-atlantida text-white"
                 : "bg-bg-elevated border border-border-medium text-white/40 hover:text-white/60 hover:border-red-atlantida/20"
             }`}
+            initial={{ x: -60, opacity: 0, filter: "blur(4px)" }}
+            animate={cardsInView ? { x: 0, opacity: 1, filter: "blur(0px)" } : {}}
+            transition={{ duration: 0.6, delay: 0.55, ease: [0.25, 0.4, 0.25, 1] }}
           >
             Eliminatorias
-          </button>
+          </motion.button>
         </div>
       </div>
-      </FadeIn>
 
       {/* Groups Tab Content */}
       <FadeIn delay={0.3}>

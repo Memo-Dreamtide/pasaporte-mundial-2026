@@ -1,9 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
+import FadeIn from "@/components/ui/FadeIn"
+import { motion, useInView } from "motion/react"
 
 type RankProfile = {
   id: string
@@ -34,6 +36,8 @@ export default function RankingClient({
   const [showProfile, setShowProfile] = useState(false)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [passwordMsg, setPasswordMsg] = useState("")
+  const podiumRef = useRef(null)
+  const podiumInView = useInView(podiumRef, { once: true, margin: "-50px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -78,6 +82,7 @@ export default function RankingClient({
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/50 to-bg-base" />
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
       {/* Header */}
+      <FadeIn delay={0.1}>
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">
         <h1 className="text-4xl lg:text-5xl font-light text-white leading-tight">
           {userName.split(" ").map((word, i) => (
@@ -119,6 +124,7 @@ export default function RankingClient({
           </div>
         </button>
       </div>
+      </FadeIn>
 
       {/* Mobile Nav */}
       <div className="flex items-center rounded-full border border-border-medium bg-bg-surface p-1 mb-6 lg:hidden">
@@ -143,15 +149,22 @@ export default function RankingClient({
       </div>
 
       {/* Title */}
+      <FadeIn delay={0.15}>
       <h2 className="text-2xl lg:text-3xl font-black text-white text-center tracking-wider uppercase mb-8">
         Ranking Actual
       </h2>
+      </FadeIn>
 
-      {/* Podium — Desktop: wider layout */}
+      {/* Podium — 3rd rises first, then 2nd, then 1st */}
       {top3.length >= 3 && (
-        <div className="flex items-end justify-center gap-2 mb-10 lg:gap-4 lg:mb-12">
-          {/* 2nd Place — top-right corner only */}
-          <div className="flex-1 max-w-[140px] lg:max-w-[200px]">
+        <div ref={podiumRef} className="flex items-end justify-center gap-2 mb-10 lg:gap-4 lg:mb-12">
+          {/* 2nd Place — rises second */}
+          <motion.div
+            className="flex-1 max-w-[140px] lg:max-w-[200px] origin-bottom"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.35, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <div className="bg-white p-4 lg:p-5 text-center min-h-[140px] lg:min-h-[170px] flex flex-col justify-end" style={{ borderRadius: "0 2rem 0 0" }}>
               <p className="text-6xl lg:text-7xl font-black text-gray-900 leading-none">2</p>
               {top3[1].full_name && (
@@ -159,19 +172,29 @@ export default function RankingClient({
               )}
               <p className="text-gray-900 text-xs lg:text-sm font-black mt-1">{top3[1].total_points} Pts.</p>
             </div>
-          </div>
+          </motion.div>
 
-          {/* 1st Place — top-left corner only */}
-          <div className="flex-1 max-w-[160px] lg:max-w-[220px]">
+          {/* 1st Place — rises last (the winner reveal) */}
+          <motion.div
+            className="flex-1 max-w-[160px] lg:max-w-[220px] origin-bottom"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
+            transition={{ duration: 0.7, delay: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <div className="bg-red-atlantida p-4 lg:p-5 text-center min-h-[180px] lg:min-h-[220px] flex flex-col justify-end" style={{ borderRadius: "2rem 0 0 0" }}>
               <p className="text-7xl lg:text-8xl font-black text-white/90 leading-none">1</p>
               <p className="text-white text-[10px] lg:text-xs font-bold mt-2 truncate">{top3[0].full_name || "---"}</p>
               <p className="text-white text-sm lg:text-base font-black mt-1">{top3[0].total_points} Pts.</p>
             </div>
-          </div>
+          </motion.div>
 
-          {/* 3rd Place — top-left corner only, gray bg */}
-          <div className="flex-1 max-w-[140px] lg:max-w-[200px]">
+          {/* 3rd Place — rises first */}
+          <motion.div
+            className="flex-1 max-w-[140px] lg:max-w-[200px] origin-bottom"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <div className="bg-[#C8C8C8] p-4 lg:p-5 text-center min-h-[120px] lg:min-h-[150px] flex flex-col justify-end" style={{ borderRadius: "2rem 0 0 0" }}>
               <p className="text-5xl lg:text-6xl font-black text-gray-900 leading-none">3</p>
               {top3[2].full_name && (
@@ -179,11 +202,12 @@ export default function RankingClient({
               )}
               <p className="text-gray-900 text-xs lg:text-sm font-black mt-1">{top3[2].total_points} Pts.</p>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* Table Header */}
+      <FadeIn delay={0.35}>
       <div className="flex items-center rounded-xl overflow-hidden mb-1">
         <div className="w-16 lg:w-20 bg-red-atlantida py-2.5 text-center">
           <span className="text-white text-[11px] lg:text-xs font-black tracking-wider">Pos.</span>
@@ -235,6 +259,7 @@ export default function RankingClient({
           })
         )}
       </div>
+      </FadeIn>
 
       {/* Profile Modal */}
       {showProfile && (

@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
+import { motion, useInView } from "motion/react"
 
 type Prize = {
   id: string
@@ -46,6 +47,8 @@ export default function PremiosClient({
   const [showProfile, setShowProfile] = useState(false)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [passwordMsg, setPasswordMsg] = useState("")
+  const prizesRef = useRef(null)
+  const prizesInView = useInView(prizesRef, { once: true, margin: "-50px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -164,13 +167,19 @@ export default function PremiosClient({
       </p>
       </FadeIn>
 
-      {/* Top 3 Prize Cards — same height, top corners rounded, bottom square */}
-      <FadeIn delay={0.25}>
-      <div className="grid grid-cols-3 gap-2 mb-12 lg:gap-4 lg:mb-14 items-stretch">
+      {/* Top 3 Prize Cards — 1st rises first, then 2nd, then 3rd */}
+      <div ref={prizesRef} className="grid grid-cols-3 gap-2 mb-12 lg:gap-4 lg:mb-14 items-stretch">
         {prizes.slice(0, 3).map((prize) => {
           const style = prizeStyles[prize.place] || prizeStyles[3]
+          const delayMap: Record<number, number> = { 1: 0.1, 2: 0.35, 3: 0.6 }
           return (
-            <div key={prize.id}>
+            <motion.div
+              key={prize.id}
+              className="origin-bottom"
+              initial={{ scaleY: 0, opacity: 0 }}
+              animate={prizesInView ? { scaleY: 1, opacity: 1 } : {}}
+              transition={{ duration: 0.65, delay: delayMap[prize.place] || 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+            >
               <div
                 className={`${style.bg} p-4 lg:p-6 flex flex-col h-full`}
                 style={{ borderRadius: "2rem 2rem 0 0" }}
@@ -190,11 +199,10 @@ export default function PremiosClient({
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )
         })}
       </div>
-      </FadeIn>
 
       {/* Sorteos Semanales */}
       <FadeIn delay={0.35}>
