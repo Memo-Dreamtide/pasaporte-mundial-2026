@@ -148,10 +148,21 @@ export async function GET(request: Request) {
       }
     }
 
+    // After caching, sync World Cup fixtures to matches table
+    // This calls the SQL function that maps cache → matches
+    const worldCupFixtures = fixtures.filter(f => f.league.id === 1)
+    let matchesUpdated = 0
+
+    if (worldCupFixtures.length > 0) {
+      const { data: syncResult } = await supabase.rpc('sync_matches_from_cache')
+      matchesUpdated = syncResult?.[0]?.updated || 0
+    }
+
     return NextResponse.json({
       success: true,
       fixtures_fetched: fixtures.length,
       fixtures_cached: cacheEntries.length,
+      matches_updated: matchesUpdated,
       statuses: fixtures.reduce((acc, f) => {
         const s = f.fixture.status.short
         acc[s] = (acc[s] || 0) + 1
