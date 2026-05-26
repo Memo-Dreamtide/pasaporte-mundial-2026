@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react"
 
 interface CachedFixture {
   fixture_id: number
+  league_id: number
   league_name: string
   round: string
   status: string
@@ -104,7 +105,7 @@ export default function ApiTestPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-black tracking-tight">API-FOOTBALL TEST</h1>
           <p className="text-white/40 text-sm mt-1">
-            Testing CONMEBOL Libertadores (league=13) — Polling validation
+            Libertadores + Sudamericana — Polling cada 15s en vivo
           </p>
         </div>
 
@@ -241,9 +242,12 @@ function FixtureCard({ fixture }: { fixture: CachedFixture }) {
     <div className={`rounded-xl border p-4 transition-all ${
       isLive ? 'border-green-500/30 bg-green-500/5' : 'border-white/10 bg-white/5'
     }`}>
-      {/* Round + Status */}
+      {/* League + Round + Status */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs text-white/30">{fixture.round}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/10 text-white/40">{fixture.league_name}</span>
+          <span className="text-xs text-white/30">{fixture.round}</span>
+        </div>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${STATUS_COLORS[fixture.status] || 'bg-white/10 text-white/50'}`}>
           {fixture.status}
           {fixture.minute ? ` ${fixture.minute}'` : ''}

@@ -5,8 +5,9 @@ import { NextResponse } from 'next/server'
 const API_FOOTBALL_URL = 'https://v3.football.api-sports.io'
 const API_KEY = process.env.API_FOOTBALL_KEY || '840f4d0ea6679a3a19b3bd4390b46fde'
 
-// CONMEBOL Libertadores for testing — will switch to league=1 for World Cup
-const TEST_LEAGUE = 13
+// Test leagues — will switch to league=1 for World Cup
+// 13 = CONMEBOL Libertadores, 11 = CONMEBOL Sudamericana
+const TEST_LEAGUES = [13, 11]
 const TEST_SEASON = 2026
 
 interface ApiFixture {
@@ -63,26 +64,39 @@ async function fetchFromApi(endpoint: string, params: Record<string, string>) {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const league = searchParams.get('league') || String(TEST_LEAGUE)
+  const leagueParam = searchParams.get('league')
   const season = searchParams.get('season') || String(TEST_SEASON)
   const date = searchParams.get('date') || new Date().toISOString().split('T')[0]
   const live = searchParams.get('live') // "all" to fetch only live
 
-  try {
-    // Build API params
-    const params: Record<string, string> = {}
+  // Use provided league or fetch all test leagues
+  const leagues = leagueParam ? [leagueParam] : TEST_LEAGUES.map(String)
 
-    if (live === 'all') {
-      params.live = 'all'
-      params.league = league
-    } else {
-      params.league = league
-      params.season = season
-      params.date = date
+  try {
+    // Fetch all leagues in parallel
+    const allFixtures: ApiFixture[] = []
+
+    const results = await Promise.all(
+      leagues.map((league) => {
+        const params: Record<string, string> = {}
+        if (live === 'all') {
+          params.live = 'all'
+          params.league = league
+        } else {
+          params.league = league
+          params.season = season
+          params.date = date
+        }
+        return fetchFromApi('/fixtures', params)
+      })
+    )
+
+    for (const data of results) {
+      const fixtures: ApiFixture[] = data.response || []
+      allFixtures.push(...fixtures)
     }
 
-    const data = await fetchFromApi('/fixtures', params)
-    const fixtures: ApiFixture[] = data.response || []
+    const fixtures = allFixtures
 
     // Store in Supabase cache
     const cookieStore = await cookies()
