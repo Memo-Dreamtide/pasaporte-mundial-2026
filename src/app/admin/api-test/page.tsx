@@ -66,10 +66,10 @@ export default function ApiTestPage() {
     setLoading(false)
   }, [])
 
-  const triggerSync = useCallback(async () => {
+  const triggerSync = useCallback(async (mode: string = 'live') => {
     setSyncing(true)
     try {
-      const res = await fetch('/api/football/sync')
+      const res = await fetch(`/api/football/sync?mode=${mode}`)
       const data = await res.json()
       setSyncResult(JSON.stringify(data, null, 2))
       setLastSync(new Date().toLocaleTimeString())
@@ -113,11 +113,18 @@ export default function ApiTestPage() {
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 mb-6">
           <div className="flex flex-wrap items-center gap-4">
             <button
-              onClick={triggerSync}
+              onClick={() => triggerSync('live')}
               disabled={syncing}
               className="px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-sm transition-all disabled:opacity-50 cursor-pointer"
             >
-              {syncing ? "Syncing..." : "SYNC NOW"}
+              {syncing ? "Syncing..." : "SYNC LIVE"}
+            </button>
+            <button
+              onClick={() => triggerSync('league')}
+              disabled={syncing}
+              className="px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-sm transition-all disabled:opacity-50 cursor-pointer"
+            >
+              LIBERTADORES + SUDA
             </button>
 
             <div className="flex items-center gap-2">

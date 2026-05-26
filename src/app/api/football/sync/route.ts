@@ -64,39 +64,34 @@ async function fetchFromApi(endpoint: string, params: Record<string, string>) {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
+  const mode = searchParams.get('mode') || 'live' // "live" | "date" | "league"
   const leagueParam = searchParams.get('league')
   const season = searchParams.get('season') || String(TEST_SEASON)
   const date = searchParams.get('date') || new Date().toISOString().split('T')[0]
-  const live = searchParams.get('live') // "all" to fetch only live
-
-  // Use provided league or fetch all test leagues
-  const leagues = leagueParam ? [leagueParam] : TEST_LEAGUES.map(String)
 
   try {
-    // Fetch all leagues in parallel
-    const allFixtures: ApiFixture[] = []
+    let fixtures: ApiFixture[] = []
 
-    const results = await Promise.all(
-      leagues.map((league) => {
-        const params: Record<string, string> = {}
-        if (live === 'all') {
-          params.live = 'all'
-          params.league = league
-        } else {
-          params.league = league
-          params.season = season
-          params.date = date
-        }
-        return fetchFromApi('/fixtures', params)
-      })
-    )
-
-    for (const data of results) {
-      const fixtures: ApiFixture[] = data.response || []
-      allFixtures.push(...fixtures)
+    if (mode === 'live') {
+      // Fetch ALL live fixtures across all leagues (1 API call)
+      const data = await fetchFromApi('/fixtures', { live: 'all' })
+      fixtures = data.response || []
+    } else if (mode === 'league') {
+      // Fetch specific leagues by date
+      const leagues = leagueParam ? [leagueParam] : TEST_LEAGUES.map(String)
+      const results = await Promise.all(
+        leagues.map((league) =>
+          fetchFromApi('/fixtures', { league, season, date })
+        )
+      )
+      for (const data of results) {
+        fixtures.push(...(data.response || []))
+      }
+    } else {
+      // Fetch by date (all leagues)
+      const data = await fetchFromApi('/fixtures', { date })
+      fixtures = data.response || []
     }
-
-    const fixtures = allFixtures
 
     // Store in Supabase cache
     const cookieStore = await cookies()
@@ -162,7 +157,7 @@ export async function GET(request: Request) {
         acc[s] = (acc[s] || 0) + 1
         return acc
       }, {} as Record<string, number>),
-      api_requests_remaining: data.errors?.rateLimit || 'unknown',
+      api_calls_made: mode === 'live' ? 1 : (leagueParam ? 1 : TEST_LEAGUES.length),
     })
   } catch (error) {
     console.error('Sync error:', error)
