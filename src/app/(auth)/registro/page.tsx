@@ -8,6 +8,8 @@ import Image from "next/image"
 
 export default function RegistroPage() {
   const [fullName, setFullName] = useState("")
+  const [dui, setDui] = useState("")
+  const [birthDate, setBirthDate] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -16,13 +18,66 @@ export default function RegistroPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  // Format DUI as 00000000-0
+  const handleDuiChange = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 9)
+    if (digits.length > 8) {
+      setDui(`${digits.slice(0, 8)}-${digits.slice(8)}`)
+    } else {
+      setDui(digits)
+    }
+  }
+
+  // Validate 18+ age
+  const isOver18 = (dateStr: string): boolean => {
+    if (!dateStr) return false
+    const birth = new Date(dateStr)
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const monthDiff = today.getMonth() - birth.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--
+    }
+    return age >= 18
+  }
+
+  // Validate DUI format (8 digits + dash + 1 digit)
+  const isValidDui = (value: string): boolean => {
+    return /^\d{8}-\d$/.test(value)
+  }
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
+    if (!isValidDui(dui)) {
+      setError("Ingresa un DUI valido (formato: 00000000-0)")
+      setLoading(false)
+      return
+    }
+
+    if (!isOver18(birthDate)) {
+      setError("Debes ser mayor de 18 anos para participar")
+      setLoading(false)
+      return
+    }
+
+    // Check if DUI is already registered
+    const { data: existingDui } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("dui", dui)
+      .single()
+
+    if (existingDui) {
+      setError("Este DUI ya esta registrado en otra cuenta")
+      setLoading(false)
+      return
+    }
+
     if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres")
+      setError("La contrasena debe tener al menos 6 caracteres")
       setLoading(false)
       return
     }
@@ -33,6 +88,8 @@ export default function RegistroPage() {
       options: {
         data: {
           full_name: fullName,
+          dui: dui,
+          birth_date: birthDate,
         },
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
@@ -171,6 +228,31 @@ export default function RegistroPage() {
             </div>
             <div>
               <input
+                type="text"
+                inputMode="numeric"
+                placeholder="DUI (00000000-0)"
+                value={dui}
+                onChange={(e) => handleDuiChange(e.target.value)}
+                required
+                maxLength={10}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                style={{ caretColor: "#D9272E" }}
+              />
+            </div>
+            <div>
+              <label className="block text-white/40 text-xs mb-1.5 ml-1">Fecha de nacimiento</label>
+              <input
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                required
+                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm [color-scheme:dark]"
+                style={{ caretColor: "#D9272E" }}
+              />
+            </div>
+            <div>
+              <input
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -183,7 +265,7 @@ export default function RegistroPage() {
             <div>
               <input
                 type="password"
-                placeholder="Contraseña (minimo 6 caracteres)"
+                placeholder="Contrasena (minimo 6 caracteres)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

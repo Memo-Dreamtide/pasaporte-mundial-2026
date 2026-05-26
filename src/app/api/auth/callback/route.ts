@@ -28,6 +28,20 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Check if user has completed their profile (DUI)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("dui")
+          .eq("id", user.id)
+          .single()
+
+        // If no DUI, redirect to complete profile
+        if (!profile?.dui) {
+          return NextResponse.redirect(`${origin}/completar-perfil`)
+        }
+      }
       return NextResponse.redirect(`${origin}${next}`)
     }
   }
