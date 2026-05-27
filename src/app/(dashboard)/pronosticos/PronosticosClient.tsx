@@ -193,7 +193,7 @@ export default function PronosticosClient({
                 onMouseEnter={() => setHoveredNav(item.href)}
                 onMouseLeave={() => setHoveredNav(null)}
                 className={`text-center py-2.5 px-6 rounded-full text-[11px] font-bold tracking-wider transition-all duration-300 whitespace-nowrap ${
-                  showHighlight ? "bg-red-atlantida text-white" : "text-white/40 hover:text-white/60"
+                  showHighlight ? "bg-red-atlantida text-white" : "text-white/60 hover:text-white/80"
                 }`}
               >
                 {item.label}
@@ -229,7 +229,7 @@ export default function PronosticosClient({
               onMouseEnter={() => setHoveredNav(item.href)}
               onMouseLeave={() => setHoveredNav(null)}
               className={`flex-1 text-center py-2 px-1.5 rounded-full text-[10px] font-bold tracking-wider transition-all duration-300 whitespace-nowrap ${
-                showHighlight ? "bg-red-atlantida text-white" : "text-white/40"
+                showHighlight ? "bg-red-atlantida text-white" : "text-white/60"
               }`}
             >
               {item.label}
@@ -278,7 +278,7 @@ export default function PronosticosClient({
             transition={{ duration: 0.6, delay: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <p className="text-white text-sm font-black">¿Cómo jugar?</p>
-            <p className="text-white/40 text-xs mt-1">Conoce las reglas.</p>
+            <p className="text-white/60 text-xs mt-1">Conoce las reglas.</p>
           </motion.button>
         </div>
 
@@ -290,7 +290,7 @@ export default function PronosticosClient({
             className={`flex-1 py-3.5 rounded-2xl text-sm font-black tracking-wider transition-all cursor-pointer ${
               tab === "groups"
                 ? "bg-red-atlantida text-white"
-                : "bg-bg-elevated border border-border-medium text-white/40 hover:text-white/60 hover:border-red-atlantida/20"
+                : "bg-bg-elevated border border-border-medium text-white/60 hover:text-white/80 hover:border-red-atlantida/20"
             }`}
             initial={{ x: -60, opacity: 0, filter: "blur(4px)" }}
             animate={cardsInView ? { x: 0, opacity: 1, filter: "blur(0px)" } : {}}
@@ -304,7 +304,7 @@ export default function PronosticosClient({
             className={`flex-1 py-3.5 rounded-2xl text-sm font-black tracking-wider transition-all cursor-pointer ${
               tab === "knockout"
                 ? "bg-red-atlantida text-white"
-                : "bg-bg-elevated border border-border-medium text-white/40 hover:text-white/60 hover:border-red-atlantida/20"
+                : "bg-bg-elevated border border-border-medium text-white/60 hover:text-white/80 hover:border-red-atlantida/20"
             }`}
             initial={{ x: -60, opacity: 0, filter: "blur(4px)" }}
             animate={cardsInView ? { x: 0, opacity: 1, filter: "blur(0px)" } : {}}
@@ -328,7 +328,7 @@ export default function PronosticosClient({
                 className={`w-9 h-9 rounded-full text-xs font-bold tracking-wider transition-all shrink-0 cursor-pointer ${
                   groupFilter === g
                     ? "bg-red-atlantida text-white"
-                    : "text-white/30 hover:text-white/60"
+                    : "text-white/50 hover:text-white/80"
                 }`}
               >
                 {g}
@@ -338,7 +338,7 @@ export default function PronosticosClient({
 
           {/* Fecha Filter */}
           <div className="flex items-center gap-3 mb-5 bg-bg-elevated rounded-full px-5 py-3 border border-border-subtle">
-            <span className="text-white/50 text-[11px] font-black tracking-[0.2em] uppercase">Fecha</span>
+            <span className="text-white/70 text-[11px] font-black tracking-[0.2em] uppercase">Fecha</span>
             {JORNADAS.map(j => (
               <button
                 key={j}
@@ -346,7 +346,7 @@ export default function PronosticosClient({
                 className={`w-7 h-7 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   jornadaFilter === j
                     ? "bg-red-atlantida text-white"
-                    : "text-white/30 hover:text-white/60"
+                    : "text-white/50 hover:text-white/80"
                 }`}
               >
                 {j}
@@ -357,7 +357,7 @@ export default function PronosticosClient({
           {/* Match Cards */}
           <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
             {filteredGroups.length === 0 ? (
-              <p className="text-center text-white/30 py-12 text-sm lg:col-span-2">No hay partidos con este filtro</p>
+              <p className="text-center text-white/50 py-12 text-sm lg:col-span-2">No hay partidos con este filtro</p>
             ) : (
               filteredGroups.map(match => (
                 <MatchCard
@@ -391,7 +391,7 @@ export default function PronosticosClient({
                 className={`px-4 py-2.5 rounded-full text-[10px] font-black tracking-wider whitespace-nowrap transition-all shrink-0 cursor-pointer ${
                   elimStage === s
                     ? "bg-red-atlantida text-white"
-                    : "bg-bg-elevated border border-border-medium text-white/30 hover:text-white/60"
+                    : "bg-bg-elevated border border-border-medium text-white/50 hover:text-white/80"
                 }`}
               >
                 {(STAGE_LABELS[s] || s).toUpperCase()}
@@ -402,7 +402,7 @@ export default function PronosticosClient({
           {/* Knockout Match Cards */}
           <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
             {filteredKnockout.length === 0 ? (
-              <p className="text-center text-white/30 py-12 text-sm lg:col-span-2">No hay partidos en esta fase</p>
+              <p className="text-center text-white/50 py-12 text-sm lg:col-span-2">No hay partidos en esta fase</p>
             ) : (
               filteredKnockout.map(match => (
                 <MatchCard
@@ -441,7 +441,7 @@ export default function PronosticosClient({
           <div className="relative z-10 w-full max-w-md mx-4 bg-bg-elevated border border-border-subtle rounded-3xl p-6 animate-slide-up max-h-[85vh] overflow-y-auto">
             <button
               onClick={() => setShowRules(false)}
-              className="absolute top-4 right-4 text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -458,7 +458,7 @@ export default function PronosticosClient({
                   </div>
                   <div>
                     <p className="text-white text-sm font-bold">{rule.title}</p>
-                    <p className="text-white/40 text-xs mt-0.5">{rule.desc}</p>
+                    <p className="text-white/60 text-xs mt-0.5">{rule.desc}</p>
                   </div>
                 </div>
               ))}
@@ -466,7 +466,7 @@ export default function PronosticosClient({
 
             {/* Points Summary */}
             <div className="mt-6 pt-6 border-t border-white/10">
-              <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-3">Puntos por partido</p>
+              <p className="text-white/60 text-[10px] font-bold tracking-wider uppercase mb-3">Puntos por partido</p>
               <div className="flex flex-wrap gap-2 mb-5">
                 {[
                   { label: "Exacto", pts: "+10" },
@@ -475,13 +475,13 @@ export default function PronosticosClient({
                   { label: "Falla", pts: "0" },
                 ].map(m => (
                   <div key={m.label} className="bg-white/5 rounded-lg px-3 py-2 text-center">
-                    <p className="text-white/30 text-[9px]">{m.label}</p>
+                    <p className="text-white/60 text-[9px]">{m.label}</p>
                     <p className="text-red-atlantida text-xs font-black">{m.pts}</p>
                   </div>
                 ))}
               </div>
 
-              <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-3">Racha de exactos</p>
+              <p className="text-white/60 text-[10px] font-bold tracking-wider uppercase mb-3">Racha de exactos</p>
               <div className="flex flex-wrap gap-2 mb-5">
                 {[
                   { label: "1 exacto", mult: "x1" },
@@ -490,13 +490,13 @@ export default function PronosticosClient({
                   { label: "4+ seguidos", mult: "x4" },
                 ].map(m => (
                   <div key={m.label} className="bg-white/5 rounded-lg px-3 py-2 text-center">
-                    <p className="text-white/30 text-[9px]">{m.label}</p>
+                    <p className="text-white/60 text-[9px]">{m.label}</p>
                     <p className="text-red-atlantida text-xs font-black">{m.mult}</p>
                   </div>
                 ))}
               </div>
 
-              <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-3">Multiplicadores por fase</p>
+              <p className="text-white/60 text-[10px] font-bold tracking-wider uppercase mb-3">Multiplicadores por fase</p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { label: "Grupos", mult: "x1.0" },
@@ -507,7 +507,7 @@ export default function PronosticosClient({
                   { label: "Final", mult: "x3.0" },
                 ].map(m => (
                   <div key={m.label} className="bg-white/5 rounded-lg px-3 py-2 text-center">
-                    <p className="text-white/30 text-[9px]">{m.label}</p>
+                    <p className="text-white/60 text-[9px]">{m.label}</p>
                     <p className="text-red-atlantida text-xs font-black">{m.mult}</p>
                   </div>
                 ))}
@@ -524,7 +524,7 @@ export default function PronosticosClient({
           <div className="relative z-10 w-full max-w-md bg-bg-elevated border border-border-subtle rounded-3xl p-8 animate-slide-up">
             <button
               onClick={() => setShowProfile(false)}
-              className="absolute top-4 right-4 text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -534,38 +534,38 @@ export default function PronosticosClient({
               <span className="text-3xl font-black text-red-atlantida">{userInitial}</span>
             </div>
             <h2 className="text-xl font-black text-white text-center">{userName}</h2>
-            <p className="text-white/40 text-sm text-center mt-1 mb-6">{userEmail}</p>
+            <p className="text-white/60 text-sm text-center mt-1 mb-6">{userEmail}</p>
             <div className="grid grid-cols-4 gap-2 mb-4">
               <div className="bg-bg-surface rounded-xl p-3 text-center">
                 <p className="text-xl font-black text-red-atlantida">{totalPoints}</p>
-                <p className="text-white/30 text-[10px] font-bold mt-1">PUNTOS</p>
+                <p className="text-white/60 text-[10px] font-bold mt-1">PUNTOS</p>
               </div>
               <div className="bg-bg-surface rounded-xl p-3 text-center">
                 <p className="text-xl font-black text-white">#{rankPosition || "-"}</p>
-                <p className="text-white/30 text-[10px] font-bold mt-1">RANKING</p>
+                <p className="text-white/60 text-[10px] font-bold mt-1">RANKING</p>
               </div>
               <div className="bg-bg-surface rounded-xl p-3 text-center">
                 <p className="text-xl font-black text-white">{predictionsCount}</p>
-                <p className="text-white/30 text-[10px] font-bold mt-1">JUGADOS</p>
+                <p className="text-white/60 text-[10px] font-bold mt-1">JUGADOS</p>
               </div>
               <div className="bg-bg-surface rounded-xl p-3 text-center">
                 <p className="text-xl font-black text-white">{exactScores}</p>
-                <p className="text-white/30 text-[10px] font-bold mt-1">EXACTOS</p>
+                <p className="text-white/60 text-[10px] font-bold mt-1">EXACTOS</p>
               </div>
             </div>
             {totalMatches - totalPredicted > 0 && (
-              <p className="text-white/20 text-xs text-center mb-5">Te faltan {totalMatches - totalPredicted} pronosticos por hacer</p>
+              <p className="text-white/50 text-xs text-center mb-5">Te faltan {totalMatches - totalPredicted} pronosticos por hacer</p>
             )}
             {authProvider === "google" ? (
               <div className="flex items-center gap-2 bg-bg-surface rounded-xl px-4 py-3 mb-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/30 shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/50 shrink-0">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
-                <p className="text-white/30 text-xs">Tu cuenta esta vinculada con Google. La contrasena se administra desde tu cuenta de Google.</p>
+                <p className="text-white/50 text-xs">Tu cuenta esta vinculada con Google. La contraseña se administra desde tu cuenta de Google.</p>
               </div>
             ) : (
-              <button onClick={handleResetPassword} className="w-full py-3 rounded-xl font-bold text-xs tracking-wider bg-bg-surface text-white/50 hover:text-white/70 transition-all duration-300 cursor-pointer mb-3">
-                CAMBIAR CONTRASENA
+              <button onClick={handleResetPassword} className="w-full py-3 rounded-xl font-bold text-xs tracking-wider bg-bg-surface text-white/60 hover:text-white/80 transition-all duration-300 cursor-pointer mb-3">
+                CAMBIAR CONTRASEÑA
               </button>
             )}
             {passwordMsg && <p className="text-red-atlantida text-xs text-center mb-3">{passwordMsg}</p>}
@@ -573,7 +573,7 @@ export default function PronosticosClient({
               onClick={handleLogout}
               className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wider bg-red-atlantida/10 text-red-atlantida border border-red-atlantida/20 hover:bg-red-atlantida/20 transition-all duration-300 cursor-pointer"
             >
-              CERRAR SESION
+              CERRAR SESIÓN
             </button>
           </div>
         </div>
@@ -618,7 +618,7 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
       }`}
     >
       {/* Date */}
-      <p className="text-center text-white/40 text-[11px] font-medium mb-3">
+      <p className="text-center text-white/60 text-sm font-medium mb-3">
         {formatToSV(match.match_date)}
       </p>
 
@@ -635,7 +635,7 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
             </div>
           </div>
 
-          <span className="text-white/20 text-sm font-bold px-3">vs</span>
+          <span className="text-white/40 text-sm font-bold px-3">vs</span>
 
           <div className="flex-1 text-center">
             <p className="text-4xl lg:text-5xl font-black text-white tracking-wider">{match.away_team!.code}</p>
@@ -649,7 +649,7 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
         </div>
       ) : (
         <div className="text-center py-4">
-          <span className="text-white/20 text-sm font-black">POR DEFINIR</span>
+          <span className="text-white/40 text-sm font-black">POR DEFINIR</span>
         </div>
       )}
 
@@ -657,7 +657,7 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
       {hasRealScore && hasPrediction ? (
         <div className="mt-3 pt-3 border-t border-white/10">
           {/* Real score */}
-          <p className="text-center text-white/40 text-[10px] font-bold tracking-wider uppercase mb-2">Resultado Real</p>
+          <p className="text-center text-white/60 text-[10px] font-bold tracking-wider uppercase mb-2">Resultado Real</p>
           <p className="text-center text-white text-sm font-black mb-3">
             {match.home_team!.code} {match.home_score} - {match.away_score} {match.away_team!.code}
           </p>
@@ -666,28 +666,28 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
           {points && (
             <div className="space-y-1">
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/40">Marcador Exacto</span>
-                <span className={points.exact > 0 ? "text-green-400 font-bold" : "text-white/20"}>{points.exact} pts</span>
+                <span className="text-white/60">Marcador Exacto</span>
+                <span className={points.exact > 0 ? "text-green-400 font-bold" : "text-white/40"}>{points.exact} pts</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/40">Ganador Correcto</span>
-                <span className={points.winner > 0 ? "text-green-400 font-bold" : "text-white/20"}>{points.winner} pts</span>
+                <span className="text-white/60">Ganador Correcto</span>
+                <span className={points.winner > 0 ? "text-green-400 font-bold" : "text-white/40"}>{points.winner} pts</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/40">Diferencia de goles</span>
-                <span className={points.difference > 0 ? "text-green-400 font-bold" : "text-white/20"}>{points.difference} pts</span>
+                <span className="text-white/60">Diferencia de goles</span>
+                <span className={points.difference > 0 ? "text-green-400 font-bold" : "text-white/40"}>{points.difference} pts</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/40">Racha</span>
-                <span className={points.streak > 1 ? "text-red-atlantida font-bold" : "text-white/20"}>x{points.streak}</span>
+                <span className="text-white/60">Racha</span>
+                <span className={points.streak > 1 ? "text-red-atlantida font-bold" : "text-white/40"}>x{points.streak}</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/40">Fase</span>
-                <span className={points.phase > 1 ? "text-red-atlantida font-bold" : "text-white/20"}>x{points.phase}</span>
+                <span className="text-white/60">Fase</span>
+                <span className={points.phase > 1 ? "text-red-atlantida font-bold" : "text-white/40"}>x{points.phase}</span>
               </div>
               <div className="flex justify-between text-xs pt-1.5 mt-1.5 border-t border-white/10">
                 <span className="text-white font-bold">Total</span>
-                <span className={`font-black ${points.total > 0 ? "text-red-atlantida" : "text-white/30"}`}>{points.total} pts</span>
+                <span className={`font-black ${points.total > 0 ? "text-red-atlantida" : "text-white/50"}`}>{points.total} pts</span>
               </div>
             </div>
           )}
@@ -771,7 +771,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
             <div className="flex items-center gap-3 mt-1">
               <button
                 onClick={() => setHomeScore(Math.max(homeScore - 1, 0))}
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
               >
                 -
               </button>
@@ -780,7 +780,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
               </span>
               <button
                 onClick={() => setHomeScore(Math.min(homeScore + 1, 20))}
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
               >
                 +
               </button>
@@ -796,7 +796,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
             <div className="flex items-center gap-3 mt-1">
               <button
                 onClick={() => setAwayScore(Math.max(awayScore - 1, 0))}
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
               >
                 -
               </button>
@@ -805,7 +805,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
               </span>
               <button
                 onClick={() => setAwayScore(Math.min(awayScore + 1, 20))}
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors cursor-pointer text-lg font-bold"
               >
                 +
               </button>
@@ -821,7 +821,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
         <div className="flex gap-3 mb-2">
           <button
             onClick={onClose}
-            className="flex-1 py-3.5 rounded-full font-black text-sm tracking-wider text-white/50 bg-white/10 transition-colors hover:bg-white/15 cursor-pointer"
+            className="flex-1 py-3.5 rounded-full font-black text-sm tracking-wider text-white/70 bg-white/10 transition-colors hover:bg-white/15 cursor-pointer"
           >
             CANCELAR
           </button>
@@ -839,7 +839,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
           <div className="mt-2">
             {confirmDelete ? (
               <div className="flex gap-2">
-                <button onClick={() => setConfirmDelete(false)} className="flex-1 py-2.5 rounded-full text-[11px] font-bold text-white/30 bg-white/5 cursor-pointer">
+                <button onClick={() => setConfirmDelete(false)} className="flex-1 py-2.5 rounded-full text-[11px] font-bold text-white/50 bg-white/5 cursor-pointer">
                   NO, MANTENER
                 </button>
                 <button onClick={handleDelete} disabled={deleting} className="flex-1 py-2.5 rounded-full text-[11px] font-bold text-red-atlantida bg-red-atlantida/10 disabled:opacity-50 cursor-pointer">
