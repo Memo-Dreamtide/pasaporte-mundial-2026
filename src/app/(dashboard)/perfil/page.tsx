@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import SignOutButton from "./SignOutButton"
 
 export default async function PerfilPage() {
   const supabase = await createClient()
@@ -95,15 +96,7 @@ export default async function PerfilPage() {
           ))}
         </div>
 
-        <form action="/api/auth/signout" method="post">
-          <button
-            type="submit"
-            className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wider transition-all duration-300 hover:scale-[1.01] border"
-            style={{ backgroundColor: "rgba(241,10,60,0.08)", borderColor: "rgba(241,10,60,0.2)", color: "#f10a3c" }}
-          >
-            CERRAR SESIÓN
-          </button>
-        </form>
+        <SignOutButton />
       </div>
     </div>
   )
