@@ -299,9 +299,9 @@ export default function DashboardClient({
                 <Image
                   src={brands[brandIndex].logo}
                   alt={brands[brandIndex].name}
-                  width={240}
-                  height={80}
-                  className="object-contain max-h-[60px] w-auto"
+                  width={400}
+                  height={120}
+                  className="object-contain max-h-[80px] lg:max-h-[100px] w-auto"
                   unoptimized
                 />
               </div>
