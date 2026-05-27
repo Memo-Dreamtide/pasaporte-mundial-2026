@@ -8,7 +8,10 @@ import Image from "next/image"
 
 export default function RegistroPage() {
   const [fullName, setFullName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [docType, setDocType] = useState<"dui" | "residencia">("dui")
   const [dui, setDui] = useState("")
+  const [residencia, setResidencia] = useState("")
   const [birthDate, setBirthDate] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -25,6 +28,16 @@ export default function RegistroPage() {
       setDui(`${digits.slice(0, 8)}-${digits.slice(8)}`)
     } else {
       setDui(digits)
+    }
+  }
+
+  // Format phone as 0000-0000
+  const handlePhoneChange = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8)
+    if (digits.length > 4) {
+      setPhone(`${digits.slice(0, 4)}-${digits.slice(4)}`)
+    } else {
+      setPhone(digits)
     }
   }
 
@@ -46,38 +59,76 @@ export default function RegistroPage() {
     return /^\d{8}-\d$/.test(value)
   }
 
+  // Validate phone format (4 digits + dash + 4 digits)
+  const isValidPhone = (value: string): boolean => {
+    return /^\d{4}-\d{4}$/.test(value)
+  }
+
+  // Get the document number based on type
+  const getDocNumber = () => docType === "dui" ? dui : residencia
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
-    if (!isValidDui(dui)) {
-      setError("Ingresa un DUI valido (formato: 00000000-0)")
+    // Validate phone
+    if (!isValidPhone(phone)) {
+      setError("Ingresa un número de teléfono válido (formato: 0000-0000)")
       setLoading(false)
       return
+    }
+
+    // Validate document
+    if (docType === "dui") {
+      if (!isValidDui(dui)) {
+        setError("Ingresa un DUI válido (formato: 00000000-0)")
+        setLoading(false)
+        return
+      }
+    } else {
+      if (!residencia.trim() || residencia.trim().length < 5) {
+        setError("Ingresa un número de carné de residencia válido")
+        setLoading(false)
+        return
+      }
     }
 
     if (!isOver18(birthDate)) {
-      setError("Debes ser mayor de 18 anos para participar")
+      setError("Debes ser mayor de 18 años para participar")
       setLoading(false)
       return
     }
 
-    // Check if DUI is already registered
-    const { data: existingDui } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("dui", dui)
-      .single()
+    // Check if document is already registered
+    if (docType === "dui") {
+      const { data: existingDui } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("dui", dui)
+        .single()
 
-    if (existingDui) {
-      setError("Este DUI ya esta registrado en otra cuenta")
-      setLoading(false)
-      return
+      if (existingDui) {
+        setError("Este DUI ya está registrado en otra cuenta")
+        setLoading(false)
+        return
+      }
+    } else {
+      const { data: existingRes } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("residencia", residencia.trim())
+        .single()
+
+      if (existingRes) {
+        setError("Este carné de residencia ya está registrado en otra cuenta")
+        setLoading(false)
+        return
+      }
     }
 
     if (password.length < 6) {
-      setError("La contrasena debe tener al menos 6 caracteres")
+      setError("La contraseña debe tener al menos 6 caracteres")
       setLoading(false)
       return
     }
@@ -88,7 +139,10 @@ export default function RegistroPage() {
       options: {
         data: {
           full_name: fullName,
-          dui: dui,
+          phone: phone,
+          doc_type: docType,
+          dui: docType === "dui" ? dui : null,
+          residencia: docType === "residencia" ? residencia.trim() : null,
           birth_date: birthDate,
         },
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
@@ -142,7 +196,7 @@ export default function RegistroPage() {
             </div>
             <h2 className="text-2xl font-black text-white mb-3">REVISA TU EMAIL</h2>
             <p className="text-white/50 text-sm mb-2">
-              Te enviamos un enlace de confirmacion a
+              Te enviamos un enlace de confirmación a
             </p>
             <p className="font-bold text-sm mb-6 text-red-atlantida">{email}</p>
             <p className="text-white/30 text-xs">Haz clic en el enlace para activar tu cuenta</p>
@@ -228,17 +282,76 @@ export default function RegistroPage() {
             </div>
             <div>
               <input
-                type="text"
+                type="tel"
                 inputMode="numeric"
-                placeholder="DUI (00000000-0)"
-                value={dui}
-                onChange={(e) => handleDuiChange(e.target.value)}
+                placeholder="Teléfono (0000-0000)"
+                value={phone}
+                onChange={(e) => handlePhoneChange(e.target.value)}
                 required
-                maxLength={10}
+                maxLength={9}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
                 style={{ caretColor: "#D9272E" }}
               />
             </div>
+
+            {/* Document Type Toggle */}
+            <div>
+              <label className="block text-white/40 text-xs mb-2 ml-1">Tipo de documento</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setDocType("dui"); setResidencia("") }}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                    docType === "dui"
+                      ? "bg-red-atlantida text-white"
+                      : "bg-white/5 text-white/40 border border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  DUI
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setDocType("residencia"); setDui("") }}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                    docType === "residencia"
+                      ? "bg-red-atlantida text-white"
+                      : "bg-white/5 text-white/40 border border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  Carné de residencia
+                </button>
+              </div>
+            </div>
+
+            {/* Document Input */}
+            {docType === "dui" ? (
+              <div>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="DUI (00000000-0)"
+                  value={dui}
+                  onChange={(e) => handleDuiChange(e.target.value)}
+                  required
+                  maxLength={10}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                  style={{ caretColor: "#D9272E" }}
+                />
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  placeholder="Número de carné de residencia"
+                  value={residencia}
+                  onChange={(e) => setResidencia(e.target.value)}
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                  style={{ caretColor: "#D9272E" }}
+                />
+              </div>
+            )}
+
             <div>
               <label className="block text-white/40 text-xs mb-1.5 ml-1">Fecha de nacimiento</label>
               <input
@@ -265,7 +378,7 @@ export default function RegistroPage() {
             <div>
               <input
                 type="password"
-                placeholder="Contrasena (minimo 6 caracteres)"
+                placeholder="Contraseña (mínimo 6 caracteres)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -290,9 +403,9 @@ export default function RegistroPage() {
 
         {/* Login link */}
         <p className="text-center text-white/30 text-sm mt-6">
-          Ya tienes cuenta?{" "}
+          ¿Ya tienes cuenta?{" "}
           <Link href="/login" className="font-bold hover:opacity-80 transition-opacity text-red-atlantida">
-            Inicia sesion
+            Inicia sesión
           </Link>
         </p>
 

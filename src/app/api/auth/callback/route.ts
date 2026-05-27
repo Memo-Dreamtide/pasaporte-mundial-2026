@@ -33,12 +33,12 @@ export async function GET(request: Request) {
       if (user) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("dui")
+          .select("dui, residencia")
           .eq("id", user.id)
           .single()
 
-        // If no DUI, redirect to complete profile
-        if (!profile?.dui) {
+        // If no document (DUI or residencia), redirect to complete profile
+        if (!profile?.dui && !profile?.residencia) {
           return NextResponse.redirect(`${origin}/completar-perfil`)
         }
       }

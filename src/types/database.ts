@@ -40,6 +40,10 @@ export type Profile = {
   id: string
   email: string
   full_name: string
+  phone: string | null
+  doc_type: 'dui' | 'residencia'
+  dui: string | null
+  residencia: string | null
   avatar_url: string | null
   department: string | null
   total_points: number

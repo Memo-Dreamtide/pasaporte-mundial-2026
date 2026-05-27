@@ -74,7 +74,7 @@ export default function LoginPage() {
               height={48}
             />
           </Link>
-          <h1 className="text-2xl font-black text-white tracking-tight">INICIAR SESION</h1>
+          <h1 className="text-2xl font-black text-white tracking-tight">INICIAR SESIÓN</h1>
           <p className="text-white/40 text-sm mt-1">Pasaporte 2026</p>
         </div>
 
@@ -129,8 +129,8 @@ export default function LoginPage() {
 
             {/* Forgot password */}
             <div className="text-right">
-              <Link href="#" className="text-white/40 text-xs hover:text-white/60 transition-colors">
-                Olvidaste tu contraseña?
+              <Link href="/recuperar-contrasena" className="text-white/40 text-xs hover:text-white/60 transition-colors">
+                ¿Olvidaste tu contraseña?
               </Link>
             </div>
 
@@ -143,16 +143,16 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full py-3.5 rounded-xl font-bold text-lg tracking-wider transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 bg-red-atlantida text-white cursor-pointer hover:shadow-[0_0_30px_rgba(217,39,46,0.4)]"
             >
-              {loading ? "Ingresando..." : "INICIAR SESION"}
+              {loading ? "Ingresando..." : "INICIAR SESIÓN"}
             </button>
           </form>
         </div>
 
         {/* Register link */}
         <p className="text-center text-white/30 text-sm mt-6">
-          No tienes cuenta?{" "}
+          ¿No tienes cuenta?{" "}
           <Link href="/registro" className="font-bold hover:opacity-80 transition-opacity text-red-atlantida">
-            Registrate gratis
+            Regístrate gratis
           </Link>
         </p>
 

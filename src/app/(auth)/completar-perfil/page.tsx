@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 
 export default function CompletarPerfilPage() {
+  const [phone, setPhone] = useState("")
+  const [docType, setDocType] = useState<"dui" | "residencia">("dui")
   const [dui, setDui] = useState("")
+  const [residencia, setResidencia] = useState("")
   const [birthDate, setBirthDate] = useState("")
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
@@ -23,14 +26,14 @@ export default function CompletarPerfilPage() {
         return
       }
 
-      // If user already has DUI, redirect to dashboard
+      // If user already has a document, redirect to dashboard
       const { data: profile } = await supabase
         .from("profiles")
-        .select("dui, full_name")
+        .select("dui, residencia, doc_type, full_name")
         .eq("id", user.id)
         .single()
 
-      if (profile?.dui) {
+      if (profile?.dui || profile?.residencia) {
         router.push("/dashboard")
         return
       }
@@ -50,6 +53,15 @@ export default function CompletarPerfilPage() {
     }
   }
 
+  const handlePhoneChange = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8)
+    if (digits.length > 4) {
+      setPhone(`${digits.slice(0, 4)}-${digits.slice(4)}`)
+    } else {
+      setPhone(digits)
+    }
+  }
+
   const isOver18 = (dateStr: string): boolean => {
     if (!dateStr) return false
     const birth = new Date(dateStr)
@@ -66,19 +78,39 @@ export default function CompletarPerfilPage() {
     return /^\d{8}-\d$/.test(value)
   }
 
+  const isValidPhone = (value: string): boolean => {
+    return /^\d{4}-\d{4}$/.test(value)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
-    if (!isValidDui(dui)) {
-      setError("Ingresa un DUI valido (formato: 00000000-0)")
+    // Validate phone
+    if (!isValidPhone(phone)) {
+      setError("Ingresa un número de teléfono válido (formato: 0000-0000)")
       setLoading(false)
       return
     }
 
+    // Validate document
+    if (docType === "dui") {
+      if (!isValidDui(dui)) {
+        setError("Ingresa un DUI válido (formato: 00000000-0)")
+        setLoading(false)
+        return
+      }
+    } else {
+      if (!residencia.trim() || residencia.trim().length < 5) {
+        setError("Ingresa un número de carné de residencia válido")
+        setLoading(false)
+        return
+      }
+    }
+
     if (!isOver18(birthDate)) {
-      setError("Debes ser mayor de 18 anos para participar")
+      setError("Debes ser mayor de 18 años para participar")
       setLoading(false)
       return
     }
@@ -89,26 +121,50 @@ export default function CompletarPerfilPage() {
       return
     }
 
-    // Check if DUI is already registered
-    const { data: existingProfile } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("dui", dui)
-      .neq("id", user.id)
-      .single()
+    // Check if document is already registered
+    if (docType === "dui") {
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("dui", dui)
+        .neq("id", user.id)
+        .single()
 
-    if (existingProfile) {
-      setError("Este DUI ya esta registrado en otra cuenta")
-      setLoading(false)
-      return
+      if (existingProfile) {
+        setError("Este DUI ya está registrado en otra cuenta")
+        setLoading(false)
+        return
+      }
+    } else {
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("residencia", residencia.trim())
+        .neq("id", user.id)
+        .single()
+
+      if (existingProfile) {
+        setError("Este carné de residencia ya está registrado en otra cuenta")
+        setLoading(false)
+        return
+      }
+    }
+
+    const updateData: Record<string, string> = {
+      phone: phone,
+      doc_type: docType,
+      birth_date: birthDate,
+    }
+
+    if (docType === "dui") {
+      updateData.dui = dui
+    } else {
+      updateData.residencia = residencia.trim()
     }
 
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({
-        dui: dui,
-        birth_date: birthDate,
-      })
+      .update(updateData)
       .eq("id", user.id)
 
     if (updateError) {
@@ -155,7 +211,7 @@ export default function CompletarPerfilPage() {
           </div>
           <h1 className="text-2xl font-black text-white tracking-tight">COMPLETA TU PERFIL</h1>
           <p className="text-white/40 text-sm mt-1">
-            {userName ? `Hola ${userName.split(" ")[0]}, solo necesitamos unos datos mas` : "Solo necesitamos unos datos mas"}
+            {userName ? `Hola ${userName.split(" ")[0]}, solo necesitamos unos datos más` : "Solo necesitamos unos datos más"}
           </p>
         </div>
 
@@ -163,17 +219,76 @@ export default function CompletarPerfilPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <input
-                type="text"
+                type="tel"
                 inputMode="numeric"
-                placeholder="DUI (00000000-0)"
-                value={dui}
-                onChange={(e) => handleDuiChange(e.target.value)}
+                placeholder="Teléfono (0000-0000)"
+                value={phone}
+                onChange={(e) => handlePhoneChange(e.target.value)}
                 required
-                maxLength={10}
+                maxLength={9}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
                 style={{ caretColor: "#D9272E" }}
               />
             </div>
+
+            {/* Document Type Toggle */}
+            <div>
+              <label className="block text-white/40 text-xs mb-2 ml-1">Tipo de documento</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setDocType("dui"); setResidencia("") }}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                    docType === "dui"
+                      ? "bg-red-atlantida text-white"
+                      : "bg-white/5 text-white/40 border border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  DUI
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setDocType("residencia"); setDui("") }}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                    docType === "residencia"
+                      ? "bg-red-atlantida text-white"
+                      : "bg-white/5 text-white/40 border border-white/10 hover:border-white/20"
+                  }`}
+                >
+                  Carné de residencia
+                </button>
+              </div>
+            </div>
+
+            {/* Document Input */}
+            {docType === "dui" ? (
+              <div>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="DUI (00000000-0)"
+                  value={dui}
+                  onChange={(e) => handleDuiChange(e.target.value)}
+                  required
+                  maxLength={10}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                  style={{ caretColor: "#D9272E" }}
+                />
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  placeholder="Número de carné de residencia"
+                  value={residencia}
+                  onChange={(e) => setResidencia(e.target.value)}
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-red-atlantida/50 transition-colors text-sm"
+                  style={{ caretColor: "#D9272E" }}
+                />
+              </div>
+            )}
+
             <div>
               <label className="block text-white/40 text-xs mb-1.5 ml-1">Fecha de nacimiento</label>
               <input
@@ -188,7 +303,7 @@ export default function CompletarPerfilPage() {
             </div>
 
             <p className="text-white/30 text-xs text-center py-1">
-              Debes ser mayor de 18 anos y contar con DUI vigente para participar
+              Debes ser mayor de 18 años y contar con documento de identidad vigente para participar
             </p>
 
             {error && (
