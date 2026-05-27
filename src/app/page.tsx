@@ -153,13 +153,13 @@ export default function Home() {
               href="/login"
               className="px-10 py-4 text-white font-bold text-sm tracking-[0.15em] uppercase border border-white/30 rounded-lg hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-sm"
             >
-              INICIAR SESION
+              INICIAR SESIÓN
             </Link>
             <Link
               href="/registro"
               className="group relative px-10 py-4 bg-red-atlantida text-white font-bold text-sm tracking-[0.15em] uppercase rounded-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(217,39,46,0.4)] cursor-pointer"
             >
-              <span className="relative z-10">COMIENZA AQUI</span>
+              <span className="relative z-10">COMIENZA AQUÍ</span>
               <div className="absolute inset-0 bg-gradient-to-r from-red-atlantida to-red-glow opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Link>
           </motion.div>
@@ -195,16 +195,16 @@ export default function Home() {
                   Marcadores<br />en vivo
                 </h2>
                 <p className="text-gray-600 text-base md:text-lg leading-relaxed max-w-md">
-                  Sigue todos los resultados de la cita mundialista en tiempo real. Marcadores, estadisticas y actualizaciones al instante desde tu celular.
+                  Sigue todos los resultados de la cita mundialista en tiempo real. Marcadores, estadísticas y actualizaciones al instante desde tu celular.
                 </p>
               </div>
               <div className="relative">
                 <div className="absolute -inset-4 bg-red-atlantida/5 rounded-3xl blur-2xl" />
                 <div className="relative bg-white border border-gray-200 rounded-2xl p-6 space-y-4 shadow-sm">
                   {[
-                    { home: "Mexico", away: "Canada", scoreH: 2, scoreA: 1, time: "67'", live: true },
-                    { home: "Brasil", away: "Alemania", scoreH: 1, scoreA: 1, time: "45+2'", live: true },
-                    { home: "Argentina", away: "Japon", scoreH: 3, scoreA: 0, time: "FT", live: false },
+                    { home: "México", away: "Sudáfrica", scoreH: 2, scoreA: 1, time: "67'", live: true },
+                    { home: "España", away: "Uruguay", scoreH: 1, scoreA: 1, time: "45+2'", live: true },
+                    { home: "Argentina", away: "Austria", scoreH: 3, scoreA: 0, time: "FT", live: false },
                   ].map((match, i) => (
                     <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-100">
                       <div className="flex-1 text-right">
@@ -241,7 +241,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealOnScroll>
             <div className="text-center mb-16 md:mb-20">
-              <span className="text-white/70 text-xs font-bold tracking-[0.2em] uppercase">Asi de facil</span>
+              <span className="text-white/70 text-xs font-bold tracking-[0.2em] uppercase">Así de fácil</span>
               <h2 className="text-4xl md:text-5xl font-black mt-3 text-white uppercase">
                 Predice, espera<br />y gana
               </h2>
@@ -253,7 +253,7 @@ export default function Home() {
               {
                 num: "01",
                 title: "REGISTRATE",
-                desc: "Crea tu cuenta gratis en segundos con tu correo electronico.",
+                desc: "Crea tu cuenta gratis en segundos con tu correo electrónico.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ),
@@ -261,7 +261,7 @@ export default function Home() {
               {
                 num: "02",
                 title: "PRONOSTICA",
-                desc: "Predice los marcadores de los 104 partidos. Facil, rapido y desde tu celular.",
+                desc: "Predice los marcadores de los 104 partidos. Fácil, rápido y desde tu celular.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ),
@@ -269,7 +269,7 @@ export default function Home() {
               {
                 num: "03",
                 title: "GANA PREMIOS",
-                desc: "Acumula puntos, sube en el ranking y participa en sorteos semanales.",
+                desc: "Acumula puntos, sube en el ranking y gana premios al final de la fase de grupos y eliminatorias.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6"><path d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ),
@@ -295,31 +295,35 @@ export default function Home() {
         <div className="max-w-5xl mx-auto relative z-10">
           <RevealOnScroll>
             <div className="text-center mb-16 md:mb-20">
-              <span className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase">Premios y gran final</span>
+              <span className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase">Premios por ranking</span>
               <h2 className="text-4xl md:text-5xl font-black mt-3 text-gray-900 uppercase">
-                Gana premios<br />increibles
+                Gana premios<br />increíbles
               </h2>
               <p className="text-gray-600 mt-4 max-w-lg mx-auto">
-                Sorteos semanales para todos los participantes activos y un gran premio final para el campeon del ranking.
+                25 ganadores en total. Los mejores del ranking ganan al final de cada fase.
               </p>
             </div>
           </RevealOnScroll>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {[
-              { name: "Televisor 55\"", icon: "TV", gradient: "from-red-atlantida/10 to-transparent" },
-              { name: "Barbacoa Premium", icon: "BBQ", gradient: "from-red-atlantida/10 to-transparent" },
-              { name: "Horno de Conveccion", icon: "HC", gradient: "from-red-atlantida/10 to-transparent" },
-              { name: "Sala Completa", icon: "SC", gradient: "from-red-atlantida/10 to-transparent" },
-            ].map((prize, i) => (
-              <RevealOnScroll key={i} delay={i * 0.1}>
-                <div className="group relative p-6 md:p-8 rounded-2xl bg-gray-50 border border-gray-200 hover:border-red-atlantida/30 transition-all duration-500 text-center cursor-pointer">
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${prize.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                  <div className="relative z-10">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-atlantida/10 flex items-center justify-center">
-                      <span className="text-2xl font-black text-red-atlantida">{prize.icon}</span>
-                    </div>
-                    <p className="text-gray-900 font-bold text-sm">{prize.name}</p>
+              { phase: "Fase de Grupos", prize: "Gift Card $500", desc: "1er lugar del ranking y 9 premios más para el Top 10", img: "/images/premio-gift-card.png" },
+              { phase: "Fase Eliminatoria", prize: "TV 60\" + Gift Card $100", desc: "1er lugar del ranking y 14 premios más para el Top 15", img: "/images/premio-tv.png" },
+            ].map((item, i) => (
+              <RevealOnScroll key={i} delay={i * 0.15}>
+                <div className="group relative rounded-2xl bg-gray-50 border border-gray-200 hover:border-red-atlantida/30 transition-all duration-500 text-center cursor-pointer overflow-hidden">
+                  <div className="relative h-48 md:h-56 overflow-hidden">
+                    <Image
+                      src={item.img}
+                      alt={item.prize}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6 md:p-8">
+                    <p className="text-gray-400 text-xs font-bold tracking-[0.15em] uppercase mb-2">{item.phase}</p>
+                    <p className="text-gray-900 font-black text-lg">{item.prize}</p>
+                    <p className="text-gray-500 text-sm mt-1">{item.desc}</p>
                   </div>
                 </div>
               </RevealOnScroll>
@@ -334,7 +338,7 @@ export default function Home() {
           <RevealOnScroll>
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-black text-white uppercase">
-                Grupo Atlantida
+                Grupo Atlántida
               </h2>
             </div>
           </RevealOnScroll>
@@ -342,10 +346,10 @@ export default function Home() {
           <RevealOnScroll delay={0.2}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { name: "Banco Atlantida", url: "https://www.bancoatlantida.com.sv" },
-                { name: "Seguros Atlantida", url: "https://www.segurosatlantida.com" },
-                { name: "Atlantida Capital", url: "https://atlantidacapital.com.sv/" },
-                { name: "Atlantida Vida", url: "https://www.segurosatlantida.com.sv/seguro-de-vida" },
+                { name: "Banco Atlántida", url: "https://www.bancoatlantida.com.sv" },
+                { name: "Seguros Atlántida", url: "https://www.segurosatlantida.com" },
+                { name: "Atlántida Capital", url: "https://atlantidacapital.com.sv/" },
+                { name: "Atlántida Vida", url: "https://www.segurosatlantida.com.sv/seguro-de-vida" },
               ].map((brand, i) => (
                 <a
                   key={i}
@@ -408,7 +412,7 @@ export default function Home() {
               />
               <div>
                 <p className="text-white font-bold text-sm">Pasaporte 2026</p>
-                <p className="text-white/60 text-xs">Presentado por Banco Atlantida</p>
+                <p className="text-white/60 text-xs">Presentado por Grupo Financiero Atlántida</p>
               </div>
             </div>
 
@@ -423,7 +427,7 @@ export default function Home() {
           <div className="mt-10 pt-6 border-t border-white/20 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-center md:text-left">
               <p className="text-white/60 text-xs">2026 Pasaporte 2026. Todos los derechos reservados.</p>
-              <p className="text-white/40 text-[10px] mt-1">Aplicacion exclusiva para colaboradores del Grupo Atlantida.</p>
+              <p className="text-white/40 text-[10px] mt-1">Aplicación exclusiva para colaboradores del Grupo Atlántida.</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-white/60 text-xs">Desarrollado por</span>
@@ -456,17 +460,16 @@ function StickyHeader() {
         }`}
       >
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-          {/* Left: Logo + Name */}
-          <Link href="/" className="flex items-center gap-3 cursor-pointer">
+          {/* Left: Logo Grupo Financiero Atlántida */}
+          <Link href="/" className="flex items-center cursor-pointer">
             <Image
-              src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png"
-              alt="Banco Atlantida"
-              width={32}
-              height={32}
-              className="brightness-0 invert"
+              src="/images/logo-grupo-atlantida.png"
+              alt="Grupo Financiero Atlantida"
+              width={300}
+              height={60}
+              className="h-16 w-auto"
+              priority
             />
-            <div className="h-6 w-px bg-white/30" />
-            <span className="text-white text-sm font-bold tracking-wide uppercase">Pasaporte 2026</span>
           </Link>
 
           {/* Right: Nav */}
