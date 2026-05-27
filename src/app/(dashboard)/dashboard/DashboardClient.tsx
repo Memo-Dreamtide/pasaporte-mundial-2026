@@ -35,10 +35,14 @@ interface DashboardClientProps {
 }
 
 const brands = [
-  { name: "Banco Atlantida", subtitle: "Banca personal y empresarial" },
-  { name: "Seguros Atlantida", subtitle: "Proteccion y respaldo" },
-  { name: "Atlantida Capital", subtitle: "Inversiones y finanzas" },
-  { name: "Atlantida Vida", subtitle: "Seguros de vida" },
+  { logo: "/images/logos-atlantida/banco-atlantida.png", name: "Banco Atlántida" },
+  { logo: "/images/logos-atlantida/seguros-atlantida.png", name: "Seguros Atlántida" },
+  { logo: "/images/logos-atlantida/atlantida-capital.png", name: "Atlántida Capital, S.A." },
+  { logo: "/images/logos-atlantida/confia.png", name: "CONFIA" },
+  { logo: "/images/logos-atlantida/atlantida-titularizadora.png", name: "Atlántida Titularizadora" },
+  { logo: "/images/logos-atlantida/atlantida-securities.png", name: "Atlántida Securities" },
+  { logo: "/images/logos-atlantida/fundacion-atlantida.png", name: "Fundación Atlántida" },
+  { logo: "/images/logos-atlantida/leasing-atlantida.png", name: "Leasing Atlántida" },
 ]
 
 function formatToSV(dateStr: string) {
@@ -279,29 +283,27 @@ export default function DashboardClient({
           )}
 
           {/* Brand Carousel */}
-          <div className="relative overflow-hidden h-[160px] mt-6 lg:mt-0">
+          <div className="relative overflow-hidden h-[120px] mt-6 lg:mt-0">
             <Image
               src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/bg-demuestra.jpg"
               alt=""
               fill
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-black/50" />
-            <div className="relative z-10 flex items-center justify-center h-full px-6 gap-4">
-              <Image
-                src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png"
-                alt="Atlantida"
-                width={44}
-                height={44}
-              />
-              <div className="overflow-hidden">
-                <div
-                  key={brandIndex}
-                  className="animate-fade-in"
-                >
-                  <p className="text-white text-xl font-black">{brands[brandIndex].name}</p>
-                  <p className="text-white/50 text-xs mt-1">{brands[brandIndex].subtitle}</p>
-                </div>
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative z-10 flex items-center justify-center h-full px-8">
+              <div
+                key={brandIndex}
+                className="animate-fade-in flex items-center justify-center"
+              >
+                <Image
+                  src={brands[brandIndex].logo}
+                  alt={brands[brandIndex].name}
+                  width={240}
+                  height={80}
+                  className="object-contain max-h-[60px] w-auto"
+                  unoptimized
+                />
               </div>
             </div>
           </div>
