@@ -12,6 +12,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Handle expired/invalid auth links — redirect to recuperar-contrasena with error
+  const authError = request.nextUrl.searchParams.get('error_code')
+  if (authError === 'otp_expired' && request.nextUrl.pathname === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/recuperar-contrasena'
+    url.search = '?expired=true'
+    return NextResponse.redirect(url)
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })

@@ -1,7 +1,8 @@
 "use client"
 
 import { createClient } from "@/lib/supabase-browser"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -11,6 +12,13 @@ export default function RecuperarContrasenaPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const supabase = createClient()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('expired') === 'true') {
+      setError("El enlace ha expirado. Solicita uno nuevo.")
+    }
+  }, [searchParams])
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,7 +26,7 @@ export default function RecuperarContrasenaPage() {
     setError("")
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${window.location.origin}/api/auth/callback?next=/auth/reset-password`,
     })
 
     if (error) {
