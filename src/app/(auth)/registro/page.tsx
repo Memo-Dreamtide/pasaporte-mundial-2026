@@ -88,7 +88,7 @@ export default function RegistroPage() {
       }
     } else {
       if (!residencia.trim() || residencia.trim().length < 5) {
-        setError("Ingresa un número de carné de residencia válido")
+        setError("Ingresa un número de residencia válido")
         setLoading(false)
         return
       }
@@ -98,33 +98,6 @@ export default function RegistroPage() {
       setError("Debes ser mayor de 18 años para participar")
       setLoading(false)
       return
-    }
-
-    // Check if document is already registered
-    if (docType === "dui") {
-      const { data: existingDui } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("dui", dui)
-        .single()
-
-      if (existingDui) {
-        setError("Este DUI ya está registrado en otra cuenta")
-        setLoading(false)
-        return
-      }
-    } else {
-      const { data: existingRes } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("residencia", residencia.trim())
-        .single()
-
-      if (existingRes) {
-        setError("Este carné de residencia ya está registrado en otra cuenta")
-        setLoading(false)
-        return
-      }
     }
 
     if (password.length < 6) {
@@ -318,7 +291,7 @@ export default function RegistroPage() {
                       : "bg-white/5 text-white/40 border border-white/10 hover:border-white/20"
                   }`}
                 >
-                  Carné de residencia
+                  Residencia
                 </button>
               </div>
             </div>
@@ -342,7 +315,7 @@ export default function RegistroPage() {
               <div>
                 <input
                   type="text"
-                  placeholder="Número de carné de residencia"
+                  placeholder="Número de residencia"
                   value={residencia}
                   onChange={(e) => setResidencia(e.target.value)}
                   required

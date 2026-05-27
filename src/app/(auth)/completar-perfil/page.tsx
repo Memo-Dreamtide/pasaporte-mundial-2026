@@ -103,7 +103,7 @@ export default function CompletarPerfilPage() {
       }
     } else {
       if (!residencia.trim() || residencia.trim().length < 5) {
-        setError("Ingresa un número de carné de residencia válido")
+        setError("Ingresa un número de residencia válido")
         setLoading(false)
         return
       }
@@ -119,35 +119,6 @@ export default function CompletarPerfilPage() {
     if (!user) {
       router.push("/login")
       return
-    }
-
-    // Check if document is already registered
-    if (docType === "dui") {
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("dui", dui)
-        .neq("id", user.id)
-        .single()
-
-      if (existingProfile) {
-        setError("Este DUI ya está registrado en otra cuenta")
-        setLoading(false)
-        return
-      }
-    } else {
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("residencia", residencia.trim())
-        .neq("id", user.id)
-        .single()
-
-      if (existingProfile) {
-        setError("Este carné de residencia ya está registrado en otra cuenta")
-        setLoading(false)
-        return
-      }
     }
 
     const updateData: Record<string, string> = {
@@ -255,7 +226,7 @@ export default function CompletarPerfilPage() {
                       : "bg-white/5 text-white/40 border border-white/10 hover:border-white/20"
                   }`}
                 >
-                  Carné de residencia
+                  Residencia
                 </button>
               </div>
             </div>
@@ -279,7 +250,7 @@ export default function CompletarPerfilPage() {
               <div>
                 <input
                   type="text"
-                  placeholder="Número de carné de residencia"
+                  placeholder="Número de residencia"
                   value={residencia}
                   onChange={(e) => setResidencia(e.target.value)}
                   required
