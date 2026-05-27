@@ -20,7 +20,7 @@ export type Match = {
   match_date: string
   stadium: string
   city: string
-  status: 'scheduled' | 'live' | 'finished' | 'postponed'
+  status: 'scheduled' | 'live' | 'in_progress' | 'finished' | 'postponed'
   created_at: string
 }
 

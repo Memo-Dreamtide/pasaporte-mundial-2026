@@ -150,7 +150,7 @@ export default function PartidosClient({
     { label: "PREMIOS", href: "/premios" },
   ]
 
-  const isLive = featuredMatches.some(m => m.status === "in_progress")
+  const isLive = featuredMatches.some(m => m.status === "live" || m.status === "in_progress")
 
   return (
     <div
@@ -269,7 +269,7 @@ export default function PartidosClient({
               key={match.id}
               match={match}
               scorers={scorersByMatch[match.id] || []}
-              isLive={match.status === "in_progress"}
+              isLive={match.status === "live" || match.status === "in_progress"}
             />
           ))}
         </div>
@@ -550,7 +550,7 @@ function FeaturedMatchCard({ match, scorers, isLive }: {
 function MatchResultCard({ match }: { match: Match }) {
   const hasTeams = match.home_team && match.away_team
   const isFinished = match.status === "finished"
-  const isLive = match.status === "in_progress"
+  const isLive = match.status === "live" || match.status === "in_progress"
 
   return (
     <div className={`rounded-2xl p-4 border transition-all ${
