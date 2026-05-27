@@ -2,6 +2,16 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Intercept auth code from Supabase (password reset, email confirm, etc.)
+  const code = request.nextUrl.searchParams.get('code')
+  if (code && (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/api/auth/callback'
+    url.searchParams.set('code', code)
+    url.searchParams.set('next', '/auth/reset-password')
+    return NextResponse.redirect(url)
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -33,8 +43,10 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
-                     request.nextUrl.pathname.startsWith('/registro')
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login') ||
+                     request.nextUrl.pathname.startsWith('/registro') ||
+                     request.nextUrl.pathname.startsWith('/recuperar-contrasena')
+  const isResetPage = request.nextUrl.pathname.startsWith('/auth/reset-password')
   const isDashboardPage = request.nextUrl.pathname.startsWith('/dashboard') ||
                           request.nextUrl.pathname.startsWith('/partidos') ||
                           request.nextUrl.pathname.startsWith('/pronosticos') ||
@@ -50,7 +62,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (user && isAuthPage) {
+  if (user && isAuthPage && !isResetPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
