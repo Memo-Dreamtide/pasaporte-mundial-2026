@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase-browser"
 import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -12,13 +11,12 @@ export default function RecuperarContrasenaPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const supabase = createClient()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (searchParams.get('expired') === 'true') {
+    if (typeof window !== 'undefined' && window.location.search.includes('expired=true')) {
       setError("El enlace ha expirado. Solicita uno nuevo.")
     }
-  }, [searchParams])
+  }, [])
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
