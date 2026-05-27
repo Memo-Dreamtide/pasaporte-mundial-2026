@@ -1,11 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useRef } from "react"
+import Image from "next/image"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
 import { motion, useInView } from "motion/react"
+
+const PER_PAGE = 20
 
 type RankProfile = {
   id: string
@@ -25,27 +28,136 @@ interface RankingClientProps {
   predictionsCount: number
   exactScores: number
   currentUserId: string
-  profiles: RankProfile[]
   authProvider: string
 }
 
 export default function RankingClient({
   userName, userEmail, userInitial, rankPosition, totalPoints,
-  predictionsCount, exactScores, currentUserId, profiles, authProvider,
+  predictionsCount, exactScores, currentUserId, authProvider,
 }: RankingClientProps) {
   const [showProfile, setShowProfile] = useState(false)
   const [selectedPlayer, setSelectedPlayer] = useState<RankProfile | null>(null)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [passwordMsg, setPasswordMsg] = useState("")
   const podiumRef = useRef(null)
-  const podiumInView = useInView(podiumRef, { once: true, margin: "-50px" })
+  const podiumInView = useInView(podiumRef, { once: true, margin: "100px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
 
+  // Ranking data state
+  const [top3, setTop3] = useState<RankProfile[]>([])
+  const [pageProfiles, setPageProfiles] = useState<RankProfile[]>([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [myPosition, setMyPosition] = useState<{ position: number; points: number; onPage: boolean } | null>(null)
+
+  const totalPages = Math.max(1, Math.ceil((totalCount - 3) / PER_PAGE))
+
+  // Fetch ranking data
+  const fetchRanking = useCallback(async (page: number) => {
+    setLoading(true)
+
+    // Get top 3
+    const { data: topData } = await supabase
+      .from("profiles")
+      .select("id, full_name, total_points, exact_scores, predictions_count, rank_position")
+      .gt("predictions_count", 0)
+      .order("total_points", { ascending: false })
+      .order("exact_scores", { ascending: false })
+      .limit(3)
+
+    setTop3(topData || [])
+
+    // Get total count
+    const { count } = await supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .gt("predictions_count", 0)
+
+    setTotalCount(count || 0)
+
+    // Get paginated data (from position 4 onwards)
+    const from = (page - 1) * PER_PAGE + 3
+    const to = from + PER_PAGE - 1
+
+    const { data: pageData } = await supabase
+      .from("profiles")
+      .select("id, full_name, total_points, exact_scores, predictions_count, rank_position")
+      .gt("predictions_count", 0)
+      .order("total_points", { ascending: false })
+      .order("exact_scores", { ascending: false })
+      .range(from, to)
+
+    setPageProfiles(pageData || [])
+
+    // Check if current user is in top 3 or current page
+    const isInTop3 = (topData || []).some(p => p.id === currentUserId)
+    const isInPage = (pageData || []).some(p => p.id === currentUserId)
+
+    if (!isInTop3 && !isInPage) {
+      // Find user's position
+      const { data: userRank } = await supabase
+        .from("profiles")
+        .select("total_points, rank_position")
+        .eq("id", currentUserId)
+        .single()
+
+      if (userRank && userRank.rank_position) {
+        setMyPosition({
+          position: userRank.rank_position,
+          points: userRank.total_points || 0,
+          onPage: false,
+        })
+      } else {
+        setMyPosition(null)
+      }
+    } else {
+      setMyPosition(null)
+    }
+
+    setLoading(false)
+  }, [currentUserId, supabase])
+
+  // Initial fetch
+  useEffect(() => {
+    fetchRanking(currentPage)
+  }, [currentPage]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Supabase Realtime subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel("ranking-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "profiles",
+        },
+        () => {
+          // Re-fetch when any profile updates
+          fetchRanking(currentPage)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [currentPage]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const goToMyPage = () => {
+    if (myPosition) {
+      const myPage = Math.ceil((myPosition.position - 3) / PER_PAGE)
+      setCurrentPage(Math.max(1, myPage))
+    }
+  }
+
   const handleResetPassword = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail)
-    setPasswordMsg(error ? "Error al enviar el correo" : "Revisa tu correo para cambiar tu contrasena")
+    setPasswordMsg(error ? "Error al enviar el correo" : "Revisa tu correo para cambiar tu contraseña")
     setTimeout(() => setPasswordMsg(""), 5000)
   }
 
@@ -62,14 +174,22 @@ export default function RankingClient({
     { label: "PREMIOS", href: "/premios" },
   ]
 
-  // Top 3 for podium
-  const top3 = profiles.slice(0, 3)
-  const rest = profiles.slice(3)
-
-  // Podium order: 2nd, 1st, 3rd
-  const podiumOrder = top3.length >= 3
-    ? [top3[1], top3[0], top3[2]]
-    : top3
+  // Pagination range
+  const getPageNumbers = () => {
+    const pages: (number | "...")[] = []
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i)
+    } else {
+      pages.push(1)
+      if (currentPage > 3) pages.push("...")
+      const start = Math.max(2, currentPage - 1)
+      const end = Math.min(totalPages - 1, currentPage + 1)
+      for (let i = start; i <= end; i++) pages.push(i)
+      if (currentPage < totalPages - 2) pages.push("...")
+      pages.push(totalPages)
+    }
+    return pages
+  }
 
   return (
     <div
@@ -82,6 +202,7 @@ export default function RankingClient({
       <div className="absolute inset-0 bg-bg-base/70" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/50 to-bg-base" />
       <div className="relative z-10 px-4 lg:px-8 pt-6 pb-24 max-w-md lg:max-w-6xl mx-auto">
+
       {/* Header */}
       <FadeIn delay={0.1}>
       <div className="flex items-start justify-between mb-6 lg:items-center lg:mb-10">
@@ -125,7 +246,6 @@ export default function RankingClient({
           </div>
         </button>
       </div>
-      </FadeIn>
 
       {/* Mobile Nav */}
       <div className="flex items-center rounded-full border border-border-medium bg-bg-surface p-1 mb-6 lg:hidden">
@@ -148,22 +268,35 @@ export default function RankingClient({
           )
         })}
       </div>
+      </FadeIn>
 
       {/* Title */}
       <FadeIn delay={0.15}>
-      <h2 className="text-2xl lg:text-3xl font-black text-white text-center tracking-wider uppercase mb-8">
+      <div className="flex justify-center mb-4">
+        <Image
+          src="/images/logo-grupo-atlantida.png"
+          alt="Grupo Financiero Atlántida"
+          width={180}
+          height={50}
+          className="h-10 w-auto"
+        />
+      </div>
+      <h2 className="text-2xl lg:text-3xl font-black text-white text-center tracking-wider uppercase mb-2">
         Ranking Actual
       </h2>
+      <p className="text-white/30 text-sm text-center mb-8 lg:mb-10">
+        Actualizado en tiempo real
+      </p>
       </FadeIn>
 
-      {/* Podium — 3rd rises first, then 2nd, then 1st */}
+      {/* Podium — Top 3 always visible */}
       {top3.length >= 3 && (
         <div ref={podiumRef} className="flex items-end justify-center gap-2 mb-10 lg:gap-4 lg:mb-12">
-          {/* 2nd Place — rises second */}
+          {/* 2nd Place */}
           <motion.div
             className="flex-1 max-w-[140px] lg:max-w-[200px] origin-bottom"
             initial={{ scaleY: 0, opacity: 0 }}
-            animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
+            animate={{ scaleY: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.35, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <div onClick={() => setSelectedPlayer(top3[1])} className="bg-white p-4 lg:p-5 text-center min-h-[140px] lg:min-h-[170px] flex flex-col justify-end cursor-pointer hover:opacity-90 transition-opacity" style={{ borderRadius: "0 2rem 0 0" }}>
@@ -175,11 +308,11 @@ export default function RankingClient({
             </div>
           </motion.div>
 
-          {/* 1st Place — rises last (the winner reveal) */}
+          {/* 1st Place */}
           <motion.div
             className="flex-1 max-w-[160px] lg:max-w-[220px] origin-bottom"
             initial={{ scaleY: 0, opacity: 0 }}
-            animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
+            animate={{ scaleY: 1, opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <div onClick={() => setSelectedPlayer(top3[0])} className="bg-red-atlantida p-4 lg:p-5 text-center min-h-[180px] lg:min-h-[220px] flex flex-col justify-end cursor-pointer hover:opacity-90 transition-opacity" style={{ borderRadius: "2rem 0 0 0" }}>
@@ -189,11 +322,11 @@ export default function RankingClient({
             </div>
           </motion.div>
 
-          {/* 3rd Place — rises first */}
+          {/* 3rd Place */}
           <motion.div
             className="flex-1 max-w-[140px] lg:max-w-[200px] origin-bottom"
             initial={{ scaleY: 0, opacity: 0 }}
-            animate={podiumInView ? { scaleY: 1, opacity: 1 } : {}}
+            animate={{ scaleY: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <div onClick={() => setSelectedPlayer(top3[2])} className="bg-[#C8C8C8] p-4 lg:p-5 text-center min-h-[120px] lg:min-h-[150px] flex flex-col justify-end cursor-pointer hover:opacity-90 transition-opacity" style={{ borderRadius: "2rem 0 0 0" }}>
@@ -206,6 +339,13 @@ export default function RankingClient({
           </motion.div>
         </div>
       )}
+
+      {/* Total participants */}
+      <FadeIn delay={0.3}>
+      <p className="text-white/20 text-xs text-center mb-4 tracking-wider">
+        {totalCount} participantes
+      </p>
+      </FadeIn>
 
       {/* Table Header */}
       <FadeIn delay={0.35}>
@@ -222,12 +362,16 @@ export default function RankingClient({
       </div>
 
       {/* Table Rows */}
-      <div className="space-y-0.5">
-        {rest.length === 0 && top3.length === 0 ? (
-          <p className="text-center text-white/30 py-12 text-sm">No hay jugadores en el ranking aun</p>
+      <div className="space-y-0.5 mb-6">
+        {loading ? (
+          <div className="py-12 text-center">
+            <div className="w-6 h-6 border-2 border-red-atlantida/30 border-t-red-atlantida rounded-full animate-spin mx-auto" />
+          </div>
+        ) : pageProfiles.length === 0 && top3.length === 0 ? (
+          <p className="text-center text-white/30 py-12 text-sm">No hay jugadores en el ranking aún</p>
         ) : (
-          rest.map((p, i) => {
-            const position = i + 4
+          pageProfiles.map((p, i) => {
+            const position = (currentPage - 1) * PER_PAGE + i + 4
             const isCurrentUser = p.id === currentUserId
             return (
               <div
@@ -261,7 +405,70 @@ export default function RankingClient({
           })
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-1 mb-8">
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+
+          {getPageNumbers().map((page, i) =>
+            page === "..." ? (
+              <span key={`dots-${i}`} className="w-9 h-9 flex items-center justify-center text-white/20 text-sm">...</span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page as number)}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-all cursor-pointer ${
+                  currentPage === page
+                    ? "bg-red-atlantida text-white"
+                    : "text-white/40 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {page}
+              </button>
+            )
+          )}
+
+          <button
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+          </button>
+        </div>
+      )}
       </FadeIn>
+
+      {/* Floating "Your Position" banner */}
+      {myPosition && !myPosition.onPage && (
+        <div className="fixed bottom-6 left-4 right-4 z-40 max-w-md mx-auto">
+          <button
+            onClick={goToMyPage}
+            className="w-full flex items-center justify-between bg-red-atlantida rounded-2xl px-5 py-4 shadow-lg shadow-red-atlantida/20 cursor-pointer hover:shadow-red-atlantida/40 transition-shadow"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <span className="text-white text-sm font-black">{userInitial}</span>
+              </div>
+              <div className="text-left">
+                <p className="text-white text-xs font-bold">Tu posición</p>
+                <p className="text-white/70 text-[10px]">{myPosition.points} Pts.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-white text-2xl font-black">#{myPosition.position}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+            </div>
+          </button>
+        </div>
+      )}
 
       {/* Player Stats Modal */}
       {selectedPlayer && (
@@ -277,20 +484,17 @@ export default function RankingClient({
               </svg>
             </button>
 
-            {/* Player Initial */}
             <div className="w-20 h-20 rounded-full bg-red-atlantida/20 flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl font-black text-red-atlantida">
                 {selectedPlayer.full_name?.charAt(0)?.toUpperCase() || "?"}
               </span>
             </div>
 
-            {/* Name & Position */}
             <h2 className="text-xl font-black text-white text-center">{selectedPlayer.full_name || "Usuario"}</h2>
             <p className="text-red-atlantida text-sm text-center font-bold mt-1 mb-6">
-              Posicion #{selectedPlayer.rank_position || "-"}
+              Posición #{selectedPlayer.rank_position || "-"}
             </p>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-2 mb-2">
               <div className="bg-bg-surface rounded-xl p-4 text-center">
                 <p className="text-2xl font-black text-red-atlantida">{selectedPlayer.total_points}</p>
@@ -306,7 +510,6 @@ export default function RankingClient({
               </div>
             </div>
 
-            {/* Accuracy */}
             {selectedPlayer.predictions_count > 0 && (
               <div className="bg-bg-surface rounded-xl p-4 text-center mt-2">
                 <p className="text-white/30 text-[10px] font-bold mb-1">PROMEDIO POR PARTIDO</p>
@@ -360,11 +563,11 @@ export default function RankingClient({
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/30 shrink-0">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
-                <p className="text-white/30 text-xs">Tu cuenta esta vinculada con Google. La contrasena se administra desde tu cuenta de Google.</p>
+                <p className="text-white/30 text-xs">Tu cuenta está vinculada con Google. La contraseña se administra desde tu cuenta de Google.</p>
               </div>
             ) : (
               <button onClick={handleResetPassword} className="w-full py-3 rounded-xl font-bold text-xs tracking-wider bg-bg-surface text-white/50 hover:text-white/70 transition-all duration-300 cursor-pointer mb-3">
-                CAMBIAR CONTRASENA
+                CAMBIAR CONTRASEÑA
               </button>
             )}
             {passwordMsg && <p className="text-red-atlantida text-xs text-center mb-3">{passwordMsg}</p>}
@@ -372,7 +575,7 @@ export default function RankingClient({
               onClick={handleLogout}
               className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wider bg-red-atlantida/10 text-red-atlantida border border-red-atlantida/20 hover:bg-red-atlantida/20 transition-all duration-300 cursor-pointer"
             >
-              CERRAR SESION
+              CERRAR SESIÓN
             </button>
           </div>
         </div>
