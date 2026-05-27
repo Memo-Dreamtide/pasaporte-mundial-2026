@@ -474,7 +474,7 @@ function FeaturedMatchCard({ match, scorers, isLive }: {
       </div>
 
       {/* Date */}
-      <p className="text-center text-red-atlantida/60 text-[11px] font-medium mb-4">
+      <p className="text-center text-red-atlantida text-sm font-medium mb-4">
         {formatToSVLong(match.match_date)}
       </p>
 
@@ -540,7 +540,7 @@ function FeaturedMatchCard({ match, scorers, isLive }: {
 
       {/* Stadium */}
       {!isLive && match.status !== "finished" && (
-        <p className="text-center text-white/20 text-[10px] mt-3">{match.stadium}, {match.city}</p>
+        <p className="text-center text-white/40 text-xs mt-3">{match.stadium}, {match.city}</p>
       )}
     </div>
   )
@@ -561,7 +561,7 @@ function MatchResultCard({ match }: { match: Match }) {
           : "bg-bg-elevated border-border-medium opacity-60"
     }`}>
       {/* Date */}
-      <p className="text-center text-white/40 text-[11px] font-medium mb-3">
+      <p className="text-center text-white/60 text-sm font-medium mb-3">
         {formatToSV(match.match_date)}
       </p>
 
@@ -597,7 +597,7 @@ function MatchResultCard({ match }: { match: Match }) {
       )}
 
       {/* Stadium info */}
-      <p className="text-center text-white/15 text-[9px] mt-3">{match.stadium}, {match.city}</p>
+      <p className="text-center text-white/40 text-xs mt-3">{match.stadium}, {match.city}</p>
     </div>
   )
 }
