@@ -13,8 +13,15 @@ export const metadata: Metadata = {
   description: "La plataforma de predicciones del Mundial 2026. Pronostica los 104 partidos, acumula puntos y gana premios. Presentado por Banco Atlantida.",
   keywords: ["mundial", "2026", "predicciones", "el salvador", "banco atlantida"],
   icons: {
-    icon: "https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png",
-    apple: "https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-atlantida-icon.png",
+    icon: "/icon-192.png",
+    apple: "/icon-192.png",
+  },
+  manifest: "/manifest.json",
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": "Pasaporte 2026",
   },
   openGraph: {
     title: "Pasaporte 2026",
