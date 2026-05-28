@@ -97,7 +97,9 @@ async function mapKnockoutFixtures(supabase: ReturnType<typeof createClient>) {
 
   // 5. Match each knockout fixture to a placeholder
   let mapped = 0
+  let failed = 0
   const matchedDetails: Array<Record<string, unknown>> = []
+  const errors: Array<Record<string, unknown>> = []
 
   for (const f of knockoutFixtures) {
     const homeApiId = f.teams?.home?.id
@@ -133,14 +135,17 @@ async function mapKnockoutFixtures(supabase: ReturnType<typeof createClient>) {
       })
       .eq("id", placeholder.id)
 
-    if (!error) {
+    if (error) {
+      failed++
+      console.error(`[knockout-mapping] Failed to map ${f.league.round} fixture ${f.fixture.id}:`, error.message)
+      errors.push({ api_fixture_id: f.fixture.id, round: f.league.round, error: error.message })
+    } else {
       mapped++
       matchedDetails.push({
         stage: placeholder.stage,
         api_fixture_id: f.fixture.id,
         round: f.league.round,
       })
-      // Remove from unmapped so we don't match it twice
       const idx = unmapped.findIndex((m) => m.id === placeholder.id)
       if (idx >= 0) unmapped.splice(idx, 1)
     }
@@ -150,8 +155,10 @@ async function mapKnockoutFixtures(supabase: ReturnType<typeof createClient>) {
     skipped: false,
     total_knockout_available: knockoutFixtures.length,
     newly_mapped: mapped,
+    failed,
     still_unmapped: unmapped.length,
     details: matchedDetails,
+    errors: errors.length > 0 ? errors : undefined,
   }
 }
 
@@ -200,8 +207,10 @@ async function pollOnce(supabase: ReturnType<typeof createClient>) {
 
   const fixtures = data.response || []
   let updated = 0
+  let failed = 0
   let finished = 0
   let live = 0
+  const errors: Array<Record<string, unknown>> = []
 
   // Update each match in Supabase
   for (const f of fixtures) {
@@ -224,7 +233,11 @@ async function pollOnce(supabase: ReturnType<typeof createClient>) {
       })
       .eq("api_football_id", apiId)
 
-    if (!error) {
+    if (error) {
+      failed++
+      console.error(`[score-poll] Failed to update fixture ${apiId} (${newStatus} ${homeScore}-${awayScore}):`, error.message)
+      errors.push({ api_fixture_id: apiId, status: newStatus, score: `${homeScore}-${awayScore}`, error: error.message })
+    } else {
       updated++
       if (newStatus === "live") live++
       if (newStatus === "finished") finished++
@@ -235,8 +248,10 @@ async function pollOnce(supabase: ReturnType<typeof createClient>) {
     skipped: false,
     api_fixtures: fixtures.length,
     matches_updated: updated,
+    matches_failed: failed,
     live,
     finished,
+    errors: errors.length > 0 ? errors : undefined,
     timestamp: new Date().toISOString(),
   }
 }
