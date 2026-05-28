@@ -54,6 +54,65 @@ function RevealOnScroll({ children, className = "", delay = 0 }: { children: Rea
   )
 }
 
+const ATLANTIDA_LOGOS = [
+  { src: "/images/logos-atlantida-red/fundacion-atlantida.png", alt: "Fundacion Atlantida" },
+  { src: "/images/logos-atlantida-red/atlantida-capital.png", alt: "Atlantida Capital" },
+  { src: "/images/logos-atlantida-red/seguros-atlantida.png", alt: "Seguros Atlantida" },
+  { src: "/images/logos-atlantida-red/atlantida-securities.png", alt: "Atlantida Securities" },
+  { src: "/images/logos-atlantida-red/banco-atlantida.png", alt: "Banco Atlantida" },
+  { src: "/images/logos-atlantida-red/confia.png", alt: "Confia" },
+  { src: "/images/logos-atlantida-red/leasing-atlantida.png", alt: "Leasing Atlantida" },
+  { src: "/images/logos-atlantida-red/atlantida-titularizadora.png", alt: "Atlantida Titularizadora" },
+]
+
+function StaggerLogos() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
+
+  return (
+    <div ref={ref} className="relative z-10 max-w-4xl mx-auto">
+      {/* Grupo Financiero Atlántida header — overlapping the white card */}
+      <motion.div
+        className="flex justify-center relative z-20"
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+      >
+        <div className="bg-[#D9272E] rounded-2xl px-8 py-4 md:px-10 md:py-5 translate-y-1/2">
+          <Image src="/images/logos-atlantida-red/grupo-financiero.png" alt="Grupo Financiero Atlantida" width={400} height={120} unoptimized className="h-10 md:h-14 w-auto brightness-0 invert" />
+        </div>
+      </motion.div>
+      {/* White card with logo grid */}
+      <motion.div
+        className="bg-white rounded-3xl px-6 pt-14 pb-8 md:px-12 md:pt-16 md:pb-10"
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
+      >
+        <div className="grid grid-cols-3 gap-x-4 gap-y-5 md:gap-x-10 md:gap-y-6 items-center justify-items-center">
+          {ATLANTIDA_LOGOS.map((logo, i) => (
+            <motion.div
+              key={logo.alt}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.4, delay: 0.4 + i * 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+            >
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                width={300}
+                height={120}
+                unoptimized
+                className="h-16 md:h-24 w-auto object-contain max-w-full"
+              />
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
@@ -307,8 +366,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {[
-              { phase: "Fase de Grupos", prize: "Gift Card $500", desc: "1er lugar del ranking y 9 premios más para el Top 10", img: "/images/premio-gift-card.png" },
-              { phase: "Fase Eliminatoria", prize: "TV 60\" + Gift Card $100", desc: "1er lugar del ranking y 14 premios más para el Top 15", img: "/images/premio-tv.png" },
+              { phase: "Fase de Grupos", prize: "Gift Card $500", desc: "1er lugar del ranking y mas premios para el Top 10", img: "/images/premio-gift-card.png" },
+              { phase: "Fase Eliminatoria", prize: "TV 60\" + Gift Card $100", desc: "1er lugar del ranking y mas premios para el Top 15", img: "/images/premio-tv.png" },
             ].map((item, i) => (
               <RevealOnScroll key={i} delay={i * 0.15}>
                 <div className="group relative rounded-2xl bg-gray-50 border border-gray-200 hover:border-red-atlantida/30 transition-all duration-500 text-center cursor-pointer overflow-hidden">
@@ -333,17 +392,11 @@ export default function Home() {
       </section>
 
       {/* ========== PATROCINADO POR ========== */}
-      <section className="relative">
-        <RevealOnScroll>
-          <Image
-            src="/images/logos-grupo-atlantida.png"
-            alt="Grupo Financiero Atlántida — Banco Atlántida, Seguros Atlántida, Atlántida Capital, Confía, Atlántida Securities, Leasing Atlántida, Fundación Atlántida, Atlántida Titularizadora"
-            width={2400}
-            height={981}
-            unoptimized
-            className="w-full h-auto block"
-          />
-        </RevealOnScroll>
+      <section className="relative py-8 md:py-12 px-4 md:px-6 bg-[#D9272E] overflow-hidden">
+        {/* Background image with parallax + multiply blend */}
+        <ParallaxBg src="/images/bg-sponsors.png" blend="multiply" className="opacity-70" />
+
+        <StaggerLogos />
       </section>
 
       {/* ========== CTA FINAL ========== */}

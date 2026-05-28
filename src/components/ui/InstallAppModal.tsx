@@ -6,7 +6,7 @@ export default function InstallAppModal({ onClose }: { onClose: () => void }) {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+        className="fixed inset-0 z-[70] flex items-center justify-center px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
