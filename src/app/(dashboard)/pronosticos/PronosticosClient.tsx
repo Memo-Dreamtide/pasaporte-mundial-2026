@@ -19,7 +19,7 @@ type Match = {
 }
 type Prediction = {
   id: string; match_id: string; home_score: number; away_score: number
-  scorer_name: string | null; player_name?: string | null; points_earned: number | null
+  points_earned: number | null
 }
 
 interface PronosticosClientProps {
@@ -837,8 +837,6 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
       match_id: match.id,
       home_score: homeScore,
       away_score: awayScore,
-      scorer_name: null,
-      player_name: null,
       updated_at: new Date().toISOString(),
     }
 

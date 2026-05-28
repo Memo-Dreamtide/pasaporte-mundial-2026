@@ -34,12 +34,32 @@ export default async function DashboardPage() {
   const { data: predictions } = await supabase.from("predictions").select("match_id").eq("user_id", user.id)
   const predictedCount = predictions?.length || 0
 
-  const { data: exactMatches } = await supabase
+  // Exact predictions = points_earned multiple of 10 (10, 20, 30, 40 — with streak multiplier)
+  const { data: exactPredictions } = await supabase
     .from("predictions")
-    .select("id")
+    .select("id, points_earned, home_score, away_score, match_id")
     .eq("user_id", user.id)
-    .eq("points_earned", 10)
-  const exactCount = exactMatches?.length || 0
+    .not("points_earned", "is", null)
+  const exactCount = exactPredictions?.filter(p => p.points_earned && p.points_earned >= 10).length || 0
+
+  // Compute current streak: consecutive exact predictions from most recent finished match backwards
+  const { data: userHistory } = await supabase
+    .from("predictions")
+    .select("home_score, away_score, match:matches!inner(home_score, away_score, status, match_date)")
+    .eq("user_id", user.id)
+    .eq("match.status", "finished")
+    .order("match(match_date)", { ascending: false })
+
+  let currentStreak = 0
+  if (userHistory) {
+    for (const p of userHistory) {
+      const m = Array.isArray(p.match) ? p.match[0] : p.match
+      if (!m) break
+      const isExact = p.home_score === m.home_score && p.away_score === m.away_score
+      if (isExact) currentStreak++
+      else break
+    }
+  }
 
   const totalMatches = 104
 
@@ -70,6 +90,7 @@ export default async function DashboardPage() {
       predictedCount={predictedCount}
       faltantes={totalMatches - predictedCount}
       exactCount={exactCount}
+      currentStreak={currentStreak}
       match={matchData}
       authProvider={authProvider}
     />
