@@ -64,7 +64,7 @@ const brands = [
 function formatToSV(dateStr: string) {
   const date = new Date(dateStr)
   const svDate = new Date(date.getTime() - 6 * 60 * 60 * 1000)
-  const days = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"]
+  const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
   const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
   const day = days[svDate.getUTCDay()]
   const num = svDate.getUTCDate()

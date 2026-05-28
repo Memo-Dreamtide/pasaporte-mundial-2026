@@ -55,9 +55,14 @@ export default function ApiTestPage() {
 
   const fetchCached = useCallback(async () => {
     setLoading(true)
+    // Filter to TODAY only + World Cup league (id=1)
+    const today = new Date().toISOString().split('T')[0]
     const { data, error } = await supabase
       .from('api_football_cache')
       .select('*')
+      .eq('league_id', 1)
+      .gte('kickoff', `${today}T00:00:00`)
+      .lte('kickoff', `${today}T23:59:59`)
       .order('kickoff', { ascending: true })
 
     if (!error && data) {
@@ -103,9 +108,9 @@ export default function ApiTestPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-black tracking-tight">API-FOOTBALL TEST</h1>
+          <h1 className="text-3xl font-black tracking-tight">MUNDIAL 2026 — LIVE FEED</h1>
           <p className="text-white/40 text-sm mt-1">
-            Libertadores + Sudamericana — Polling cada 15s en vivo
+            Partidos del día desde API-Football — Polling cada 15s en vivo
           </p>
         </div>
 
@@ -122,9 +127,9 @@ export default function ApiTestPage() {
             <button
               onClick={() => triggerSync('league')}
               disabled={syncing}
-              className="px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-sm transition-all disabled:opacity-50 cursor-pointer"
+              className="px-5 py-3 bg-red-atlantida hover:bg-red-atlantida/90 rounded-xl font-bold text-sm transition-all disabled:opacity-50 cursor-pointer"
             >
-              LIBERTADORES + SUDA
+              SYNC MUNDIAL 2026
             </button>
 
             <div className="flex items-center gap-2">

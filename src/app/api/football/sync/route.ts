@@ -5,9 +5,8 @@ import { NextResponse } from 'next/server'
 const API_FOOTBALL_URL = 'https://v3.football.api-sports.io'
 const API_KEY = process.env.API_FOOTBALL_KEY || '840f4d0ea6679a3a19b3bd4390b46fde'
 
-// Test leagues — will switch to league=1 for World Cup
-// 13 = CONMEBOL Libertadores, 11 = CONMEBOL Sudamericana
-const TEST_LEAGUES = [13, 11]
+// 1 = FIFA World Cup (production)
+const TEST_LEAGUES = [1]
 const TEST_SEASON = 2026
 
 interface ApiFixture {

@@ -112,11 +112,12 @@ async function mapKnockoutFixtures(supabase: ReturnType<typeof createClient>) {
     // Skip if either team is not in our DB (shouldn't happen, 48 teams mapped)
     if (!homeTeamId || !awayTeamId) continue
 
-    // Find our placeholder by match_date (UTC, within 1h tolerance)
+    // Find our placeholder by match_date (UTC, 15 min tolerance — FIFA always
+    // separates knockout matches by 3+ hours due to potential extra time + penalties)
     const theirDate = new Date(f.fixture.date).getTime()
     const placeholder = unmapped.find((m) => {
       const ourDate = new Date(m.match_date as string).getTime()
-      return Math.abs(ourDate - theirDate) < 60 * 60 * 1000
+      return Math.abs(ourDate - theirDate) < 15 * 60 * 1000
     })
 
     if (!placeholder) continue

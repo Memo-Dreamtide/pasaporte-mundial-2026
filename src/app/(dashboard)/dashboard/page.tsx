@@ -34,13 +34,8 @@ export default async function DashboardPage() {
   const { data: predictions } = await supabase.from("predictions").select("match_id").eq("user_id", user.id)
   const predictedCount = predictions?.length || 0
 
-  // Exact predictions = points_earned multiple of 10 (10, 20, 30, 40 — with streak multiplier)
-  const { data: exactPredictions } = await supabase
-    .from("predictions")
-    .select("id, points_earned, home_score, away_score, match_id")
-    .eq("user_id", user.id)
-    .not("points_earned", "is", null)
-  const exactCount = exactPredictions?.filter(p => p.points_earned && p.points_earned >= 10).length || 0
+  // Use profile.exact_scores (updated by SQL trigger) — accurate count by score match, not points threshold
+  const exactCount = profile?.exact_scores || 0
 
   // Compute current streak: consecutive exact predictions from most recent finished match backwards
   const { data: userHistory } = await supabase
