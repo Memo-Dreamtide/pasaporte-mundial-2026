@@ -244,7 +244,7 @@ export default function DashboardClient({
             transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <p className="text-8xl lg:text-9xl font-black text-black/70 leading-none">{rankPosition || "-"}</p>
-            <p className="text-white/90 text-[11px] font-bold tracking-wider mt-3 uppercase">Posicion Actual</p>
+            <p className="text-white/90 text-[11px] font-bold tracking-wider mt-3 uppercase">Posición Actual</p>
           </motion.div>
 
           {/* Predictions - rises up second with delay */}

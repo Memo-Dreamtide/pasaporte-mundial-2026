@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState, useRef } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
@@ -184,10 +185,11 @@ export default function PremiosClient({
 
       {/* Title */}
       <FadeIn delay={0.15}>
+      <Image src="/images/logo-grupo-atlantida.png" alt="Grupo Financiero Atlántida" width={180} height={50} className="h-10 w-auto mx-auto mb-4" />
       <h2 className="text-2xl lg:text-3xl font-black text-white text-center tracking-wider uppercase mb-2">
         Premios
       </h2>
-      <p className="text-white/30 text-sm text-center mb-6 lg:mb-8">
+      <p className="text-white/60 text-sm text-center mb-6 lg:mb-8">
         Los mejores del ranking ganan al final de cada fase
       </p>
       </FadeIn>
@@ -218,7 +220,7 @@ export default function PremiosClient({
 
       {/* Fase subtitle */}
       <FadeIn delay={0.25}>
-      <p className="text-white/20 text-xs text-center mb-6 tracking-wider uppercase">
+      <p className="text-white/60 text-xs text-center mb-6 tracking-wider uppercase">
         {fase === "grupos" ? "11 de junio — 27 de junio 2026" : "28 de junio — 19 de julio 2026"}
       </p>
       </FadeIn>

@@ -286,7 +286,7 @@ export default function RankingClient({
       <h2 className="text-2xl lg:text-3xl font-black text-white text-center tracking-wider uppercase mb-2">
         Ranking Actual
       </h2>
-      <p className="text-white/30 text-sm text-center mb-8 lg:mb-10">
+      <p className="text-white/60 text-sm text-center mb-8 lg:mb-10">
         Actualizado en tiempo real
       </p>
       </FadeIn>
@@ -344,7 +344,7 @@ export default function RankingClient({
 
       {/* Total participants */}
       <FadeIn delay={0.3}>
-      <p className="text-white/20 text-xs text-center mb-4 tracking-wider">
+      <p className="text-white/60 text-xs text-center mb-4 tracking-wider">
         {totalCount} participantes
       </p>
       </FadeIn>

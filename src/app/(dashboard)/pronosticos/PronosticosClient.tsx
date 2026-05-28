@@ -51,10 +51,10 @@ const ELIM_STAGES = ["round_of_32", "round_of_16", "quarter", "semi", "third_pla
 
 const RULES = [
   { title: "Predice el marcador", desc: "Selecciona un partido y predice el marcador final antes de que inicie." },
-  { title: "Bloqueo automatico", desc: "Los pronósticos se bloquean 1 minuto antes del inicio del partido." },
+  { title: "Bloqueo automático", desc: "Los pronósticos se bloquean 1 minuto antes del inicio del partido." },
   { title: "Edita cuando quieras", desc: "Puedes editar o borrar tu pronóstico en cualquier momento antes del bloqueo." },
   { title: "Marcador exacto", desc: "+10 puntos si aciertas el marcador exacto del partido." },
-  { title: "Ganador correcto", desc: "+4 puntos si aciertas quien gana o si es empate, sin importar el marcador." },
+  { title: "Ganador correcto", desc: "+4 puntos si aciertas quién gana o si es empate, sin importar el marcador." },
   { title: "Diferencia de goles", desc: "+3 puntos si aciertas la diferencia de goles entre ambos equipos." },
   { title: "Racha de exactos", desc: "Acierta marcadores exactos consecutivos y multiplica tus puntos: x2, x3, hasta x4." },
   { title: "Multiplicadores por fase", desc: "Grupos x1.0, 32avos x1.25, 8vos x1.5, 4tos x2.0, Semis x2.5, Final x3.0." },
