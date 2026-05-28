@@ -114,7 +114,7 @@ export default function PartidosClient({
 
   const handleResetPassword = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail)
-    setPasswordMsg(error ? "Error al enviar el correo" : "Revisa tu correo para cambiar tu contrasena")
+    setPasswordMsg(error ? "Error al enviar el correo" : "Revisa tu correo para cambiar tu contraseña")
     setTimeout(() => setPasswordMsg(""), 5000)
   }
 
@@ -431,11 +431,11 @@ export default function PartidosClient({
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/30 shrink-0">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
-                <p className="text-white/30 text-xs">Tu cuenta esta vinculada con Google. La contrasena se administra desde tu cuenta de Google.</p>
+                <p className="text-white/30 text-xs">Tu cuenta está vinculada con Google. La contraseña se administra desde tu cuenta de Google.</p>
               </div>
             ) : (
               <button onClick={handleResetPassword} className="w-full py-3 rounded-xl font-bold text-xs tracking-wider bg-bg-surface text-white/50 hover:text-white/70 transition-all duration-300 cursor-pointer mb-3">
-                CAMBIAR CONTRASENA
+                CAMBIAR CONTRASEÑA
               </button>
             )}
             {passwordMsg && <p className="text-red-atlantida text-xs text-center mb-3">{passwordMsg}</p>}
@@ -454,7 +454,7 @@ export default function PartidosClient({
               onClick={handleLogout}
               className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wider bg-red-atlantida/10 text-red-atlantida border border-red-atlantida/20 hover:bg-red-atlantida/20 transition-all duration-300 cursor-pointer"
             >
-              CERRAR SESION
+              CERRAR SESIÓN
             </button>
           </div>
         </div>

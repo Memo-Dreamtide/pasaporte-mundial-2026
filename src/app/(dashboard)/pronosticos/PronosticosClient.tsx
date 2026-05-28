@@ -137,7 +137,7 @@ export default function PronosticosClient({
 
   const handleResetPassword = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail)
-    setPasswordMsg(error ? "Error al enviar el correo" : "Revisa tu correo para cambiar tu contrasena")
+    setPasswordMsg(error ? "Error al enviar el correo" : "Revisa tu correo para cambiar tu contraseña")
     setTimeout(() => setPasswordMsg(""), 5000)
   }
 
@@ -463,7 +463,7 @@ export default function PronosticosClient({
         <TutorialOverlay
           targetSelector="[data-tutorial='match-card']"
           title="Selecciona un partido"
-          description="Toca cualquier partido disponible para ingresar tu pronostico."
+          description="Toca cualquier partido disponible para ingresar tu pronóstico."
           position="bottom"
           onSkip={handleTutorialSkip}
           currentStep={0}
@@ -475,7 +475,7 @@ export default function PronosticosClient({
       {tutorialStep === 2 && selectedMatch && (
         <TutorialOverlay
           targetSelector="[data-tutorial='score-area']"
-          title="Ingresa tu pronostico"
+          title="Ingresa tu pronóstico"
           description="Usa los botones + y - para elegir el marcador que pronosticas para cada equipo."
           position="bottom"
           actionText="SIGUIENTE"
@@ -490,8 +490,8 @@ export default function PronosticosClient({
       {tutorialStep === 3 && selectedMatch && (
         <TutorialOverlay
           targetSelector="[data-tutorial='guardar-btn']"
-          title="Guarda tu pronostico"
-          description="Presiona GUARDAR para registrar tu pronostico."
+          title="Guarda tu pronóstico"
+          description="Presiona GUARDAR para registrar tu pronóstico."
           position="top"
           onSkip={handleTutorialSkip}
           currentStep={2}
@@ -635,7 +635,7 @@ export default function PronosticosClient({
               </div>
             </div>
             {totalMatches - totalPredicted > 0 && (
-              <p className="text-white/50 text-xs text-center mb-5">Te faltan {totalMatches - totalPredicted} pronosticos por hacer</p>
+              <p className="text-white/50 text-xs text-center mb-5">Te faltan {totalMatches - totalPredicted} pronósticos por hacer</p>
             )}
             {authProvider === "google" ? (
               <div className="flex items-center gap-2 bg-bg-surface rounded-xl px-4 py-3 mb-3">

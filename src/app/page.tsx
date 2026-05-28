@@ -366,8 +366,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {[
-              { phase: "Fase de Grupos", prize: "Gift Card $500", desc: "1er lugar del ranking y mas premios para el Top 10", img: "/images/premio-gift-card.png" },
-              { phase: "Fase Eliminatoria", prize: "TV 60\" + Gift Card $100", desc: "1er lugar del ranking y mas premios para el Top 15", img: "/images/premio-tv.png" },
+              { phase: "Fase de Grupos", prize: "Gift Card $500", desc: "1er lugar del ranking y más premios para el Top 10", img: "/images/premio-gift-card.png" },
+              { phase: "Fase Eliminatoria", prize: "TV 60\" + Gift Card $100", desc: "1er lugar del ranking y más premios para el Top 15", img: "/images/premio-tv.png" },
             ].map((item, i) => (
               <RevealOnScroll key={i} delay={i * 0.15}>
                 <div className="group relative rounded-2xl bg-gray-50 border border-gray-200 hover:border-red-atlantida/30 transition-all duration-500 text-center cursor-pointer overflow-hidden">

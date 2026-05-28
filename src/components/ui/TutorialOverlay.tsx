@@ -216,7 +216,7 @@ export function TutorialCelebration({ onClose }: { onClose: () => void }) {
           Sigue pronosticando para subir en el ranking global y ganar premios.
         </p>
         <p className="text-white text-base mb-10 max-w-[380px] mx-auto leading-relaxed">
-          No olvides revisar tu posicion en el ranking y los puntos obtenidos por partido en pronosticos.
+          No olvides revisar tu posición en el ranking y los puntos obtenidos por partido en pronósticos.
         </p>
 
         {/* Grupo Financiero Atlántida logo — already white on transparent */}

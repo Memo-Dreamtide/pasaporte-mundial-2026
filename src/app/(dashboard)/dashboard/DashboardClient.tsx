@@ -14,8 +14,8 @@ import { motion, useInView } from "motion/react"
 const TUTORIAL_STEPS = [
   {
     selector: "[data-tutorial='pronosticos-btn']",
-    title: "Haz tu primer pronostico",
-    description: "Toca aqui para ir a pronosticos y predecir tu primer partido.",
+    title: "Haz tu primer pronóstico",
+    description: "Toca aqui para ir a pronósticos y predecir tu primer partido.",
     position: "top" as const,
   },
 ]
@@ -121,7 +121,7 @@ export default function DashboardClient({
     if (error) {
       setPasswordMsg("Error al enviar el correo")
     } else {
-      setPasswordMsg("Revisa tu correo para cambiar tu contrasena")
+      setPasswordMsg("Revisa tu correo para cambiar tu contraseña")
     }
     setTimeout(() => setPasswordMsg(""), 5000)
   }
@@ -269,7 +269,7 @@ export default function DashboardClient({
                 <span className="text-gray-700 text-xs lg:text-sm font-medium">Acertados</span>
               </div>
             </div>
-            <p className="text-gray-700 text-[11px] font-bold tracking-wider mt-3 uppercase text-center">Pronosticos</p>
+            <p className="text-gray-700 text-[11px] font-bold tracking-wider mt-3 uppercase text-center">Pronósticos</p>
           </motion.div>
         </div>
 
@@ -278,7 +278,7 @@ export default function DashboardClient({
           {/* Learn to play — small red button, centered mobile, right-aligned desktop */}
           <button
             onClick={handleStartTutorial}
-            className="mx-auto lg:mx-0 lg:ml-auto px-4 py-1.5 rounded-full text-[10px] font-black tracking-wider text-white bg-red-atlantida/80 hover:bg-red-atlantida transition-colors cursor-pointer block"
+            className="mx-auto lg:mx-0 lg:ml-auto px-4 py-1.5 mb-3 lg:mb-0 rounded-full text-[10px] font-black tracking-wider text-white bg-red-atlantida/80 hover:bg-red-atlantida transition-colors cursor-pointer block"
           >
             APRENDE A JUGAR
           </button>
@@ -291,7 +291,7 @@ export default function DashboardClient({
                 {match.isLive ? (
                   <span className="text-red-atlantida text-xs font-black tracking-wider uppercase animate-pulse">EN VIVO</span>
                 ) : (
-                  <span className="text-white/30 text-xs font-black tracking-wider uppercase">Proximo</span>
+                  <span className="text-white/30 text-xs font-black tracking-wider uppercase">Próximo</span>
                 )}
               </div>
               <p className="text-center text-red-atlantida/60 text-[11px] font-medium mb-4">
@@ -433,7 +433,7 @@ export default function DashboardClient({
             </div>
 
             {faltantes > 0 && (
-              <p className="text-white/20 text-xs text-center mb-5">Te faltan {faltantes} pronosticos por hacer</p>
+              <p className="text-white/20 text-xs text-center mb-5">Te faltan {faltantes} pronósticos por hacer</p>
             )}
 
             {authProvider === "google" ? (
@@ -441,14 +441,14 @@ export default function DashboardClient({
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/30 shrink-0">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
-                <p className="text-white/30 text-xs">Tu cuenta esta vinculada con Google. La contrasena se administra desde tu cuenta de Google.</p>
+                <p className="text-white/30 text-xs">Tu cuenta está vinculada con Google. La contraseña se administra desde tu cuenta de Google.</p>
               </div>
             ) : (
               <button
                 onClick={handleResetPassword}
                 className="w-full py-3 rounded-xl font-bold text-xs tracking-wider bg-bg-surface text-white/50 hover:text-white/70 transition-all duration-300 cursor-pointer mb-3"
               >
-                CAMBIAR CONTRASENA
+                CAMBIAR CONTRASEÑA
               </button>
             )}
 
@@ -471,7 +471,7 @@ export default function DashboardClient({
               onClick={handleLogout}
               className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wider bg-red-atlantida/10 text-red-atlantida border border-red-atlantida/20 hover:bg-red-atlantida/20 transition-all duration-300 cursor-pointer"
             >
-              CERRAR SESION
+              CERRAR SESIÓN
             </button>
           </div>
         </div>
