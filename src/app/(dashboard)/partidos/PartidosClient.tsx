@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
 import InstallAppModal from "@/components/ui/InstallAppModal"
+import { useRealtimeMatches } from "@/hooks/useRealtimeMatches"
 
 type Team = { id: string; name: string; code: string; flag_emoji: string; group_letter: string }
 type Match = {
@@ -96,8 +97,10 @@ function getJornada(matchNumber: number): string {
 
 export default function PartidosClient({
   userName, userEmail, userInitial, rankPosition, totalPoints,
-  predictionsCount, exactScores, matches, featuredMatches, scorers, authProvider,
+  predictionsCount, exactScores, matches: initialMatches, featuredMatches: initialFeatured, scorers, authProvider,
 }: PartidosClientProps) {
+  const [matches, setMatches] = useState(initialMatches)
+  const [featuredMatches, setFeaturedMatches] = useState(initialFeatured)
   const [showProfile, setShowProfile] = useState(false)
   const [showInstall, setShowInstall] = useState(false)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
@@ -111,6 +114,16 @@ export default function PartidosClient({
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  // Realtime: update matches and featured matches live
+  useRealtimeMatches((updatedMatch) => {
+    const updateFn = (m: Match) =>
+      m.id === updatedMatch.id
+        ? { ...m, home_score: updatedMatch.home_score, away_score: updatedMatch.away_score, status: updatedMatch.status, minute: updatedMatch.minute ?? m.minute, status_detail: updatedMatch.status_detail ?? m.status_detail }
+        : m
+    setMatches((prev) => prev.map(updateFn))
+    setFeaturedMatches((prev) => prev.map(updateFn))
+  })
 
   const handleResetPassword = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail)
@@ -480,12 +493,17 @@ function FeaturedMatchCard({ match, scorers, isLive }: {
     <div className="bg-bg-elevated border border-border-subtle rounded-2xl p-5 lg:p-6">
       {/* Status Header */}
       <div className="flex items-center justify-center gap-2 mb-1">
-        <span className="text-white text-xs font-black tracking-wider uppercase">Partido</span>
         {isLive ? (
-          <span className="text-red-atlantida text-xs font-black tracking-wider uppercase animate-pulse">EN VIVO</span>
+          <span className="text-red-atlantida text-xs font-black tracking-wider uppercase flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-atlantida opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-atlantida" />
+            </span>
+            EN VIVO
+          </span>
         ) : (
           <span className="text-white/30 text-xs font-black tracking-wider uppercase">
-            {match.status === "finished" ? "Finalizado" : "Próximo"}
+            {match.status === "finished" ? "Finalizado" : "Próximo Partido"}
           </span>
         )}
       </div>
@@ -547,10 +565,14 @@ function FeaturedMatchCard({ match, scorers, isLive }: {
       </div>
 
       {/* Current Minute Badge */}
-      {isLive && match.current_minute && (
+      {isLive && (match.minute || match.current_minute) && (
         <div className="flex justify-center mt-4">
-          <span className="bg-red-atlantida/15 border border-red-atlantida/30 text-red-atlantida text-xs font-bold px-4 py-1.5 rounded-full">
-            Minuto {match.current_minute}
+          <span className="bg-red-atlantida/15 border border-red-atlantida/30 text-red-atlantida text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-atlantida opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-atlantida" />
+            </span>
+            {match.status_detail || `Minuto ${match.minute || match.current_minute}`}
           </span>
         </div>
       )}
@@ -577,10 +599,21 @@ function MatchResultCard({ match }: { match: Match }) {
           ? "bg-bg-elevated border-border-subtle"
           : "bg-bg-elevated border-border-medium opacity-60"
     }`}>
-      {/* Date */}
-      <p className="text-center text-white/60 text-sm font-medium mb-3">
-        {formatToSV(match.match_date)}
-      </p>
+      {/* Date + EN VIVO */}
+      <div className="flex items-center justify-center gap-2 mb-3">
+        <p className="text-white/60 text-sm font-medium">
+          {formatToSV(match.match_date)}
+        </p>
+        {isLive && (
+          <span className="text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 bg-red-atlantida/20 text-red-atlantida">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-atlantida opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-atlantida" />
+            </span>
+            {match.minute ? `${match.minute}'` : "VIVO"}
+          </span>
+        )}
+      </div>
 
       {/* Teams & Score */}
       {hasTeams ? (

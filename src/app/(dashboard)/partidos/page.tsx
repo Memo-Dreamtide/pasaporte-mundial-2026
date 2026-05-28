@@ -19,7 +19,7 @@ export default async function PartidosPage() {
   const { data: liveMatches } = await supabase
     .from("matches")
     .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
-    .eq("status", "in_progress")
+    .eq("status", "live")
     .order("match_date", { ascending: true })
 
   // If no live matches, get next scheduled

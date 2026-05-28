@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
 import TutorialOverlay from "@/components/ui/TutorialOverlay"
 import InstallAppModal from "@/components/ui/InstallAppModal"
+import { useRealtimeMatches } from "@/hooks/useRealtimeMatches"
 import { useRef } from "react"
 import { motion, useInView } from "motion/react"
 
@@ -21,6 +22,7 @@ const TUTORIAL_STEPS = [
 ]
 
 interface MatchData {
+  id: string
   homeCode: string
   awayCode: string
   homeFlag: string
@@ -30,6 +32,8 @@ interface MatchData {
   matchDate: string
   isLive: boolean
   status: string
+  minute?: number | null
+  status_detail?: string | null
 }
 
 interface DashboardClientProps {
@@ -89,11 +93,31 @@ export default function DashboardClient({
   const [passwordMsg, setPasswordMsg] = useState("")
   const [tutorialStep, setTutorialStep] = useState<number | null>(null)
   const [showInstall, setShowInstall] = useState(false)
+  const [liveMatch, setLiveMatch] = useState(match)
   const cardsRef = useRef(null)
   const cardsInView = useInView(cardsRef, { once: true, margin: "-50px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  // Realtime: update match scores live without page reload
+  useRealtimeMatches((updatedMatch) => {
+    if (liveMatch && liveMatch.id === updatedMatch.id) {
+      setLiveMatch((prev) =>
+        prev
+          ? {
+              ...prev,
+              homeScore: updatedMatch.home_score ?? prev.homeScore,
+              awayScore: updatedMatch.away_score ?? prev.awayScore,
+              status: updatedMatch.status,
+              isLive: updatedMatch.status === "live",
+              minute: updatedMatch.minute,
+              status_detail: updatedMatch.status_detail,
+            }
+          : prev
+      )
+    }
+  })
 
   // Auto-trigger tutorial for new users (0 predictions, never completed)
   useEffect(() => {
@@ -284,27 +308,34 @@ export default function DashboardClient({
           </button>
 
           {/* Live Results */}
-          {match && (
+          {liveMatch && (
             <div className="bg-bg-elevated p-5 lg:p-6 border border-border-subtle" style={{ borderRadius: "0 0 3rem 3rem" }}>
               <div className="flex items-center justify-center gap-2 mb-1">
-                <span className="text-white text-xs font-black tracking-wider uppercase">Resultados</span>
-                {match.isLive ? (
-                  <span className="text-red-atlantida text-xs font-black tracking-wider uppercase animate-pulse">EN VIVO</span>
+                {liveMatch.isLive ? (
+                  <span className="text-red-atlantida text-xs font-black tracking-wider uppercase flex items-center gap-1.5">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-atlantida opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-atlantida" />
+                    </span>
+                    EN VIVO{liveMatch.minute ? ` - ${liveMatch.minute}'` : ""}
+                  </span>
                 ) : (
-                  <span className="text-white/30 text-xs font-black tracking-wider uppercase">Próximo</span>
+                  <span className="text-white/30 text-xs font-black tracking-wider uppercase">
+                    {liveMatch.status === "finished" ? "Finalizado" : "Próximo Partido"}
+                  </span>
                 )}
               </div>
               <p className="text-center text-red-atlantida/60 text-[11px] font-medium mb-4">
-                {formatToSV(match.matchDate)}
+                {formatToSV(liveMatch.matchDate)}
               </p>
 
               <div className="flex items-center justify-between">
                 <div className="flex-1 text-center">
-                  <p className="text-4xl font-black text-white tracking-wider">{match.homeCode}</p>
+                  <p className="text-4xl font-black text-white tracking-wider">{liveMatch.homeCode}</p>
                   <div className="flex items-center justify-center gap-2 mt-2">
-                    <span className="text-2xl">{match.homeFlag}</span>
+                    <span className="text-2xl">{liveMatch.homeFlag}</span>
                     <span className="text-2xl font-black text-white">
-                      {match.isLive || match.status === "finished" ? String(match.homeScore).padStart(2, "0") : "--"}
+                      {liveMatch.isLive || liveMatch.status === "finished" ? String(liveMatch.homeScore).padStart(2, "0") : "--"}
                     </span>
                   </div>
                 </div>
@@ -312,11 +343,11 @@ export default function DashboardClient({
                 <span className="text-white/20 text-sm font-bold px-4">vs</span>
 
                 <div className="flex-1 text-center">
-                  <p className="text-4xl font-black text-white tracking-wider">{match.awayCode}</p>
+                  <p className="text-4xl font-black text-white tracking-wider">{liveMatch.awayCode}</p>
                   <div className="flex items-center justify-center gap-2 mt-2">
-                    <span className="text-2xl">{match.awayFlag}</span>
+                    <span className="text-2xl">{liveMatch.awayFlag}</span>
                     <span className="text-2xl font-black text-white">
-                      {match.isLive || match.status === "finished" ? String(match.awayScore).padStart(2, "0") : "--"}
+                      {liveMatch.isLive || liveMatch.status === "finished" ? String(liveMatch.awayScore).padStart(2, "0") : "--"}
                     </span>
                   </div>
                 </div>

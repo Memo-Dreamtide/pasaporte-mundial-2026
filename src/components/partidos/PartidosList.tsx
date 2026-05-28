@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import PartidoCard from "./PartidoCard"
+import { useRealtimeMatches } from "@/hooks/useRealtimeMatches"
 
 type Team = {
   id: string
@@ -24,6 +25,8 @@ type Match = {
   stadium: string
   city: string
   status: string
+  minute?: number | null
+  status_detail?: string | null
 }
 
 type FilterType = "todos" | "proximos" | "en_vivo" | "finalizados"
@@ -40,9 +43,28 @@ const STAGE_LABELS: Record<string, string> = {
   final: "Final",
 }
 
-export default function PartidosList({ matches }: { matches: Match[] }) {
+export default function PartidosList({ matches: initialMatches }: { matches: Match[] }) {
+  const [matches, setMatches] = useState<Match[]>(initialMatches)
   const [filter, setFilter] = useState<FilterType>("todos")
   const [groupFilter, setGroupFilter] = useState<string>("todos")
+
+  // Subscribe to realtime match updates
+  useRealtimeMatches((updatedMatch) => {
+    setMatches((prev) =>
+      prev.map((m) =>
+        m.id === updatedMatch.id
+          ? {
+              ...m,
+              home_score: updatedMatch.home_score,
+              away_score: updatedMatch.away_score,
+              status: updatedMatch.status,
+              minute: updatedMatch.minute,
+              status_detail: updatedMatch.status_detail,
+            }
+          : m
+      )
+    )
+  })
 
   const filtered = matches.filter((m) => {
     if (filter === "proximos" && m.status !== "scheduled") return false

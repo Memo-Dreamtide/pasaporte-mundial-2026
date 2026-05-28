@@ -19,6 +19,8 @@ type Match = {
   stadium: string
   city: string
   status: string
+  minute?: number | null
+  status_detail?: string | null
 }
 
 function formatDate(dateStr: string) {
@@ -65,8 +67,12 @@ export default function PartidoCard({ match }: { match: Match }) {
             </span>
           )}
           {isLive && (
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse" style={{ backgroundColor: "rgba(241,10,60,0.2)", color: "#f10a3c" }}>
-              LIVE
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1.5" style={{ backgroundColor: "rgba(241,10,60,0.2)", color: "#f10a3c" }}>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f10a3c] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f10a3c]" />
+              </span>
+              EN VIVO{match.minute ? ` ${match.minute}'` : ""}
             </span>
           )}
           {isFinished && (
@@ -93,10 +99,18 @@ export default function PartidoCard({ match }: { match: Match }) {
 
           <div className="text-center px-4">
             {isFinished || isLive ? (
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-black text-white">{match.home_score}</span>
-                <span className="text-white/20 text-lg">:</span>
-                <span className="text-3xl font-black text-white">{match.away_score}</span>
+              <div className="flex flex-col items-center">
+                <div className="flex items-center gap-2">
+                  <span className={`text-3xl font-black ${isLive ? "text-white" : "text-white/70"}`}>{match.home_score}</span>
+                  <span className="text-white/20 text-lg">:</span>
+                  <span className={`text-3xl font-black ${isLive ? "text-white" : "text-white/70"}`}>{match.away_score}</span>
+                </div>
+                {isLive && match.minute && (
+                  <span className="text-[9px] font-bold text-[#f10a3c] mt-0.5">{match.status_detail || `${match.minute}'`}</span>
+                )}
+                {isFinished && (
+                  <span className="text-[9px] font-bold text-white/20 mt-0.5">FINAL</span>
+                )}
               </div>
             ) : (
               <span className="text-white/10 text-sm font-black">VS</span>

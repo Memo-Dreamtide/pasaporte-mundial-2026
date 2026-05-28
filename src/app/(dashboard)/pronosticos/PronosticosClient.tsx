@@ -9,6 +9,7 @@ import TutorialOverlay, { TutorialCelebration } from "@/components/ui/TutorialOv
 import InstallAppModal from "@/components/ui/InstallAppModal"
 import { motion, useInView } from "motion/react"
 import { calculatePoints, STAGE_MULTIPLIERS } from "@/utils/points"
+import { useRealtimeMatches } from "@/hooks/useRealtimeMatches"
 
 type Team = { id: string; name: string; code: string; flag_emoji: string; group_letter: string }
 type Match = {
@@ -88,8 +89,9 @@ function getJornada(matchNumber: number): string {
 
 export default function PronosticosClient({
   userName, userEmail, userInitial, rankPosition, totalPoints,
-  predictionsCount, exactScores, matches, predictions, totalMatches, authProvider,
+  predictionsCount, exactScores, matches: initialMatches, predictions, totalMatches, authProvider,
 }: PronosticosClientProps) {
+  const [matches, setMatches] = useState(initialMatches)
   const [showProfile, setShowProfile] = useState(false)
   const [showInstall, setShowInstall] = useState(false)
   const [showRules, setShowRules] = useState(false)
@@ -111,6 +113,17 @@ export default function PronosticosClient({
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  // Realtime: update match scores in predictions view
+  useRealtimeMatches((updatedMatch) => {
+    setMatches((prev) =>
+      prev.map((m) =>
+        m.id === updatedMatch.id
+          ? { ...m, home_score: updatedMatch.home_score, away_score: updatedMatch.away_score, status: updatedMatch.status }
+          : m
+      )
+    )
+  })
 
   // Auto-start tutorial (flag cleared inside setTimeout to survive React Strict Mode double-run)
   useEffect(() => {

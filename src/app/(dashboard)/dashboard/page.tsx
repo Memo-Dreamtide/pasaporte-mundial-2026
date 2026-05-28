@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   const { data: liveMatch } = await supabase
     .from("matches")
     .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
-    .eq("status", "in_progress")
+    .eq("status", "live")
     .order("match_date", { ascending: true })
     .limit(1)
     .single()
@@ -44,6 +44,7 @@ export default async function DashboardPage() {
   const totalMatches = 104
 
   const matchData = currentMatch ? {
+    id: currentMatch.id as string,
     homeCode: currentMatch.home_team?.code || "???",
     awayCode: currentMatch.away_team?.code || "???",
     homeFlag: currentMatch.home_team?.flag_emoji || "",
@@ -51,8 +52,10 @@ export default async function DashboardPage() {
     homeScore: currentMatch.home_score ?? 0,
     awayScore: currentMatch.away_score ?? 0,
     matchDate: currentMatch.match_date,
-    isLive: currentMatch.status === "in_progress",
+    isLive: currentMatch.status === "live",
     status: currentMatch.status as string,
+    minute: currentMatch.minute as number | null,
+    status_detail: currentMatch.status_detail as string | null,
   } : null
 
   const authProvider = user.app_metadata?.provider || "email"
