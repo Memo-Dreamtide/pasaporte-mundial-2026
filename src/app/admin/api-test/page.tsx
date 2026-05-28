@@ -55,14 +55,10 @@ export default function ApiTestPage() {
 
   const fetchCached = useCallback(async () => {
     setLoading(true)
-    // Filter to TODAY only + World Cup league (id=1)
-    const today = new Date().toISOString().split('T')[0]
+    // Show all cached fixtures (SYNC LIVE pulls all live games globally)
     const { data, error } = await supabase
       .from('api_football_cache')
       .select('*')
-      .eq('league_id', 1)
-      .gte('kickoff', `${today}T00:00:00`)
-      .lte('kickoff', `${today}T23:59:59`)
       .order('kickoff', { ascending: true })
 
     if (!error && data) {
@@ -123,13 +119,6 @@ export default function ApiTestPage() {
               className="px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-sm transition-all disabled:opacity-50 cursor-pointer"
             >
               {syncing ? "Syncing..." : "SYNC LIVE"}
-            </button>
-            <button
-              onClick={() => triggerSync('league')}
-              disabled={syncing}
-              className="px-5 py-3 bg-red-atlantida hover:bg-red-atlantida/90 rounded-xl font-bold text-sm transition-all disabled:opacity-50 cursor-pointer"
-            >
-              SYNC MUNDIAL 2026
             </button>
 
             <div className="flex items-center gap-2">
@@ -232,7 +221,7 @@ export default function ApiTestPage() {
         {fixtures.length === 0 && !loading && (
           <div className="text-center py-20">
             <p className="text-white/30 text-lg">No hay datos en cache</p>
-            <p className="text-white/20 text-sm mt-2">Presiona SYNC NOW para traer partidos de la Libertadores</p>
+            <p className="text-white/20 text-sm mt-2">Presiona SYNC LIVE para traer partidos en vivo del mundo</p>
           </div>
         )}
       </div>
