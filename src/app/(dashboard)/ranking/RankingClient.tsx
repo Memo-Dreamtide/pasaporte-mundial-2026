@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
+import InstallAppModal from "@/components/ui/InstallAppModal"
 import { motion, useInView } from "motion/react"
 
 const PER_PAGE = 20
@@ -36,6 +37,7 @@ export default function RankingClient({
   predictionsCount, exactScores, currentUserId, authProvider,
 }: RankingClientProps) {
   const [showProfile, setShowProfile] = useState(false)
+  const [showInstall, setShowInstall] = useState(false)
   const [selectedPlayer, setSelectedPlayer] = useState<RankProfile | null>(null)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [passwordMsg, setPasswordMsg] = useState("")
@@ -572,6 +574,17 @@ export default function RankingClient({
             )}
             {passwordMsg && <p className="text-red-atlantida text-xs text-center mb-3">{passwordMsg}</p>}
             <button
+              onClick={() => { setShowProfile(false); setShowInstall(true) }}
+              className="w-full py-3 rounded-xl font-bold text-xs tracking-wider bg-bg-surface text-white/50 hover:text-white/70 transition-all duration-300 cursor-pointer mb-3 flex items-center justify-center gap-2"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="shrink-0">
+                <path d="M12 18v-6M12 12l-3 3m3-3l3 3" />
+                <rect x="4" y="2" width="16" height="20" rx="3" />
+              </svg>
+              INSTALAR EN TU CELULAR
+            </button>
+
+            <button
               onClick={handleLogout}
               className="w-full py-3.5 rounded-xl font-bold text-sm tracking-wider bg-red-atlantida/10 text-red-atlantida border border-red-atlantida/20 hover:bg-red-atlantida/20 transition-all duration-300 cursor-pointer"
             >
@@ -580,6 +593,8 @@ export default function RankingClient({
           </div>
         </div>
       )}
+
+      {showInstall && <InstallAppModal onClose={() => setShowInstall(false)} />}
       </div>
     </div>
   )
