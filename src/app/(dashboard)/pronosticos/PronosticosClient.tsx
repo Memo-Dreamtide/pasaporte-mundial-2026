@@ -746,28 +746,28 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0, isFirstAvaila
           {points && (
             <div className="space-y-1">
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Marcador Exacto</span>
-                <span className={points.exact > 0 ? "text-green-400 font-bold" : "text-white/40"}>{points.exact} pts</span>
+                <span className="text-white/70">Marcador Exacto</span>
+                <span className={points.exact > 0 ? "text-[#4ade4f] font-bold" : "text-white/70"}>{points.exact} pts</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Ganador Correcto</span>
-                <span className={points.winner > 0 ? "text-green-400 font-bold" : "text-white/40"}>{points.winner} pts</span>
+                <span className="text-white/70">Ganador Correcto</span>
+                <span className={points.winner > 0 ? "text-[#4ade4f] font-bold" : "text-white/70"}>{points.winner} pts</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Diferencia de goles</span>
-                <span className={points.difference > 0 ? "text-green-400 font-bold" : "text-white/40"}>{points.difference} pts</span>
+                <span className="text-white/70">Diferencia de goles</span>
+                <span className={points.difference > 0 ? "text-[#4ade4f] font-bold" : "text-white/70"}>{points.difference} pts</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Racha</span>
-                <span className={points.streak > 1 ? "text-red-atlantida font-bold" : "text-white/40"}>x{points.streak}</span>
+                <span className="text-white/70">Racha</span>
+                <span className="text-white/70">x{points.streak}</span>
               </div>
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Fase</span>
-                <span className={points.phase > 1 ? "text-red-atlantida font-bold" : "text-white/40"}>x{points.phase}</span>
+                <span className="text-white/70">Fase</span>
+                <span className="text-white/70">x{points.phase}</span>
               </div>
-              <div className="flex justify-between text-xs pt-1.5 mt-1.5 border-t border-white/10">
-                <span className="text-white font-bold">Total</span>
-                <span className={`font-black ${points.total > 0 ? "text-red-atlantida" : "text-white/50"}`}>{points.total} pts</span>
+              <div className="flex justify-between text-[18px] pt-2 mt-2 border-t border-white/10">
+                <span className="text-white font-extrabold uppercase">Total</span>
+                <span className="text-white font-extrabold uppercase">{points.total} PTS</span>
               </div>
             </div>
           )}

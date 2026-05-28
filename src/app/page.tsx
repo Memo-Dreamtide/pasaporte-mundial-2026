@@ -395,13 +395,9 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-6">
+          <div className="mt-8 flex items-center justify-center">
             <Link href="/bases-del-concurso" className="text-white/80 text-xs font-bold hover:text-white transition-colors underline underline-offset-2">
               Bases del Concurso
-            </Link>
-            <span className="text-white/30">|</span>
-            <Link href="/creditos" className="text-white/80 text-xs font-bold hover:text-white transition-colors underline underline-offset-2">
-              Créditos
             </Link>
           </div>
 
