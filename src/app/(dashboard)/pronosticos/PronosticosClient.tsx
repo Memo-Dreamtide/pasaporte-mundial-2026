@@ -1,11 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
-import { useRef } from "react"
+import TutorialOverlay, { TutorialCelebration } from "@/components/ui/TutorialOverlay"
 import { motion, useInView } from "motion/react"
 import { calculatePoints, STAGE_MULTIPLIERS } from "@/utils/points"
 
@@ -102,11 +102,36 @@ export default function PronosticosClient({
     Object.fromEntries(predictions.map(p => [p.match_id, p]))
   )
 
+  const [tutorialStep, setTutorialStep] = useState<number | null>(null)
+
   const cardsRef = useRef(null)
   const cardsInView = useInView(cardsRef, { once: true, margin: "-50px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  // Auto-start tutorial (flag cleared inside setTimeout to survive React Strict Mode double-run)
+  useEffect(() => {
+    const completed = localStorage.getItem("tutorial_completed")
+    const pending = localStorage.getItem("tutorial_active")
+    if (pending === "pronosticos" || (!completed && predictions.length === 0)) {
+      const timer = setTimeout(() => {
+        localStorage.removeItem("tutorial_active")
+        setTutorialStep(1)
+      }, 800)
+      return () => clearTimeout(timer)
+    }
+  }, [predictions.length])
+
+  const handleTutorialNext = () => {
+    setTutorialStep(prev => (prev !== null ? prev + 1 : null))
+  }
+
+  const handleTutorialSkip = () => {
+    setTutorialStep(null)
+    localStorage.setItem("tutorial_completed", "true")
+    localStorage.removeItem("tutorial_active")
+  }
 
   const handleResetPassword = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail)
@@ -136,6 +161,10 @@ export default function PronosticosClient({
   const handleSaved = (matchId: string, prediction: Prediction) => {
     setPredictedMap(prev => ({ ...prev, [matchId]: prediction }))
     setSelectedMatch(null)
+    // If tutorial is active, show celebration
+    if (tutorialStep === 3) {
+      setTimeout(() => setTutorialStep(4), 300)
+    }
   }
 
   const handleDeleted = (matchId: string) => {
@@ -359,14 +388,18 @@ export default function PronosticosClient({
             {filteredGroups.length === 0 ? (
               <p className="text-center text-white/50 py-12 text-sm lg:col-span-2">No hay partidos con este filtro</p>
             ) : (
-              filteredGroups.map(match => (
+              filteredGroups.map((match, idx) => (
                 <MatchCard
                   key={match.id}
                   match={match}
                   prediction={predictedMap[match.id]}
+                  isFirstAvailable={idx === 0 && tutorialStep === 1}
                   onSelect={() => {
                     if (!isLocked(match.match_date) && match.home_team && match.away_team) {
                       setSelectedMatch(match)
+                      if (tutorialStep === 1) {
+                        setTimeout(() => setTutorialStep(2), 400)
+                      }
                     }
                   }}
                 />
@@ -422,6 +455,52 @@ export default function PronosticosClient({
       )}
 
       </FadeIn>
+
+      {/* Tutorial Step 1: Spotlight first match card */}
+      {tutorialStep === 1 && (
+        <TutorialOverlay
+          targetSelector="[data-tutorial='match-card']"
+          title="Selecciona un partido"
+          description="Toca cualquier partido disponible para ingresar tu pronostico."
+          position="bottom"
+          onSkip={handleTutorialSkip}
+          currentStep={0}
+          totalSteps={3}
+        />
+      )}
+
+      {/* Tutorial Step 2: Spotlight score selectors */}
+      {tutorialStep === 2 && selectedMatch && (
+        <TutorialOverlay
+          targetSelector="[data-tutorial='score-area']"
+          title="Ingresa tu pronostico"
+          description="Usa los botones + y - para elegir el marcador que pronosticas para cada equipo."
+          position="bottom"
+          actionText="SIGUIENTE"
+          onAction={() => setTutorialStep(3)}
+          onSkip={handleTutorialSkip}
+          currentStep={1}
+          totalSteps={3}
+        />
+      )}
+
+      {/* Tutorial Step 3: Spotlight GUARDAR button */}
+      {tutorialStep === 3 && selectedMatch && (
+        <TutorialOverlay
+          targetSelector="[data-tutorial='guardar-btn']"
+          title="Guarda tu pronostico"
+          description="Presiona GUARDAR para registrar tu pronostico."
+          position="top"
+          onSkip={handleTutorialSkip}
+          currentStep={2}
+          totalSteps={3}
+        />
+      )}
+
+      {/* Tutorial Step 4: Celebration */}
+      {tutorialStep === 4 && (
+        <TutorialCelebration onClose={handleTutorialSkip} />
+      )}
 
       {/* Prediction Modal */}
       {selectedMatch && (
@@ -584,8 +663,8 @@ export default function PronosticosClient({
 }
 
 /* ─── Match Card ─── */
-function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
-  match: Match; prediction?: Prediction; onSelect: () => void; streakCount?: number
+function MatchCard({ match, prediction, onSelect, streakCount = 0, isFirstAvailable = false }: {
+  match: Match; prediction?: Prediction; onSelect: () => void; streakCount?: number; isFirstAvailable?: boolean
 }) {
   const locked = isLocked(match.match_date)
   const hasPrediction = !!prediction
@@ -607,6 +686,7 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0 }: {
       onClick={() => {
         if (!locked && hasTeams && !isFinished) onSelect()
       }}
+      {...(isFirstAvailable ? { "data-tutorial": "match-card" } : {})}
       className={`w-full rounded-2xl p-4 transition-all duration-200 border ${
         isFinished && hasPrediction
           ? "bg-bg-elevated border-border-subtle opacity-100"
@@ -761,7 +841,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
         <h2 className="text-xl font-black text-white text-center mb-8">Pronóstico</h2>
 
         {/* Teams & Score Selectors */}
-        <div className="flex items-start justify-center gap-8 mb-8">
+        <div data-tutorial="score-area" className="flex items-start justify-center gap-8 mb-8">
           {/* Home Team */}
           <div className="flex flex-col items-center gap-2">
             <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
@@ -828,6 +908,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
           <button
             onClick={handleSubmit}
             disabled={loading}
+            data-tutorial="guardar-btn"
             className="flex-1 py-3.5 rounded-full font-black text-sm tracking-wider bg-red-atlantida text-white transition-all duration-300 hover:bg-red-700 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "GUARDANDO..." : "GUARDAR"}

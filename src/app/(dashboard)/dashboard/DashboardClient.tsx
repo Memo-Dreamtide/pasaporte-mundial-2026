@@ -6,8 +6,18 @@ import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import FadeIn from "@/components/ui/FadeIn"
+import TutorialOverlay from "@/components/ui/TutorialOverlay"
 import { useRef } from "react"
 import { motion, useInView } from "motion/react"
+
+const TUTORIAL_STEPS = [
+  {
+    selector: "[data-tutorial='pronosticos-btn']",
+    title: "Haz tu primer pronostico",
+    description: "Toca aqui para ir a pronosticos y predecir tu primer partido.",
+    position: "top" as const,
+  },
+]
 
 interface MatchData {
   homeCode: string
@@ -76,11 +86,33 @@ export default function DashboardClient({
   const [brandIndex, setBrandIndex] = useState(0)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [passwordMsg, setPasswordMsg] = useState("")
+  const [tutorialStep, setTutorialStep] = useState<number | null>(null)
   const cardsRef = useRef(null)
   const cardsInView = useInView(cardsRef, { once: true, margin: "-50px" })
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  // Auto-trigger tutorial for new users (0 predictions, never completed)
+  useEffect(() => {
+    const completed = localStorage.getItem("tutorial_completed")
+    if (!completed && predictedCount === 0) {
+      localStorage.setItem("tutorial_active", "pronosticos")
+      const timer = setTimeout(() => setTutorialStep(0), 800)
+      return () => clearTimeout(timer)
+    }
+  }, [predictedCount])
+
+  const handleTutorialSkip = () => {
+    setTutorialStep(null)
+    localStorage.setItem("tutorial_completed", "true")
+    localStorage.removeItem("tutorial_active")
+  }
+
+  const handleStartTutorial = () => {
+    localStorage.setItem("tutorial_active", "pronosticos")
+    setTutorialStep(0)
+  }
 
   const handleResetPassword = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail)
@@ -240,10 +272,18 @@ export default function DashboardClient({
         </div>
 
         {/* Right column on desktop: Match + Carousel stacked */}
-        <div className="lg:col-span-1 lg:flex lg:flex-col lg:gap-6">
+        <div className="lg:col-span-1 lg:flex lg:flex-col lg:gap-4">
+          {/* Learn to play — small red button, centered mobile, right-aligned desktop */}
+          <button
+            onClick={handleStartTutorial}
+            className="mx-auto lg:mx-0 lg:ml-auto px-4 py-1.5 rounded-full text-[10px] font-black tracking-wider text-white bg-red-atlantida/80 hover:bg-red-atlantida transition-colors cursor-pointer block"
+          >
+            APRENDE A JUGAR
+          </button>
+
           {/* Live Results */}
           {match && (
-            <div className="bg-bg-elevated p-5 lg:p-6 border border-border-subtle lg:flex-1" style={{ borderRadius: "0 0 3rem 3rem" }}>
+            <div className="bg-bg-elevated p-5 lg:p-6 border border-border-subtle" style={{ borderRadius: "0 0 3rem 3rem" }}>
               <div className="flex items-center justify-center gap-2 mb-1">
                 <span className="text-white text-xs font-black tracking-wider uppercase">Resultados</span>
                 {match.isLive ? (
@@ -326,12 +366,26 @@ export default function DashboardClient({
       {/* Fixed "+" Button */}
       <Link
         href="/pronosticos"
+        data-tutorial="pronosticos-btn"
         className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-16 h-16 bg-red-atlantida rounded-full flex items-center justify-center shadow-[0_4px_30px_rgba(217,39,46,0.5)] hover:shadow-[0_4px_40px_rgba(217,39,46,0.7)] hover:scale-105 transition-all duration-300 cursor-pointer"
       >
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
           <path d="M12 5v14M5 12h14" />
         </svg>
       </Link>
+
+      {/* Tutorial Spotlight */}
+      {tutorialStep === 0 && (
+        <TutorialOverlay
+          targetSelector={TUTORIAL_STEPS[0].selector}
+          title={TUTORIAL_STEPS[0].title}
+          description={TUTORIAL_STEPS[0].description}
+          position={TUTORIAL_STEPS[0].position}
+          onSkip={handleTutorialSkip}
+          currentStep={0}
+          totalSteps={3}
+        />
+      )}
 
       {/* Profile Modal */}
       {showProfile && (
