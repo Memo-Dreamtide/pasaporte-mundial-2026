@@ -115,7 +115,7 @@ export default function BasesDelConcursoPage() {
         {/* Intro */}
         <div className="rounded-2xl border border-white/5 p-6 md:p-8 mb-6" style={{ backgroundColor: "rgba(255,255,255,0.03)" }}>
           <p className="text-white/60 text-sm leading-relaxed">
-            Este reglamento establece las condiciones de la promoción interna corporativa, y tiene como objetivo premiar a los participantes del Pasaporte Mundial 2026 | Atlántida Vive el Mundial entregados por las empresas participantes del Grupo Financiero Atlántida: Banco Atlántida El Salvador, S.A., AFP Confía, S.A., Atlántida Cápital, S.A. DE C.V., Atlántida Securities, S.A de C.V., Seguros Atlántida, S.A., Leasing Atlántida, Atlántida Titulizadora, Fundación Atlántida.
+            Este reglamento establece las condiciones de la promoción interna corporativa, y tiene como objetivo premiar a los participantes del Pasaporte Mundial 2026 | Atlántida Vive el Mundial entregados por las empresas participantes del Grupo Financiero Atlántida: Banco Atlántida El Salvador, S.A., AFP Confía, S.A., Atlántida Capital, S.A. DE C.V., Atlántida Securities, S.A de C.V., Seguros Atlántida, S.A., Leasing Atlántida, Atlántida Titulizadora, Fundación Atlántida.
           </p>
         </div>
 

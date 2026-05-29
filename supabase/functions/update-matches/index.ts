@@ -294,15 +294,21 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get("Authorization")
   const cronSecret = Deno.env.get("CRON_SECRET")
 
-  if (cronSecret) {
-    const validSecret = secret === cronSecret
-    const validBearer = authHeader === `Bearer ${cronSecret}`
-    if (!validSecret && !validBearer) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      })
-    }
+  // Fail-closed: require CRON_SECRET to be configured AND match. If the env
+  // var is missing or empty, reject all requests rather than letting them through.
+  if (!cronSecret) {
+    return new Response(
+      JSON.stringify({ error: "Server misconfiguration: CRON_SECRET missing" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    )
+  }
+  const validSecret = secret === cronSecret
+  const validBearer = authHeader === `Bearer ${cronSecret}`
+  if (!validSecret && !validBearer) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
