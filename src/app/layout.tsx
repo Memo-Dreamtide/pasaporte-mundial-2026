@@ -9,9 +9,10 @@ const roboto = Roboto({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.pasaporte2026.com"),
   title: "Pasaporte 2026 | Predice. Compite. Gana.",
-  description: "La plataforma de predicciones del Mundial 2026. Pronostica los 104 partidos, acumula puntos y gana premios. Presentado por Banco Atlantida.",
-  keywords: ["mundial", "2026", "predicciones", "el salvador", "banco atlantida"],
+  description: "La plataforma de predicciones del Mundial 2026. Pronostica los 104 partidos, acumula puntos y gana premios. Presentado por Grupo Financiero Atlántida.",
+  keywords: ["mundial", "2026", "predicciones", "el salvador", "banco atlantida", "atlantida", "pasaporte", "futbol"],
   icons: {
     icon: "/icon-192.png",
     apple: "/icon-192.png",
@@ -24,9 +25,27 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-title": "Pasaporte 2026",
   },
   openGraph: {
-    title: "Pasaporte 2026",
-    description: "Predice los partidos del Mundial y gana premios",
+    title: "Pasaporte 2026 | Vive el Mundial con Atlántida",
+    description: "Predice los 104 partidos del Mundial 2026, acumula puntos y gana premios. Presentado por Grupo Financiero Atlántida.",
+    url: "https://www.pasaporte2026.com",
+    siteName: "Pasaporte 2026",
+    locale: "es_SV",
     type: "website",
+    images: [
+      {
+        url: "/images/logo-vive-el-mundial.png",
+        width: 960,
+        height: 960,
+        alt: "Pasaporte 2026 — Vive el Mundial con Grupo Financiero Atlántida",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pasaporte 2026 | Vive el Mundial con Atlántida",
+    description: "Predice los partidos del Mundial 2026 y gana premios.",
+    images: ["/images/logo-vive-el-mundial.png"],
   },
 }
 
