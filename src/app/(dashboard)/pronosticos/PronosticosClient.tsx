@@ -55,10 +55,11 @@ const RULES = [
   { title: "Predice el marcador", desc: "Selecciona un partido y predice el marcador final antes de que inicie." },
   { title: "Bloqueo automático", desc: "Los pronósticos se bloquean 1 minuto antes del inicio del partido." },
   { title: "Edita cuando quieras", desc: "Puedes editar o borrar tu pronóstico en cualquier momento antes del bloqueo." },
-  { title: "Marcador exacto", desc: "+10 puntos si aciertas el marcador exacto del partido." },
+  { title: "Marcador exacto", desc: "+10 puntos si aciertas el marcador exacto al final del tiempo regular (120 min en eliminatorias, sin contar penales)." },
   { title: "Ganador correcto", desc: "+4 puntos si aciertas quién gana o si es empate, sin importar el marcador." },
   { title: "Diferencia de goles", desc: "+3 puntos si aciertas la diferencia de goles entre ambos equipos." },
-  { title: "Racha de exactos", desc: "Acierta marcadores exactos consecutivos y multiplica tus puntos: x2, x3, hasta x4." },
+  { title: "Ganador en penales", desc: "+5 puntos en eliminatorias: si predices empate y el partido va a penales, ganas el bono al acertar el equipo que gana la tanda." },
+  { title: "Racha de exactos", desc: "Acierta marcadores exactos consecutivos en un mismo día y multiplica tus puntos: x2, x3, hasta x4. La racha se reinicia al cambiar de día." },
   { title: "Multiplicadores por fase", desc: "Grupos x1.0, 32avos x1.25, 8vos x1.5, 4tos x2.0, Semis x2.5, Final x3.0." },
 ]
 
@@ -359,6 +360,13 @@ export default function PronosticosClient({
           </motion.button>
         </div>
       </div>
+
+      {/* Lock-deadline notice — sits between top tabs and filter row */}
+      <FadeIn delay={0.28}>
+      <p className="text-center text-white/50 text-[11px] italic mb-4 px-2">
+        Edita tu pronóstico las veces que quieras.<br className="lg:hidden" /> <span className="font-bold text-white/70">Se bloquea 1 minuto antes del partido.</span>
+      </p>
+      </FadeIn>
 
       {/* Groups Tab Content */}
       <FadeIn delay={0.3}>
@@ -956,42 +964,60 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
             <p className="text-center text-white/60 text-[10px] font-black tracking-[0.2em] uppercase mb-3">
               Ganador en penales
             </p>
-            <div className="flex items-center justify-center gap-8 mb-2">
-              {/* Home penalty radio */}
-              <button
-                onClick={() => match.home_team && setPenaltyWinnerId(match.home_team.id)}
-                aria-label={`${match.home_team?.code} gana penales`}
-                className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
-                  penaltyWinnerId === match.home_team?.id
-                    ? "border-red-atlantida bg-red-atlantida"
-                    : "border-white/20 hover:border-white/40"
-                }`}
-              >
-                {penaltyWinnerId === match.home_team?.id && (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                )}
-              </button>
+            {/* Mirror score row structure (gap-8 between teams, gap-3 + w-10 spacers + w-14 center) so radios align with score numbers.
+                Text floats absolute in the middle, vertically aligned with radios. */}
+            <div className="relative flex items-start justify-center gap-8">
+              {/* Home penalty column — mirrors home score row */}
+              <div className="flex items-center gap-3">
+                <div className="w-10" />
+                <div className="w-14 flex justify-center">
+                  <button
+                    onClick={() => match.home_team && setPenaltyWinnerId(match.home_team.id)}
+                    aria-label={`${match.home_team?.code} gana penales`}
+                    className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                      penaltyWinnerId === match.home_team?.id
+                        ? "border-red-atlantida bg-red-atlantida"
+                        : "border-white/20 hover:border-white/40"
+                    }`}
+                  >
+                    {penaltyWinnerId === match.home_team?.id && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <div className="w-10" />
+              </div>
 
-              {/* Away penalty radio */}
-              <button
-                onClick={() => match.away_team && setPenaltyWinnerId(match.away_team.id)}
-                aria-label={`${match.away_team?.code} gana penales`}
-                className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
-                  penaltyWinnerId === match.away_team?.id
-                    ? "border-red-atlantida bg-red-atlantida"
-                    : "border-white/20 hover:border-white/40"
-                }`}
-              >
-                {penaltyWinnerId === match.away_team?.id && (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                )}
-              </button>
+              {/* Away penalty column — mirrors away score row */}
+              <div className="flex items-center gap-3">
+                <div className="w-10" />
+                <div className="w-14 flex justify-center">
+                  <button
+                    onClick={() => match.away_team && setPenaltyWinnerId(match.away_team.id)}
+                    aria-label={`${match.away_team?.code} gana penales`}
+                    className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                      penaltyWinnerId === match.away_team?.id
+                        ? "border-red-atlantida bg-red-atlantida"
+                        : "border-white/20 hover:border-white/40"
+                    }`}
+                  >
+                    {penaltyWinnerId === match.away_team?.id && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <div className="w-10" />
+              </div>
+
+              {/* Helper text — vertically centered between the two radios */}
+              <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white/40 text-[10px] whitespace-nowrap pointer-events-none">
+                Selecciona el ganador
+              </p>
             </div>
-            <p className="text-center text-white/40 text-[10px]">Selecciona el ganador</p>
           </div>
         )}
 
