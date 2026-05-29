@@ -37,12 +37,21 @@ export default async function DashboardPage() {
   // Use profile.exact_scores (updated by SQL trigger) — accurate count by score match, not points threshold
   const exactCount = profile?.exact_scores || 0
 
-  // Compute current streak: consecutive exact predictions from most recent finished match backwards
+  // Compute current streak: consecutive exact predictions TODAY in El Salvador timezone
+  // (UTC-6, no DST). Streak resets every midnight SV — racha es por día.
+  const SV_OFFSET_MS = 6 * 60 * 60 * 1000
+  const svNow = new Date(Date.now() - SV_OFFSET_MS)
+  const svDate = svNow.toISOString().split("T")[0]
+  const svDayStartUTC = `${svDate}T06:00:00.000Z` // 00:00 SV = 06:00 UTC
+  const svDayEndUTC = new Date(new Date(svDayStartUTC).getTime() + 24 * 60 * 60 * 1000).toISOString()
+
   const { data: userHistory } = await supabase
     .from("predictions")
     .select("home_score, away_score, match:matches!inner(home_score, away_score, status, match_date)")
     .eq("user_id", user.id)
     .eq("match.status", "finished")
+    .gte("match.match_date", svDayStartUTC)
+    .lt("match.match_date", svDayEndUTC)
     .order("match(match_date)", { ascending: false })
 
   let currentStreak = 0

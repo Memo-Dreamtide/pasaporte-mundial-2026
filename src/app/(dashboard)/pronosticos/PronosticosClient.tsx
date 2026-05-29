@@ -20,6 +20,7 @@ type Match = {
 type Prediction = {
   id: string; match_id: string; home_score: number; away_score: number
   points_earned: number | null
+  penalty_winner_team_id?: string | null
 }
 
 interface PronosticosClientProps {
@@ -761,6 +762,20 @@ function MatchCard({ match, prediction, onSelect, streakCount = 0, isFirstAvaila
         </div>
       )}
 
+      {/* Penalty winner pick (knockout + tied prediction) */}
+      {hasPrediction && hasTeams && prediction!.penalty_winner_team_id && (
+        <div className="mt-3 pt-2 border-t border-white/5">
+          <p className="text-center text-white/40 text-[10px] tracking-wider uppercase">
+            Penales:{" "}
+            <span className="text-red-atlantida font-bold">
+              {prediction!.penalty_winner_team_id === match.home_team?.id
+                ? match.home_team?.code
+                : match.away_team?.code}
+            </span>
+          </p>
+        </div>
+      )}
+
       {/* Result + Points breakdown when match is finished */}
       {hasRealScore && hasPrediction ? (
         <div className="mt-3 pt-3 border-t border-white/10">
@@ -820,13 +835,27 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
 }) {
   const [homeScore, setHomeScore] = useState(existingPrediction?.home_score ?? 0)
   const [awayScore, setAwayScore] = useState(existingPrediction?.away_score ?? 0)
+  const [penaltyWinnerId, setPenaltyWinnerId] = useState<string | null>(existingPrediction?.penalty_winner_team_id ?? null)
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState("")
   const [confirmDelete, setConfirmDelete] = useState(false)
   const supabase = createClient()
 
+  // Penalty UI shows only in knockout stage WHEN the predicted score is a tie
+  const isKnockout = match.stage !== "group"
+  const isTied = homeScore === awayScore
+  const showPenalty = isKnockout && isTied
+
+  // Reset penalty pick if user changes scores away from a tie
+  useEffect(() => {
+    if (!showPenalty && penaltyWinnerId !== null) setPenaltyWinnerId(null)
+  }, [showPenalty, penaltyWinnerId])
+
+  const needsPenaltyPick = showPenalty && !penaltyWinnerId
+
   const handleSubmit = async () => {
+    if (needsPenaltyPick) { setError("Selecciona el ganador en penales"); return }
     setLoading(true)
     setError("")
     const { data: { user } } = await supabase.auth.getUser()
@@ -837,6 +866,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
       match_id: match.id,
       home_score: homeScore,
       away_score: awayScore,
+      penalty_winner_team_id: showPenalty ? penaltyWinnerId : null,
       updated_at: new Date().toISOString(),
     }
 
@@ -919,6 +949,52 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
           </div>
         </div>
 
+        {/* Penalty Winner (knockout + tied prediction) */}
+        {showPenalty && (
+          <div className="mb-6">
+            <div className="border-t border-white/10 mb-4" />
+            <p className="text-center text-white/60 text-[10px] font-black tracking-[0.2em] uppercase mb-3">
+              Ganador en penales
+            </p>
+            <div className="flex items-center justify-center gap-8 mb-2">
+              {/* Home penalty radio */}
+              <button
+                onClick={() => match.home_team && setPenaltyWinnerId(match.home_team.id)}
+                aria-label={`${match.home_team?.code} gana penales`}
+                className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                  penaltyWinnerId === match.home_team?.id
+                    ? "border-red-atlantida bg-red-atlantida"
+                    : "border-white/20 hover:border-white/40"
+                }`}
+              >
+                {penaltyWinnerId === match.home_team?.id && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                )}
+              </button>
+
+              {/* Away penalty radio */}
+              <button
+                onClick={() => match.away_team && setPenaltyWinnerId(match.away_team.id)}
+                aria-label={`${match.away_team?.code} gana penales`}
+                className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                  penaltyWinnerId === match.away_team?.id
+                    ? "border-red-atlantida bg-red-atlantida"
+                    : "border-white/20 hover:border-white/40"
+                }`}
+              >
+                {penaltyWinnerId === match.away_team?.id && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            <p className="text-center text-white/40 text-[10px]">Selecciona el ganador</p>
+          </div>
+        )}
+
         {error && (
           <p className="text-sm text-center py-2 rounded-lg mb-4 text-red-atlantida bg-red-atlantida/10">{error}</p>
         )}
@@ -933,7 +1009,7 @@ function PredictionModal({ match, existingPrediction, onClose, onSaved, onDelete
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || needsPenaltyPick}
             data-tutorial="guardar-btn"
             className="flex-1 py-3.5 rounded-full font-black text-sm tracking-wider bg-red-atlantida text-white transition-all duration-300 hover:bg-red-700 disabled:opacity-50 cursor-pointer"
           >

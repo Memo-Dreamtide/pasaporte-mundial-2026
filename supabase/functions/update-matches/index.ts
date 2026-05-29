@@ -212,6 +212,16 @@ async function pollOnce(supabase: ReturnType<typeof createClient>) {
   let live = 0
   const errors: Array<Record<string, unknown>> = []
 
+  // Build team api_id → uuid map for penalty winner lookup
+  const { data: teamRows } = await supabase
+    .from("teams")
+    .select("id, api_football_id")
+    .not("api_football_id", "is", null)
+  const teamMap = new Map<number, string>()
+  teamRows?.forEach((t) => {
+    if (t.api_football_id) teamMap.set(Number(t.api_football_id), String(t.id))
+  })
+
   // Update each match in Supabase
   for (const f of fixtures) {
     const apiId = f.fixture.id
@@ -221,16 +231,33 @@ async function pollOnce(supabase: ReturnType<typeof createClient>) {
     const minute = f.fixture.status.elapsed
     const statusDetail = f.fixture.status.short + (minute ? ` ${minute}'` : "")
 
+    // Penalty data — only present when match went to PEN (API-Football status)
+    const penHome = f.score?.penalty?.home as number | null | undefined
+    const penAway = f.score?.penalty?.away as number | null | undefined
+    let penaltyWinnerId: string | null = null
+    if (penHome != null && penAway != null && penHome !== penAway) {
+      const winnerApiId = penHome > penAway ? f.teams?.home?.id : f.teams?.away?.id
+      penaltyWinnerId = winnerApiId ? (teamMap.get(Number(winnerApiId)) ?? null) : null
+    }
+
+    const updatePayload: Record<string, unknown> = {
+      home_score: homeScore,
+      away_score: awayScore,
+      status: newStatus,
+      minute: minute,
+      status_detail: statusDetail,
+      updated_at: new Date().toISOString(),
+    }
+    // Only write penalty fields when we actually have penalty data
+    if (penHome != null && penAway != null) {
+      updatePayload.penalty_home_score = penHome
+      updatePayload.penalty_away_score = penAway
+      updatePayload.penalty_winner_team_id = penaltyWinnerId
+    }
+
     const { error } = await supabase
       .from("matches")
-      .update({
-        home_score: homeScore,
-        away_score: awayScore,
-        status: newStatus,
-        minute: minute,
-        status_detail: statusDetail,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("api_football_id", apiId)
 
     if (error) {

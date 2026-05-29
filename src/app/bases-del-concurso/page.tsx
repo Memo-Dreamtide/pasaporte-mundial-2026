@@ -57,9 +57,10 @@ export default function BasesDelConcursoPage() {
   ]
 
   const puntuacion = [
-    { criterio: "Marcador exacto", puntos: "10 puntos", desc: "por acertar el resultado exacto del partido" },
+    { criterio: "Marcador exacto", puntos: "10 puntos", desc: "por acertar el resultado exacto del partido al final del tiempo regular más tiempo añadido (120 min en eliminatorias)" },
     { criterio: "Ganador correcto", puntos: "4 puntos", desc: "por acertar el equipo ganador o el empate, sin acertar el marcador" },
     { criterio: "Diferencia de goles", puntos: "3 puntos", desc: "por acertar la diferencia de goles entre ambos equipos" },
+    { criterio: "Ganador en penales", puntos: "+5 puntos", desc: "bono en eliminatorias: si el partido termina empate y vas a penales, +5 puntos si acertás el equipo que gana la tanda" },
   ]
 
   const multiplicadores = [
