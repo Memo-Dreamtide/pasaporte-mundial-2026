@@ -273,7 +273,7 @@ export default function BasesDelConcursoPage() {
               </span>
               <div>
                 <h2 className="text-white font-bold text-sm uppercase tracking-wide mb-2">Consultas</h2>
-                <p className="text-white/50 text-sm">Para mayor información contacte a su departamento de mercadeo al No. <span className="text-white font-bold">2283 0800</span></p>
+                <p className="text-white/50 text-sm">Para mayor información contacte a su departamento de recursos humanos.</p>
               </div>
             </div>
           </div>
@@ -285,7 +285,7 @@ export default function BasesDelConcursoPage() {
               </span>
               <div>
                 <h2 className="text-white font-bold text-sm uppercase tracking-wide mb-2">Divulgación</h2>
-                <p className="text-white/50 text-sm">El presente reglamento será publicado en la plataforma de la promoción <span className="text-white font-bold">www.pasaporte2026.com</span>, así como su arte promocional en las oficinas de cada empresa participante.</p>
+                <p className="text-white/50 text-sm">El presente reglamento será publicado en la plataforma de la promoción <span className="text-white font-bold">www.pasaporte2026.com</span>.</p>
               </div>
             </div>
           </div>

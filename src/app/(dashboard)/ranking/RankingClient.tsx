@@ -55,6 +55,12 @@ export default function RankingClient({
   const [loading, setLoading] = useState(true)
   const [myPosition, setMyPosition] = useState<{ position: number; points: number; onPage: boolean } | null>(null)
 
+  // Search state
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchResults, setSearchResults] = useState<RankProfile[]>([])
+  const [searching, setSearching] = useState(false)
+  const isSearching = searchTerm.trim().length > 0
+
   const totalPages = Math.max(1, Math.ceil((totalCount - 3) / PER_PAGE))
 
   // Fetch ranking data
@@ -126,6 +132,28 @@ export default function RankingClient({
   useEffect(() => {
     fetchRanking(currentPage)
   }, [currentPage]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Search effect — debounced server-side query by full_name
+  useEffect(() => {
+    const term = searchTerm.trim()
+    if (term.length === 0) {
+      setSearchResults([])
+      return
+    }
+    setSearching(true)
+    const timer = setTimeout(async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, full_name, total_points, exact_scores, predictions_count, rank_position")
+        .ilike("full_name", `%${term}%`)
+        .gt("predictions_count", 0)
+        .order("rank_position", { ascending: true, nullsFirst: false })
+        .limit(50)
+      setSearchResults(data || [])
+      setSearching(false)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm, supabase])
 
   // Supabase Realtime subscription
   useEffect(() => {
@@ -349,6 +377,33 @@ export default function RankingClient({
       </p>
       </FadeIn>
 
+      {/* Search input */}
+      <FadeIn delay={0.33}>
+      <div className="relative mb-4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none">
+          <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Buscar jugador por nombre..."
+          className="w-full bg-bg-elevated border border-border-medium rounded-full pl-11 pr-10 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-red-atlantida/40 transition-colors"
+        />
+        {searchTerm && (
+          <button
+            onClick={() => setSearchTerm("")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors cursor-pointer"
+            aria-label="Limpiar búsqueda"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+      </FadeIn>
+
       {/* Table Header */}
       <FadeIn delay={0.35}>
       <div className="flex items-center rounded-xl overflow-hidden mb-1">
@@ -365,7 +420,47 @@ export default function RankingClient({
 
       {/* Table Rows */}
       <div className="space-y-0.5 mb-6">
-        {loading ? (
+        {isSearching ? (
+          // Search results mode
+          searching ? (
+            <div className="py-12 text-center">
+              <div className="w-6 h-6 border-2 border-red-atlantida/30 border-t-red-atlantida rounded-full animate-spin mx-auto" />
+            </div>
+          ) : searchResults.length === 0 ? (
+            <p className="text-center text-white/30 py-12 text-sm">No se encontraron jugadores con &quot;{searchTerm}&quot;</p>
+          ) : (
+            searchResults.map((p) => {
+              const isCurrentUser = p.id === currentUserId
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => setSelectedPlayer(p)}
+                  className={`flex items-center rounded-lg transition-colors cursor-pointer hover:border-red-atlantida/20 ${
+                    isCurrentUser
+                      ? "bg-red-atlantida/10 border border-red-atlantida/20"
+                      : "bg-bg-elevated hover:bg-bg-elevated/80"
+                  }`}
+                >
+                  <div className="w-16 lg:w-20 py-3 text-center">
+                    <span className={`text-sm font-black ${isCurrentUser ? "text-red-atlantida" : "text-white/60"}`}>
+                      {p.rank_position || "-"}
+                    </span>
+                  </div>
+                  <div className="flex-1 py-3 px-4">
+                    <span className={`text-sm font-medium ${isCurrentUser ? "text-red-atlantida font-bold" : "text-white/80"}`}>
+                      {p.full_name || "Usuario"}
+                    </span>
+                  </div>
+                  <div className="w-24 lg:w-28 py-3 text-center">
+                    <span className={`text-sm font-black ${isCurrentUser ? "text-red-atlantida" : "text-white/60"}`}>
+                      {p.total_points} Pts.
+                    </span>
+                  </div>
+                </div>
+              )
+            })
+          )
+        ) : loading ? (
           <div className="py-12 text-center">
             <div className="w-6 h-6 border-2 border-red-atlantida/30 border-t-red-atlantida rounded-full animate-spin mx-auto" />
           </div>
@@ -408,8 +503,8 @@ export default function RankingClient({
         )}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
+      {/* Pagination — hidden during search */}
+      {!isSearching && totalPages > 1 && (
         <div className="flex items-center justify-center gap-1 mb-8">
           <button
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
