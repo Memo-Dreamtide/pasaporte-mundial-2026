@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/logo-vive-el-mundial.png",
-        width: 960,
-        height: 960,
+        url: "/images/og-share.png",
+        width: 1200,
+        height: 630,
         alt: "Pasaporte 2026 — Vive el Mundial con Grupo Financiero Atlántida",
         type: "image/png",
       },
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Pasaporte 2026 | Vive el Mundial con Atlántida",
     description: "Predice los partidos del Mundial 2026 y gana premios.",
-    images: ["/images/logo-vive-el-mundial.png"],
+    images: ["/images/og-share.png"],
   },
 }
 
