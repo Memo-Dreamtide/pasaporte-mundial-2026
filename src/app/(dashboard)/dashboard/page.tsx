@@ -8,7 +8,11 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login")
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, total_points, rank_position, exact_scores, predictions_count")
+    .eq("id", user.id)
+    .single()
 
   const { data: liveMatch } = await supabase
     .from("matches")

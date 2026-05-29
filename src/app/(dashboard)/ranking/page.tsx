@@ -8,7 +8,11 @@ export default async function RankingPage() {
 
   if (!user) redirect("/login")
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, total_points, rank_position, exact_scores, predictions_count")
+    .eq("id", user.id)
+    .single()
 
   const authProvider = user.app_metadata?.provider || "email"
 
