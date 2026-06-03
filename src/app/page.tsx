@@ -90,23 +90,29 @@ function StaggerLogos() {
         transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
       >
         <div className="grid grid-cols-3 gap-x-4 gap-y-5 md:gap-x-10 md:gap-y-6 items-center justify-items-center">
-          {ATLANTIDA_LOGOS.map((logo, i) => (
-            <motion.div
-              key={logo.alt}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.4, delay: 0.4 + i * 0.1, ease: [0.25, 0.4, 0.25, 1] }}
-            >
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                width={300}
-                height={120}
-                unoptimized
-                className="h-16 md:h-24 w-auto object-contain max-w-full"
-              />
-            </motion.div>
-          ))}
+          {ATLANTIDA_LOGOS.map((logo, i) => {
+            // Force Atlántida Titularizadora (last logo) into the third column
+            // of the last row so it lines up directly below Confía.
+            const isTitularizadora = logo.alt === "Atlantida Titularizadora"
+            return (
+              <motion.div
+                key={logo.alt}
+                className={isTitularizadora ? "col-start-3" : ""}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.4, delay: 0.4 + i * 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  width={300}
+                  height={120}
+                  unoptimized
+                  className="h-16 md:h-24 w-auto object-contain max-w-full"
+                />
+              </motion.div>
+            )
+          })}
         </div>
       </motion.div>
     </div>
