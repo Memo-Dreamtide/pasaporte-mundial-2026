@@ -260,7 +260,7 @@ export default function Home() {
                   Marcadores<br />en vivo
                 </h2>
                 <p className="text-gray-600 text-base md:text-lg leading-relaxed max-w-md">
-                  Sigue todos los resultados de la cita mundialista en tiempo real. Marcadores, estadísticas y actualizaciones al instante desde tu celular.
+                  Sigue todos los resultados del torneo en tiempo real. Marcadores, estadísticas y actualizaciones al instante desde tu celular.
                 </p>
               </div>
               <div className="relative">
@@ -416,7 +416,7 @@ export default function Home() {
               <span className="text-white">eres el mejor</span>
             </h2>
             <p className="text-white/80 text-base md:text-lg mb-10 max-w-md mx-auto">
-              Predice los partidos de la fiesta mundialista y gana fabulosos premios.
+              Predice todos los partidos del torneo y gana fabulosos premios.
             </p>
             <Link
               href="/registro"
@@ -462,7 +462,7 @@ export default function Home() {
 
           <div className="mt-6 pt-6 border-t border-white/20 text-center space-y-2">
             <p className="text-white/60 text-xs">2026 Pasaporte 2026. Todos los derechos reservados.</p>
-            <p className="text-white/40 text-[10px] leading-relaxed max-w-lg mx-auto">Pasaporte 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA, ni por la Copa Mundial oficial.</p>
+            <p className="text-white/40 text-[10px] leading-relaxed max-w-lg mx-auto">Pasaporte 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA.</p>
             <div className="flex items-center justify-center gap-2 pt-2">
               <span className="text-white/40 text-[10px]">Desarrollado por</span>
               <a href="https://studio.dreamtide.co" target="_blank" rel="noopener noreferrer" className="text-white/70 text-[10px] font-bold hover:text-white transition-colors">studio.dreamtide.co</a>
