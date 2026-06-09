@@ -396,7 +396,7 @@ export default function DashboardClient({
       <FadeIn delay={0.3}>
       <div className="relative overflow-hidden mt-6 lg:mt-8 h-[200px] lg:h-[280px]" style={{ borderRadius: "0 0 3rem 3rem" }}>
         <Image
-          src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/banner-home.jpg"
+          src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/banner-home.jpg?v=2"
           alt="Pasaporte 2026"
           fill
           className="object-cover"
