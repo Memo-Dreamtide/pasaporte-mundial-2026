@@ -191,7 +191,7 @@ export default function Home() {
             className="mb-8"
           >
             <img
-              src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-vive-el-mundial.png"
+              src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-pasion-mundialista.png"
               alt="Atlántida Pasión Mundialista"
               style={{ width: "min(80vw, 480px)", height: "auto", filter: "drop-shadow(0 4px 30px rgba(0,0,0,0.5))" }}
             />
