@@ -1,7 +1,35 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// ─── MAINTENANCE MODE ─────────────────────────────────────
+// Activated per client request. Set MAINTENANCE_MODE=false in Vercel
+// env vars (or revert this commit) to disable. APIs, auth callbacks,
+// the cron endpoint, and static assets stay reachable so the cron job,
+// Supabase Edge Function, Realtime, and admin email delivery keep
+// running normally in the background.
+const MAINTENANCE_MODE = true
+
+function isMaintenanceExempt(pathname: string): boolean {
+  return (
+    pathname === '/mantenimiento' ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/images/') ||
+    pathname === '/manifest.json' ||
+    pathname === '/favicon.ico' ||
+    /\.(png|jpg|jpeg|gif|webp|svg|ico|mp4|webm|woff2?)$/i.test(pathname)
+  )
+}
+
 export async function middleware(request: NextRequest) {
+  // STEP 0: Maintenance redirect (runs before everything else)
+  if (MAINTENANCE_MODE && !isMaintenanceExempt(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/mantenimiento'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+
   // Intercept auth code from Supabase (password reset, email confirm, etc.)
   const code = request.nextUrl.searchParams.get('code')
   if (code && (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '')) {
