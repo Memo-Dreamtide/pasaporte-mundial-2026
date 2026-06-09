@@ -295,7 +295,7 @@ export default function BasesDelConcursoPage() {
         {/* Disclaimer */}
         <div className="text-center border-t border-white/5 pt-8">
           <p className="text-white/20 text-[10px] leading-relaxed max-w-lg mx-auto">
-            Pasaporte 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA, ni por la Copa Mundial oficial.
+            Pasaporte 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA.
           </p>
         </div>
       </div>
