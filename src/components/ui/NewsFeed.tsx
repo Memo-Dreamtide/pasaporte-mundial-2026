@@ -130,7 +130,7 @@ export default function NewsFeed({ news }: { news: NewsItem[] }) {
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <div>
                 <h2 className="text-lg font-black text-white">NOTICIAS</h2>
-                <p className="text-white/20 text-[10px] font-semibold">Últimas novedades del mundial</p>
+                <p className="text-white/20 text-[10px] font-semibold">Últimas novedades del torneo</p>
               </div>
               <button
                 onClick={() => setModalOpen(false)}

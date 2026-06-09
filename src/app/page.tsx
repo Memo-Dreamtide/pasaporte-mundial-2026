@@ -183,7 +183,7 @@ export default function Home() {
           className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center"
           style={{ opacity: heroOpacity }}
         >
-          {/* Logo Vive el Mundial */}
+          {/* Logo Atlántida Pasión Mundialista */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -192,7 +192,7 @@ export default function Home() {
           >
             <img
               src="https://oyndtkrrwmsgkijbfwcs.supabase.co/storage/v1/object/public/assets/logo-vive-el-mundial.png"
-              alt="Atlantida Vive el Mundial"
+              alt="Atlántida Pasión Mundialista"
               style={{ width: "min(80vw, 480px)", height: "auto", filter: "drop-shadow(0 4px 30px rgba(0,0,0,0.5))" }}
             />
           </motion.div>
@@ -461,8 +461,8 @@ export default function Home() {
           </div>
 
           <div className="mt-6 pt-6 border-t border-white/20 text-center space-y-2">
-            <p className="text-white/60 text-xs">2026 Pasaporte Mundial 2026. Todos los derechos reservados.</p>
-            <p className="text-white/40 text-[10px] leading-relaxed max-w-lg mx-auto">Pasaporte Mundial 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA, ni por la Copa Mundial oficial.</p>
+            <p className="text-white/60 text-xs">2026 Pasaporte 2026. Todos los derechos reservados.</p>
+            <p className="text-white/40 text-[10px] leading-relaxed max-w-lg mx-auto">Pasaporte 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA, ni por la Copa Mundial oficial.</p>
             <div className="flex items-center justify-center gap-2 pt-2">
               <span className="text-white/40 text-[10px]">Desarrollado por</span>
               <a href="https://studio.dreamtide.co" target="_blank" rel="noopener noreferrer" className="text-white/70 text-[10px] font-bold hover:text-white transition-colors">studio.dreamtide.co</a>

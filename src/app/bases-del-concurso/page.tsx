@@ -52,7 +52,7 @@ export default function BasesDelConcursoPage() {
     {
       id: "D",
       title: "Forma de participar",
-      content: "Las personas interesadas, podrán hacerlo al participar en las dinámicas de cada una de las empresas del grupo participantes, allí recibirás gratis el Pasaporte Mundial. A continuación, escanea el código QR impreso que aparece en la portada del Pasaporte Mundial 2026 o ingresa a www.pasaporte2026.com y completa los datos personales que te solicitan: Nombre y apellido, Tipo de Documento de Identidad Personal: DUI o Carnet de Residente, Número, Correo electrónico y Número de teléfono. Empieza participando en el juego de pronósticos de los partidos: adivinando el resultado final (ganador). Ya estás participando para ganarte los premios.",
+      content: "Las personas interesadas, podrán hacerlo al participar en las dinámicas de cada una de las empresas del grupo participantes, allí recibirás gratis el Pasaporte. A continuación, escanea el código QR impreso que aparece en la portada del Pasaporte 2026 o ingresa a www.pasaporte2026.com y completa los datos personales que te solicitan: Nombre y apellido, Tipo de Documento de Identidad Personal: DUI o Carnet de Residente, Número, Correo electrónico y Número de teléfono. Empieza participando en el juego de pronósticos de los partidos: adivinando el resultado final (ganador). Ya estás participando para ganarte los premios.",
     },
   ]
 
@@ -105,17 +105,17 @@ export default function BasesDelConcursoPage() {
       <div className="max-w-3xl mx-auto px-6 py-12 md:py-16 relative z-10">
         {/* Título */}
         <div className="text-center mb-12">
-          <p className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase mb-3">Pasaporte Mundial 2026</p>
+          <p className="text-red-atlantida text-xs font-bold tracking-[0.2em] uppercase mb-3">Pasaporte 2026</p>
           <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight uppercase mb-3">
             Bases del Concurso
           </h1>
-          <p className="text-white/30 text-sm">Atlántida Vive el Mundial</p>
+          <p className="text-white/30 text-sm">Atlántida Pasión Mundialista</p>
         </div>
 
         {/* Intro */}
         <div className="rounded-2xl border border-white/5 p-6 md:p-8 mb-6" style={{ backgroundColor: "rgba(255,255,255,0.03)" }}>
           <p className="text-white/60 text-sm leading-relaxed">
-            Este reglamento establece las condiciones de la promoción interna corporativa, y tiene como objetivo premiar a los participantes del Pasaporte Mundial 2026 | Atlántida Vive el Mundial entregados por las empresas participantes del Grupo Financiero Atlántida: Banco Atlántida El Salvador, S.A., AFP Confía, S.A., Atlántida Capital, S.A. DE C.V., Atlántida Securities, S.A de C.V., Seguros Atlántida, S.A., Leasing Atlántida, Atlántida Titulizadora, Fundación Atlántida.
+            Este reglamento establece las condiciones de la promoción interna corporativa, y tiene como objetivo premiar a los participantes del Pasaporte 2026 | Atlántida Pasión Mundialista entregados por las empresas participantes del Grupo Financiero Atlántida: Banco Atlántida El Salvador, S.A., AFP Confía, S.A., Atlántida Capital, S.A. DE C.V., Atlántida Securities, S.A de C.V., Seguros Atlántida, S.A., Leasing Atlántida, Atlántida Titulizadora, Fundación Atlántida.
           </p>
         </div>
 
@@ -295,7 +295,7 @@ export default function BasesDelConcursoPage() {
         {/* Disclaimer */}
         <div className="text-center border-t border-white/5 pt-8">
           <p className="text-white/20 text-[10px] leading-relaxed max-w-lg mx-auto">
-            Pasaporte Mundial 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA, ni por la Copa Mundial oficial.
+            Pasaporte 2026 es una publicación editorial independiente, no afiliada ni patrocinada por la FIFA, ni por la Copa Mundial oficial.
           </p>
         </div>
       </div>

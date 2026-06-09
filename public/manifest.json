@@ -1,7 +1,7 @@
 {
-  "name": "Pasaporte 2026 | Atlantida Vive el Mundial",
+  "name": "Pasaporte 2026 | Atlántida Pasión Mundialista",
   "short_name": "Pasaporte 2026",
-  "description": "Pronostica los 104 partidos del Mundial 2026, acumula puntos y gana premios.",
+  "description": "Pronostica los 104 partidos del torneo 2026, acumula puntos y gana premios.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0A0A0B",
